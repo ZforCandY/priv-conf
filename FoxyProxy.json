@@ -1,0 +1,70 @@
+{
+  "mode": "127.0.0.1:9050",
+  "sync": false,
+  "autoBackup": false,
+  "passthrough": "127.0.0.1:7667\n127.0.0.1:7657\n127.0.0.1:7070",
+  "theme": "moonlight",
+  "container": {},
+  "commands": {
+    "excludeHost": "",
+    "includeHost": "",
+    "setProxy": "",
+    "setTabProxy": ""
+  },
+  "data": [
+    {
+      "active": true,
+      "cc": "",
+      "city": "",
+      "color": "#ffffff",
+      "exclude": [],
+      "hostname": "127.0.0.1",
+      "include": [],
+      "pac": "",
+      "pacString": "",
+      "password": "",
+      "port": "8888",
+      "proxyDNS": true,
+      "tabProxy": [],
+      "title": "free",
+      "type": "http",
+      "username": ""
+    },
+    {
+      "active": true,
+      "cc": "",
+      "city": "",
+      "color": "#ffff00",
+      "exclude": [],
+      "hostname": "127.0.0.1",
+      "include": [],
+      "pac": "",
+      "pacString": "",
+      "password": "",
+      "port": "4444",
+      "proxyDNS": true,
+      "tabProxy": [],
+      "title": "i2p",
+      "type": "http",
+      "username": ""
+    },
+    {
+      "active": true,
+      "cc": "",
+      "city": "",
+      "color": "#7fffd4",
+      "exclude": [],
+      "hostname": "127.0.0.1",
+      "include": [],
+      "pac": "",
+      "pacString": "",
+      "password": "",
+      "port": "9050",
+      "proxyDNS": true,
+      "tabProxy": [],
+      "title": "TOR",
+      "type": "socks5",
+      "username": ""
+    }
+  ]
+}
