@@ -1,2 +1,3 @@
 # priv-conf
-dotfiles
+dotfiles mist
+WIP
