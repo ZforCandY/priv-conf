@@ -32,11 +32,10 @@
 			<Name>Localhost</Name>
 		</Rule>
 		<Rule enabled="true">
-			<Action type="Proxy">100</Action>
-			<Name>Default</Name>
+			<Action type="Direct" />
+			<Applications>snowflake-client.exe</Applications>
+			<Name>snowflake</Name>
 		</Rule>
-	</RuleList>
-</ProxifierProfile>
 		<Rule enabled="true">
 			<Action type="Proxy">100</Action>
 			<Name>Default</Name>
