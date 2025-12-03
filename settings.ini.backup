@@ -119,8 +119,8 @@ UseServerTransportOptions=0
 
 [Status]
 TotalStartDate=1753583294
-TotalDL=40306725506
-TotalUL=2591343352
+TotalDL=40314636970
+TotalUL=2591663892
 
 [Routers]
 CurrentFilter=15;-1;739;-1;10;0;0;0;
