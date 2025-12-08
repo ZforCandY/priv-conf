@@ -10,3 +10,4 @@ Set-Alias ef emacsclient
 # function ec
 function ec{emacsclient -n -c -a test.el}
 function rs{redshift -c C:\redshift.conf -v}
+function rx{redshift -x}
