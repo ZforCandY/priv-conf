@@ -6,5 +6,7 @@ Set-Alias ed edit
 Set-Alias em emacs
 Set-Alias ccl wx86cl64
 Set-Alias ef emacsclient
+
 # function ec
-function  ec{emacsclient -n -c -a test.el}
+function ec{emacsclient -n -c -a test.el}
+function rs{redshift -c C:\redshift.conf -v}
