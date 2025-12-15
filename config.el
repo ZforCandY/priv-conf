@@ -9,26 +9,23 @@
 (slime-setup)
 
                                         ;below
-
-                                        ;shell chinese
-(defun change-shell-mode-coding ()
-  (progn
-    (set-terminal-coding-system 'gbk)
-    (set-keyboard-coding-system 'gbk)
-    (set-selection-coding-system 'gbk)
-    (set-buffer-file-coding-system 'gbk)
-    (set-file-name-coding-system 'gbk)
-    (modify-coding-system-alist 'process "*" 'gbk)
-    (set-buffer-process-coding-system 'gbk 'gbk)
-    (set-file-name-coding-system 'gbk)))
-(add-hook 'shell-mode-hook 'change-shell-mode-coding)
-(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
-(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
-
+(setq next-line-add-newlines nil)
 (setq inferior-lisp-program "sbcl")
 (transient-mark-mode 1)
+(beacon-mode t)
 (setopt mouse-autoselect-window t)
+(setq load-prefer-newer t)
+(setq fast-but-imprecise-scrolling t)
+(setopt switch-to-buffer-obey-display-actions t)
+
+(setq gc-cons-threshold 50000000)
+(setq large-file-warning-threshold 100000000)
+
+(when (fboundp 'windmove-default-keybindings)
+  (windmove-default-keybindings))
+
                                         ;above
+
                                         ;
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets. It is optional.
@@ -58,7 +55,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-dark+) ;doom-nord-aurora
+(setq doom-theme 'grandshell);doom-nord-aurora doom-dark+
 
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
@@ -67,7 +64,7 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/org/")
+(setq org-directory "B:\\C\\org")
 
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
@@ -101,3 +98,4 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+
