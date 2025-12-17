@@ -8,8 +8,8 @@
 			<ExclusionList OnlyFromListMode="false">%ComputerName%; localhost; *.local</ExclusionList>
 			<DnsUdpMode>0</DnsUdpMode>
 		</Resolve>
-		<Encryption mode="basic" />
-		<ConnectionLoopDetection enabled="true" resolve="true" />
+		<Encryption mode="disabled" />
+		<ConnectionLoopDetection enabled="false" resolve="true" />
 		<Udp mode="mode_block_all" />
 		<LeakPreventionMode enabled="true" />
 		<ProcessOtherUsers enabled="false" />
@@ -35,6 +35,16 @@
 			<Action type="Direct" />
 			<Applications>snowflake-client.exe</Applications>
 			<Name>snowflake</Name>
+		</Rule>
+		<Rule enabled="true">
+			<Action type="Direct" />
+			<Applications>torcontrolpanel.exe</Applications>
+			<Name>T-C-P</Name>
+		</Rule>
+		<Rule enabled="true">
+			<Action type="Direct" />
+			<Applications>webtunnel-client.exe</Applications>
+			<Name>webtunnel</Name>
 		</Rule>
 		<Rule enabled="true">
 			<Action type="Proxy">100</Action>
