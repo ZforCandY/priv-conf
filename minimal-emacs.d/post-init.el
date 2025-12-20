@@ -20,7 +20,7 @@
   :config
   (if (daemonp)
       (add-hook 'server-after-make-frame-hook #'inhibit-mouse-mode)
-    (inhibit-mouse-mode 1)))
+    (inhibit-mouse-mode 0)))
 
 (use-package compile-angel
   :demand t
