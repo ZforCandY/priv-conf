@@ -15,6 +15,7 @@
                     :foreground "#FF9E3B"
                     :weight 'bold)
 ;;configs
+(setq initial-scratch-message "")
 (setq package-install-upgrade-built-in t)
 (setq inferior-lisp-program "sbcl")
 (setq confirm-kill-emacs 'y-or-n-p)
