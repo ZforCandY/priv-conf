@@ -1,14 +1,20 @@
 ;;; post-init.el --- post_init -*- no-byte-compile: t; lexical-binding: t; -*-
-(mapc #'disable-theme custom-enabled-themes)
-(load-theme 'grandshell t)
-                                        ;(load-theme 'tomorrow-night-deepblue t)
 (load custom-file 'noerror 'no-message)
+;;themes
+                                        ;(load-theme 'grandshell t)
+                                        ;(load-theme 'tomorrow-night-deepblue t)
+                                        ;(use-package grandshell-theme)
+                                        ;(use-package tomorrow-night-deepblue-theme)
+                                        ;(use-package leuven-theme)
+                                        ;(load-theme 'grandshell-twilly t)
+(mapc #'disable-theme custom-enabled-themes)
+(add-to-list 'custom-theme-load-path "c:/Users/Administrator/.emacs.d/var/themes")
+(setq custom-theme-directory "c:/Users/Administrator/.emacs.d/var/themes")
+(load-theme 'modus-vivendi-tritanopia t)
+                                        ;(load-theme 'modus-operandi-tinted t)
+                                        ;(native-comp-available-p)
 
-
-(native-comp-available-p)
 ;;use-packages
-(use-package grandshell-theme)
-(use-package tomorrow-night-deepblue-theme)
 
 (use-package vertico
   :ensure t
@@ -191,4 +197,7 @@
   (emacs-lisp-mode . paredit-mode)
   :config
   (define-key paredit-mode-map (kbd "RET") nil))
+
+
+
 
