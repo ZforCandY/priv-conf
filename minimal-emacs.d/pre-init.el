@@ -1,6 +1,9 @@
-;;; pre-init.el --- pre_init -*- no-byte-compile: t; lexical-binding: t; -*-
+;;; pre-init.el --- pre-init -*- no-byte-compile: t; lexical-binding: t; -*-
 ;; shortcut runemacs.exe --daemon (in shell:startup)
 ;; add EMACS_SERVER_FILE user var to "server file dir"
+;; Build native-compile-emacs 31 with MSYS2(UCRT64)
+;; bash scrpit for auto
+;; .dlls-add \msys2\ucrt64\bin to path
 
 ;;theme,font,line
 (set-face-attribute 'default nil
@@ -14,6 +17,12 @@
 (set-face-attribute 'line-number-current-line nil
                     :foreground "#FFFFFF"
                     :weight 'bold)
+                                        ;change font size
+(defun fsize/set-font-size (size)
+  "Set font size to SIZE, specified in tenth of a point."
+  (interactive "nEnter the font size: ")
+  (set-face-attribute 'default nil :height size))
+
 ;;configs
 (setq initial-scratch-message "")
 (setq package-install-upgrade-built-in t)
@@ -30,11 +39,11 @@
 (windmove-default-keybindings 'shift)
 (when (fboundp 'windmove-default-keybindings)
   (windmove-default-keybindings))
-
 (setq server-auth-dir "C:\\Users\\Administrator\\emacs-server-auth-dir"
       server-name "admin.txt")
 (setq treesit-font-lock-level 4)
-
+;;load-path
+(add-to-list 'load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
 ;;selected compile
 (let ((deny-list '("\\(?:[/\\\\]\\.dir-locals\\.el\\(?:\\.gz\\)?$\\)"
                    "\\(?:[/\\\\]modus-vivendi-theme\\.el\\(?:\\.gz\\)?$\\)"
