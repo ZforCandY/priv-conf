@@ -12,7 +12,7 @@
 (when (version<= "26.0.50" emacs-version)
   (global-display-line-numbers-mode))
 (set-face-attribute 'line-number-current-line nil
-                    :foreground "#FF9E3B"
+                    :foreground "#FFFFFF"
                     :weight 'bold)
 ;;configs
 (setq initial-scratch-message "")
