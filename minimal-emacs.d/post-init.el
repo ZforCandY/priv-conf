@@ -1,19 +1,29 @@
-;;; post-init.el --- post_init -*- no-byte-compile: t; lexical-binding: t; -*-
+;;; post-init.el --- post-init -*- no-byte-compile: t; lexical-binding: t; -*-
 (load custom-file 'noerror 'no-message)
 ;;themes
                                         ;(load-theme 'grandshell t)
                                         ;(load-theme 'tomorrow-night-deepblue t)
                                         ;(use-package grandshell-theme)
                                         ;(use-package tomorrow-night-deepblue-theme)
-                                        ;(use-package leuven-theme)
-                                        ;(load-theme 'grandshell-twilly t)
+(use-package leuven-theme)
+(use-package ef-themes)
+
 (mapc #'disable-theme custom-enabled-themes)
 (add-to-list 'custom-theme-load-path "c:/Users/Administrator/.emacs.d/var/themes")
 (setq custom-theme-directory "c:/Users/Administrator/.emacs.d/var/themes")
-(load-theme 'modus-vivendi-tritanopia t)
-                                        ;(load-theme 'modus-operandi-tinted t)
+                                        ;For high light env
+(load-theme 'modus-operandi t)
+'(load-theme 'leuven)
+                                        ;For low light env
+'(load-theme 'modus-vivendi-tritanopia t)
+'(load-theme 'grandshell-twilly t)
                                         ;(native-comp-available-p)
-
+;;Measure time
+(defvar before-user-init-time (current-time)
+  "Value of `current-time' when Emacs begins loading `user-init-file'.")
+  (message "Loading Emacs...done (%.3fs)"
+         (float-time (time-subtract before-user-init-time
+                                    before-init-time)))
 ;;use-packages
 
 (use-package vertico
@@ -197,6 +207,24 @@
   (emacs-lisp-mode . paredit-mode)
   :config
   (define-key paredit-mode-map (kbd "RET") nil))
+
+(use-package avy
+  :demand t
+  :bind (("C-x j c" . avy-goto-char)
+         ("C-x j w" . avy-goto-word-1)
+         ("C-x j l" . avy-goto-line))
+  :config
+  (setq avy-all-windows nil
+        avy-all-windows-alt t
+        avy-background t
+        avy-style 'pre))
+
+
+(use-package reader
+  :vc t
+  :load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
+
+
 
 
 
