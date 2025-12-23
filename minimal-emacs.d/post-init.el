@@ -28,8 +28,14 @@
 
 (use-package vertico
   :ensure t
+  :defer  t
+  :hook (minibuffer-setup . vertico-repeat-save)
   :config
-  (vertico-mode))
+  (vertico-mode)
+  :custom
+  (vertico-cycle t)
+  (vertico--resize nil)
+  (vertico--count 12))
 
 (use-package inhibit-mouse
   :ensure t
@@ -195,7 +201,9 @@
   :ensure t
   :commands aggressive-indent-mode
   :hook
-  (emacs-lisp-mode . aggressive-indent-mode))
+  (c-mode . aggressive-indent-mode)
+  (emacs-lisp-mode . aggressive-indent-mode)
+  (lisp-mode . aggressive-indent-mode-map))
 
 ;; Highlights function and variable definitions in Emacs Lisp mode
 (use-package highlight-defined
@@ -241,6 +249,14 @@
   (when (eq system-type 'windows-nt)
     (setq vterm-shell "powershell")))
 '(setq vterm-shell "B:\\msys2//msys2_shell.cmd -defterm -here -no-start -ucrt64 -i")
+
+'(use-package hl-line-face
+   '  :hook ((org-mode) . hl-line-mode))
+
+(use-package display-line-numbers
+  :defer t
+  :hook ((prog-mode . display-line-numbers-mode)))
+
 
 
 
