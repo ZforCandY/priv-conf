@@ -12,9 +12,9 @@
 (add-to-list 'custom-theme-load-path "c:/Users/Administrator/.emacs.d/var/themes")
 (setq custom-theme-directory "c:/Users/Administrator/.emacs.d/var/themes")
                                         ;For high light env
-(load-theme 'modus-operandi t)
+'(load-theme 'modus-operandi t)
 '(load-theme 'leuven)
-                                        ;For low light env
+(load-theme 'modus-operandi-tinted)                                       ;For low light env
 '(load-theme 'modus-vivendi-tritanopia t)
 '(load-theme 'grandshell-twilly t)
                                         ;(native-comp-available-p)
@@ -85,7 +85,12 @@
   :commands (recentf-mode recentf-cleanup)
   :hook
   (after-init . recentf-mode)
+  :init
+  (recentf-mode )
+  :bind (("C-c f" . recentf-open-files))
   :custom
+  (recentf-max-saved-items 200)
+  (recentf-case-fold-search t)
   (recentf-auto-clenanup (if (daemonp) 300 'never))
   (recentf-exclude
    (list "\\.tar$" "\\.tbz2$" "\\.tbz$" "\\.tgz$" "\\.bz2$"
@@ -219,13 +224,23 @@
         avy-background t
         avy-style 'pre))
 
-
 (use-package reader
   :vc t
   :load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
 
+(use-package nov
+  :defer t
+  :mode ("\\.epub\\'" . nov-mode)
+  :config
+  (setq nov-text-widith 95))
 
-
+(use-package vterm
+  :load-path "C:\\Users\\Administrator\\.emacs.d\\var\\elpa"
+  :bind (("C-c v t" . vterm))
+  :config
+  (when (eq system-type 'windows-nt)
+    (setq vterm-shell "powershell")))
+'(setq vterm-shell "B:\\msys2//msys2_shell.cmd -defterm -here -no-start -ucrt64 -i")
 
 
 
