@@ -18,20 +18,27 @@
   (with-no-warnings
     (setq native-comp-deferred-compilation-deny-list deny-list)
     (setq comp-deferred-compilation-deny-list deny-list)))
+(setq native-comp-speed 2)
+
+;;GC
+                                        ;(setq gc-cons-threshold 50000000)
 
 ;;;Load-path
-(add-to-list 'load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
+'(add-to-list 'load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
 (add-to-list 'load-path "B:\\msys2\\ucrt64\\bin")
 
 ;;Window-size
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
-'(add-to-list 'default-frame-alist '(width . 60))
+'(add-to-list 'default-frame-alist '(left . 150))
+'(add-to-list 'default-frame-alist '(top . 50))
 '(add-to-list 'default-frame-alist '(height . 40))
+'(add-to-list 'default-frame-alist '(width . 60))  
 
 ;;Theme,font,line
 (global-prettify-symbols-mode 1)
 (setf custom-safe-themes 't)
 (setq frame-title-format nil)
+
 (set-face-attribute 'default nil
                     :height 139 :weight 'regular :width 'normal :foundry "outline" :family "Consolas")
 (setq mode-line-position-column-line-format '("%l:%C"))
