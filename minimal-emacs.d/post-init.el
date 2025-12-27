@@ -43,6 +43,7 @@
          (float-time (time-subtract before-user-init-time
                                     before-init-time)))
 ;;;use-packages
+(custom-set-variables '(package-selected-packages nil))
 
 (use-package conf-mode)
 (use-package esup)
@@ -366,4 +367,3 @@
   :config (ultra-scroll-mode 1))
 
 ;;; post-init.el ends here
-
