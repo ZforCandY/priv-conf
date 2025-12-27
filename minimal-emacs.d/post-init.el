@@ -1,5 +1,21 @@
 ;;; post-init.el --- post-init -*- no-byte-compile: t; lexical-binding: t; -*-
 (load custom-file 'noerror 'no-message)
+
+;;Compile Angel
+(use-package compile-angel
+  :demand t
+  :ensure t
+  :custom
+  (compile-angel-verbose t)
+  :config
+  (push "/init.el" compile-angel-excluded-files)
+  (push "/early-init.el" compile-angel-excluded-files)
+  (push "/pre-init.el" compile-angel-excluded-files)
+  (push "/post-init.el" compile-angel-excluded-files)
+  (push "/pre-early-init.el" compile-angel-excluded-files)
+  (push "/post-early-init.el" compile-angel-excluded-files)
+  (compile-angel-on-load-mode 1))
+
 ;;themes
                                         ;(load-theme 'grandshell t)
                                         ;(load-theme 'tomorrow-night-deepblue t)
@@ -26,10 +42,11 @@
 (message "Loading Emacs...done (%.3fs)"
          (float-time (time-subtract before-user-init-time
                                     before-init-time)))
-;;use-packages
+;;;use-packages
 
 (use-package conf-mode)
 (use-package esup)
+(use-package powershell)
 
 (use-package vertico
   :ensure t
@@ -48,20 +65,6 @@
   (if (daemonp)
       (add-hook 'server-after-make-frame-hook #'inhibit-mouse-mode)
     (inhibit-mouse-mode 0)))
-
-(use-package compile-angel
-  :demand t
-  :ensure t
-  :custom
-  (compile-angel-verbose t)
-  :config
-  (push "/init.el" compile-angel-excluded-files)
-  (push "/early-init.el" compile-angel-excluded-files)
-  (push "/pre-init.el" compile-angel-excluded-files)
-  (push "/post-init.el" compile-angel-excluded-files)
-  (push "/pre-early-init.el" compile-angel-excluded-files)
-  (push "/post-early-init.el" compile-angel-excluded-files)
-  (compile-angel-on-load-mode 1))
 
 (use-package treesit-auto
   :ensure t
@@ -363,6 +366,4 @@
   :config (ultra-scroll-mode 1))
 
 ;;; post-init.el ends here
-
-
 
