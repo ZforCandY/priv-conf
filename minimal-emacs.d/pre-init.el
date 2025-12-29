@@ -28,6 +28,8 @@
 ;;Load-path
                                         ;(add-to-list 'load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
 (add-to-list 'load-path "B:\\msys2\\ucrt64\\bin")
+                                        ;(add-to-list 'load-path "C:\\Users\\Administrator\\.emacs.d\\var/4g.el")
+                                        ;(load (concat (file-name-directory user-init-file) "4g.el"))
 
 ;;Window-size
                                         ;(add-to-list 'default-frame-alist '(fullscreen . maximized))
@@ -57,7 +59,7 @@
     ))
 (add-hook 'window-setup-hook #'center-frame)
 
-;; Straight bootstrap
+;;Straight bootstrap
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name
@@ -73,6 +75,9 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
+
+;;Straight config
+(setq straight-vc-git-default-clone-depth 1)
 
 ;;Theme,font,line
 (global-prettify-symbols-mode 1)
@@ -138,7 +143,7 @@
 (setq kept-new-versions 10)
 
 ;;Ensure
-                                        ;(setq use-package-always-ensure t)
+(setq use-package-always-ensure t)
 
 ;;Display
 (setopt display-line-numbers-width 3)
@@ -194,6 +199,22 @@
 ;;Org
 (setq org-directory "B:\\C\\org")
 (setq org-startup-numerated t)
+
+;;Inline-image
+'(defun org-http-image-data-fn (protocol link _description)
+   "Interpret LINK as an URL to an image file."
+   (when (and (image-type-from-file-name link)
+              (not (eq org-display-remote-inline-images 'skip)))
+     (if-let (buf (url-retrieve-synchronously (concat protocol ":" link)))
+         (with-current-buffer buf
+           (goto-char (point-min))
+           (re-search-forward "\r?\n\r?\n" nil t)
+           (buffer-substring-no-properties (point) (point-max)))
+       (message "Download of image \"%s\" failed" link)
+       nil)))
+
+(setq org-display-remote-inline-images 'cache)
+
 ;;Package
 (setq package-install-upgrade-built-in t)
 
