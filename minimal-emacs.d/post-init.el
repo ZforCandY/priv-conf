@@ -4,7 +4,8 @@
 ;;Compile Angel
 (use-package compile-angel
   :defer t
-  :demand t
+  :defer 1
+  ;;:demand t
   :ensure t
   :custom
   (compile-angel-verbose t)
@@ -47,7 +48,7 @@
          (float-time (time-subtract before-user-init-time
                                     before-init-time)))
 
-;;;use-packages ;All with :defer
+;;;use-packages ;All with :defer :defer 30 s
 (custom-set-variables '(package-selected-packages nil))
 
 (use-package conf-mode
@@ -60,6 +61,7 @@
 (use-package vertico
   :ensure t
   :defer  t
+  :defer 2
   :hook (minibuffer-setup . vertico-repeat-save)
   :config
   (vertico-mode)
@@ -70,11 +72,12 @@
 
 (use-package inhibit-mouse
   :defer t
+  :defer 5
   :ensure t
   :config
   (if (daemonp)
       (add-hook 'server-after-make-frame-hook #'inhibit-mouse-mode)
-    (inhibit-mouse-mode 0)))
+    (inhibit-mouse-mode 1)))
 
 (use-package treesit-auto
   :defer t
@@ -180,6 +183,7 @@
 
 (use-package org
   :defer t
+  :defer 10
   :ensure t
   :commands (org-mode org-version)
   :mode
@@ -242,6 +246,7 @@
   (emacs-lisp-mode . highlight-defined-mode))
 
 ;; Prevent parenthesis imbalance
+
 (use-package paredit
   :defer t
   :ensure t
@@ -253,7 +258,6 @@
 
 (use-package avy
   :defer t
-  :demand t
   :bind (("C-x j c" . avy-goto-char)
          ("C-x j w" . avy-goto-word-1)
          ("C-x j l" . avy-goto-line)
@@ -270,6 +274,7 @@
 
 (use-package reader
   :defer t
+  :defer 30
   :vc t
   :load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
 
@@ -372,6 +377,7 @@
 
 (use-package expreg
   :defer t
+  :defer 2
   :config (global-set-key (kbd "M-j") 'expreg-expand))
 
 (use-package org-bullets
@@ -413,12 +419,5 @@
   :custom
   (stripspace-only-if-initially-clean nil)
   (stripspace-restore-column t))
-
-(use-package vim-tab-bar
-  :ensure t
-  :defer t
-  :commands vim-tab-bar-mode
-  :hook
-  (after-init . vim-tab-bar-mode))
 
 ;;; post-init.el ends here
