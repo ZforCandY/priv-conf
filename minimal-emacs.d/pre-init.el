@@ -1,6 +1,6 @@
 ;;; pre-init.el --- pre-init -*- no-byte-compile: t; lexical-binding: t; -*-
 
-;;;Notes
+;;Notes
 ;; shortcut runemacs.exe --daemon (in shell:startup)
 ;; add EMACS_SERVER_FILE user var to "server file dir"
 ;; Build native-compile-emacs 31 with MSYS2(UCRT64) bash-scrpit for auto
@@ -8,7 +8,7 @@
 ;;load-path compile setq vterm-shell"powershell"
 ;;see(https://emacs-china.org/t/windows-emacs-libvterm/30140/20)
 
-;;;Selected Compile
+;;Selected Compile
 (let ((deny-list '("\\(?:[/\\\\]\\.dir-locals\\.el\\(?:\\.gz\\)?$\\)"
                    "\\(?:[/\\\\]modus-vivendi-theme\\.el\\(?:\\.gz\\)?$\\)"
                    "\\(?:[/\\\\][^/\\\\]+-loaddefs\\.el\\(?:\\.gz\\)?$\\)"
@@ -18,21 +18,68 @@
   (with-no-warnings
     (setq native-comp-deferred-compilation-deny-list deny-list)
     (setq comp-deferred-compilation-deny-list deny-list)))
+(defvar old-value nil)
+(defvar original-noninteractive-value nil)
 (setq native-comp-speed 2)
 
 ;;GC
                                         ;(setq gc-cons-threshold 50000000)
 
-;;;Load-path
-'(add-to-list 'load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
+;;Load-path
+                                        ;(add-to-list 'load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
 (add-to-list 'load-path "B:\\msys2\\ucrt64\\bin")
 
 ;;Window-size
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-'(add-to-list 'default-frame-alist '(left . 150))
-'(add-to-list 'default-frame-alist '(top . 50))
-'(add-to-list 'default-frame-alist '(height . 40))
-'(add-to-list 'default-frame-alist '(width . 60))  
+                                        ;(add-to-list 'default-frame-alist '(fullscreen . maximized))
+                                        ;(add-to-list 'default-frame-alist '(left . 150))
+                                        ;(add-to-list 'default-frame-alist '(top . 50))
+(add-to-list 'default-frame-alist '(height . 40))
+(add-to-list 'default-frame-alist '(width . 160))
+
+;;Center-window
+(defun center-frame ()
+  "Center the frame on the screen, respecting the size set in default-frame-alist."
+  (interactive)
+  (let* ((desired-width
+          (or (cdr (assq 'width default-frame-alist)) 80))
+         (desired-height
+          (or (cdr (assq 'height default-frame-alist)) 24))
+         (screen-width (x-display-pixel-width))
+         (screen-height (x-display-pixel-height))
+         (char-width (frame-char-width))
+         (char-height (frame-char-height))
+         (frame-pixel-width (* desired-width char-width))
+         (frame-pixel-height (* desired-height char-height))
+         (left (max 0 (/ (- screen-width frame-pixel-width) 2)))
+         (top (max 0 (/ (- screen-height frame-pixel-height) 2))))
+    (message
+     "Screen size: %dx%d, Desired frame size: %dx%d, Position: (%d, %d)"
+     screen-width screen-height desired-width desired-height left top)
+    (set-frame-size (selected-frame) desired-width desired-height)
+    (set-frame-position (selected-frame) left top)
+    (message "Frame set to %dx%d at (%d, %d)"
+             (frame-width)
+             (frame-height)
+             (frame-parameter nil 'left)
+             (frame-parameter nil 'top))))
+(add-hook 'window-setup-hook #'center-frame)
+
+;; Straight bootstrap
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        (or (bound-and-true-p straight-base-dir)
+            user-emacs-directory)))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
 ;;Theme,font,line
 (global-prettify-symbols-mode 1)
@@ -45,8 +92,8 @@
 '(display-line-numbers-type (quote relative))
 (column-number-mode 1)
 
-(when (version<= "26.0.50" emacs-version)
-  (global-display-line-numbers-mode))
+'(when (version<= "26.0.50" emacs-version)
+   (global-display-line-numbers-mode))
 (set-face-attribute 'line-number-current-line nil
                     :foreground "#FFFFFF"
                     :weight 'bold)
@@ -76,15 +123,15 @@
 ;;;Configs
 ;;Hook
 (add-hook 'text-mode-hook 'visual-line-mode)
-(add-hook 'after-init-hook #'global-auto-revert-mode)
-(add-hook 'after-init-hook #'recentf-mode)
-(add-hook 'after-init-hook #'savehist-mode)
-(add-hook 'after-init-hook #'save-place-mode)
+                                        ;(add-hook 'after-init-hook #'global-auto-revert-mode)
+                                        ;(add-hook 'after-init-hook #'recentf-mode)
+                                        ;(add-hook 'after-init-hook #'savehist-mode)
+                                        ;(add-hook 'after-init-hook #'save-place-mode)
 (add-hook 'after-init-hook #'display-time-mode)
 (add-hook 'after-init-hook #'window-divider-mode)
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'prog-mode-hook 'electric-pair-mode)
-
+(add-hook 'after-init-hook #'minibuffer-depth-indicate-mode)
 ;;Scroll
 (setq scroll-conservatively 101)
 (setq scroll-margin 0)
@@ -98,7 +145,7 @@
 (setq kept-new-versions 10)
 
 ;;Ensure
-(setq use-package-always-ensure t)
+                                        ;(setq use-package-always-ensure t)
 
 ;;Display
 (setopt display-line-numbers-width 3)
@@ -130,7 +177,16 @@
 (setopt confirm-kill-processes nil)
 
 ;;Scratch
-(setq initial-scratch-message "")
+(setq initial-scratch-message "┌┬┐┬ ┬┬
+ │ ││││
+ ┴ └┴┘┴
+      ┬  ┬┌─┐┬ ┬┌┬┐
+      │  ││ ┬├─┤ │
+      ┴─┘┴└─┘┴ ┴ ┴
+                ┌─┐┌─┐┌─┐┬─┐┬┌─┬ ┌─┐
+                └─┐├─┘├─┤├┬┘├┴┐│ ├┤
+                └─┘┴  ┴ ┴┴└─┴ ┴┴─└─┘
+")
 
 ;;Lisp
 (setq inferior-lisp-program "sbcl")
@@ -161,7 +217,7 @@
 (setq treesit-font-lock-level 4)
 
 ;;Uncommented
-'(setq fast-but-imprecise-scrolling t)
-'(global-so-long-mode t)
+                                        ;(setq fast-but-imprecise-scrolling t)
+                                        ;(global-so-long-mode t)
 
 ;;; pre-init.el ends here
