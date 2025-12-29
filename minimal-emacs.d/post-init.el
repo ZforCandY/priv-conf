@@ -420,4 +420,18 @@
   (stripspace-only-if-initially-clean nil)
   (stripspace-restore-column t))
 
+'(straight-use-package '(org-yt
+                         :type git
+                         :host github
+                         :repo "TobiasZawada/org-yt"
+                         :ensure t
+                         :defer t
+                         :defer 10))
+                                        ;(require 'org-yt)
+
+
+                                        ;(org-link-set-parameters "http"  :image-data-fun #'org-http-image-data-fn)
+                                        ;(org-link-set-parameters "https" :image-data-fun #'org-http-image-data-fn)
+
+
 ;;; post-init.el ends here
