@@ -52,16 +52,9 @@
          (frame-pixel-height (* desired-height char-height))
          (left (max 0 (/ (- screen-width frame-pixel-width) 2)))
          (top (max 0 (/ (- screen-height frame-pixel-height) 2))))
-    (message
-     "Screen size: %dx%d, Desired frame size: %dx%d, Position: (%d, %d)"
-     screen-width screen-height desired-width desired-height left top)
     (set-frame-size (selected-frame) desired-width desired-height)
     (set-frame-position (selected-frame) left top)
-    (message "Frame set to %dx%d at (%d, %d)"
-             (frame-width)
-             (frame-height)
-             (frame-parameter nil 'left)
-             (frame-parameter nil 'top))))
+    ))
 (add-hook 'window-setup-hook #'center-frame)
 
 ;; Straight bootstrap
@@ -84,7 +77,7 @@
 ;;Theme,font,line
 (global-prettify-symbols-mode 1)
 (setf custom-safe-themes 't)
-(setq frame-title-format nil)
+(setq frame-title-format "λ: %b")
 
 (set-face-attribute 'default nil
                     :height 139 :weight 'regular :width 'normal :foundry "outline" :family "Consolas")
@@ -162,6 +155,12 @@
 (setq help-window-select t)
 (setq-default cursor-in-non-selected-windows nil)
 
+;;Mouse
+(setq mouse-wheel-scroll-amount '(2 ((shift) . 1)) ;; one line at a time
+      mouse-wheel-progressive-speed nil ;; don't accelerate scrolling
+      mouse-wheel-follow-mouse 't ;; scroll window under mouse
+      )
+
 ;;Load
 (setq load-prefer-newer t)
 
@@ -194,7 +193,7 @@
 
 ;;Org
 (setq org-directory "B:\\C\\org")
-
+(setq org-startup-numerated t)
 ;;Package
 (setq package-install-upgrade-built-in t)
 
@@ -208,6 +207,7 @@
 
 ;;Buffer
 (setopt switch-to-buffer-obey-display-actions t)
+(modify-frame-parameters nil '((inhibit-double-buffering . nil)))
 
 ;;Server
 (setq server-auth-dir "C:\\Users\\Administrator\\emacs-server-auth-dir"
