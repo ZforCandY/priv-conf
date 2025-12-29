@@ -3,6 +3,7 @@
 
 ;;Compile Angel
 (use-package compile-angel
+  :defer t
   :demand t
   :ensure t
   :custom
@@ -21,33 +22,40 @@
                                         ;(load-theme 'tomorrow-night-deepblue t)
                                         ;(use-package grandshell-theme)
                                         ;(use-package tomorrow-night-deepblue-theme)
-(use-package leuven-theme)
-(use-package ef-themes)
+                                        ;(use-package leuven-theme)
+                                        ;(use-package ef-themes)
 
 (mapc #'disable-theme custom-enabled-themes)
 (add-to-list 'custom-theme-load-path "c:/Users/Administrator/.emacs.d/var/themes")
 (setq custom-theme-directory "c:/Users/Administrator/.emacs.d/var/themes")
                                         ;For high light env
-'(load-theme 'modus-operandi t)
-'(load-theme 'leuven)
+                                        ;(load-theme 'modus-operandi t)
+                                        ;(load-theme 'leuven)
 (load-theme 'modus-operandi-tinted)
                                         ;For low light env
-'(load-theme 'modus-vivendi-tritanopia t)
-'(load-theme 'leuven-dark t)
-'(load-theme 'grandshell-twilly t)
+                                        ;(load-theme 'modus-vivendi-tritanopia t)
+                                        ;(load-theme 'leuven-dark t)
+                                        ;(load-theme 'grandshell-twilly t)
                                         ;(native-comp-available-p)
+:Straight.el
+(straight-use-package 'use-package)
+
 ;;Measure time
 (defvar before-user-init-time (current-time)
   "Value of `current-time' when Emacs begins loading `user-init-file'.")
 (message "Loading Emacs...done (%.3fs)"
          (float-time (time-subtract before-user-init-time
                                     before-init-time)))
-;;;use-packages
+
+;;;use-packages ;All with :defer
 (custom-set-variables '(package-selected-packages nil))
 
-(use-package conf-mode)
-(use-package esup)
-(use-package powershell)
+(use-package conf-mode
+  :defer t)
+(use-package esup
+  :defer t)
+(use-package powershell
+  :defer t)
 
 (use-package vertico
   :ensure t
@@ -61,6 +69,7 @@
   (vertico--count 12))
 
 (use-package inhibit-mouse
+  :defer t
   :ensure t
   :config
   (if (daemonp)
@@ -68,6 +77,7 @@
     (inhibit-mouse-mode 0)))
 
 (use-package treesit-auto
+  :defer t
   :ensure t
   :custom
   (treesit-auto-install 'prompt)
@@ -76,6 +86,7 @@
   (global-treesit-auto-mode))
 
 (use-package autorevert
+  :defer t
   :ensure nil
   :commands (auto-revert-mode global-auto-revert-mode)
   :hook
@@ -96,6 +107,7 @@
 (auto-save-visited-mode 1)
 
 (use-package recentf
+  :defer t
   :ensure nil
   :commands (recentf-mode recentf-cleanup)
   :hook
@@ -119,6 +131,7 @@
   (add-hook 'kill-emacs-hook #'recentf-cleanup -90))
 
 (use-package savehist
+  :defer t
   :ensure nil
   :init (savehist-mode 1)
   :commands (savehist-mode savehist-save)
@@ -133,6 +146,7 @@
      search-ring regexp-search-ring)))
 
 (use-package saveplace
+  :defer t
   :ensure nil
   :commands (save-place-mode save-place-local-mode)
   :hook
@@ -141,13 +155,12 @@
   (save-place-limit 400))
 
 (use-package corfu
+  :defer t
   :ensure t
   :commands (corfu-mode global-corfu-mode)
-
   :hook ((prog-mode . corfu-mode)
          (shell-mode . corfu-mode)
          (eshell-mode . corfu-mode))
-  
   :custom
   (read-extended-command-predicate #'command-completion-default-include-p)
   (text-mode-ispell-word-completion nil)
@@ -156,15 +169,17 @@
   (global-corfu-mode))
 
 (use-package cape
+  :defer t
   :ensure t
   :commands (cape-dabbrev cape-file cape-elisp-block)
   :bind ("C-c p" . cape-prefix-map)
   :init
-   (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-dabbrev)
   (add-hook 'completion-at-point-functions #'cape-file)
   (add-hook 'completion-at-point-functions #'cape-elisp-block))
 
 (use-package org
+  :defer t
   :ensure t
   :commands (org-mode org-version)
   :mode
@@ -174,16 +189,17 @@
   (org-startup-indented t)
   (org-adapt-indentation nil)
   (org-edit-src-content-indentation 0)
-  ;; (org-fontify-done-headline t)
-  ;; (org-fontify-todo-headline t)
-  ;; (org-fontify-whole-heading-line t)
-  ;; (org-fontify-quote-and-verse-blocks t)
+  (org-fontify-done-headline t)
+  (org-fontify-todo-headline t)
+  (org-fontify-whole-heading-line t)
+  (org-fontify-quote-and-verse-blocks t)
   (org-startup-truncated t))
 
 (use-package auto-package-update
+  :defer t
   :ensure t
   :custom
-    ;; Here, packages will only be updated if at least 7 days have passed
+  ;; Here, packages will only be updated if at least 7 days have passed
   ;; since the last successful update.
   (auto-package-update-interval 7)
   (auto-package-update-hide-results t)
@@ -195,9 +211,10 @@
   (auto-package-update-at-time "7:30"))
 
 (use-package buffer-terminator
+  :defer t
   :ensure t
   :custom
-    (buffer-terminator-verbose nil)
+  (buffer-terminator-verbose nil)
   ;; Set the inactivity timeout (in seconds) after which buffers are considered
   ;; inactive (default is 30 minutes):
   (buffer-terminator-inactivity-timeout (* 30 60)) ; 30 minutes
@@ -209,6 +226,7 @@
 
 ;; Enables automatic indentation of code while typing
 (use-package aggressive-indent
+  :defer t
   :ensure t
   :commands aggressive-indent-mode
   :hook
@@ -217,6 +235,7 @@
 
 ;; Highlights function and variable definitions in Emacs Lisp mode
 (use-package highlight-defined
+  :defer t
   :ensure t
   :commands highlight-defined-mode
   :hook
@@ -224,6 +243,7 @@
 
 ;; Prevent parenthesis imbalance
 (use-package paredit
+  :defer t
   :ensure t
   :commands paredit-mode
   :hook
@@ -232,6 +252,7 @@
   (define-key paredit-mode-map (kbd "RET") nil))
 
 (use-package avy
+  :defer t
   :demand t
   :bind (("C-x j c" . avy-goto-char)
          ("C-x j w" . avy-goto-word-1)
@@ -248,6 +269,7 @@
         (setq avy-indent-line-overlay t)))
 
 (use-package reader
+  :defer t
   :vc t
   :load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
 
@@ -258,6 +280,7 @@
   (setq nov-text-widith 95))
 
 (use-package vterm
+  :defer t
   :load-path "C:\\Users\\Administrator\\.emacs.d\\var\\elpa"
   :bind (("C-c t" . vterm))
   :init
@@ -278,6 +301,7 @@
   :hook ((prog-mode . display-line-numbers-mode)))
 
 (use-package ultra-scroll
+  :defer t
   :vc (:url "https://github.com/jdtsmith/ultra-scroll" :branch "main")
   :init
   (setq scroll-conservatively 101 ; important!
@@ -286,6 +310,7 @@
   (ultra-scroll-mode 1))
 
 (use-package golden-ratio
+  :defer t
   :diminish golden-ratio-mode
   :init
   (golden-ratio-mode 0)
@@ -293,10 +318,12 @@
   (golden-ratio-auto-scale t))
 
 (use-package which-key
+  :defer t
   :config
   (which-key-mode))
 
 (use-package marginalia
+  :defer t
   :hook (after-init . marginalia-mode))
 
 (use-package orderless
@@ -304,9 +331,11 @@
   (completing-styles '(orderles basic))
   (orderless-matching-styles '(orderless-literal orderless-regexp))
   (completion-category-defaults nil)
-  (completing-category-overrides nil))
+  (completing-category-overrides nil)
+  :defer t)
 
 (use-package dired
+  :defer t
   :ensure nil
   :commands (dired)
   :hook
@@ -318,6 +347,7 @@
   (setq delete-by-moving-to-trash t))
 
 (use-package dired-subtree
+  :defer t
   :after dired
   :bind
   ( :map dired-mode-map
@@ -329,24 +359,30 @@
   (setq dired-subtree-use-backgrounds nil))
 
 (use-package flycheck
+  :defer t
   :init
   (setq flycheck-display-errors-delay 0.1)
   (setq flycheck-debug t)
   :after exec-path-from-shell
   :hook (prog-mode . global-flycheck-mode))
+
 (use-package rainbow-delimiters
+  :defer t
   :hook ((prog-mode . rainbow-delimiters-mode)))
 
 (use-package expreg
+  :defer t
   :config (global-set-key (kbd "M-j") 'expreg-expand))
 
 (use-package org-bullets
+  :defer t
   :after org
   :hook (org-mode-hook . org-bullets-mode))
 (setq org-startup-truncated nil)
 
 (use-package
   simple-modeline
+  :defer t
   :init
   (setq simple-modeline-segments
         '((simple-modeline-segment-modified
@@ -364,6 +400,25 @@
   :hook (after-init . simple-modeline-mode))
 
 (use-package ultra-scroll
+  :defer t
   :config (ultra-scroll-mode 1))
+
+(use-package stripspace
+  :defer t
+  :ensure t
+  :commands stripspace-local-mode
+  :hook ((prog-mode . stripspace-local-mode)
+         (text-mode . stripspace-local-mode)
+         (conf-mode . stripspace-local-mode))
+  :custom
+  (stripspace-only-if-initially-clean nil)
+  (stripspace-restore-column t))
+
+(use-package vim-tab-bar
+  :ensure t
+  :defer t
+  :commands vim-tab-bar-mode
+  :hook
+  (after-init . vim-tab-bar-mode))
 
 ;;; post-init.el ends here
