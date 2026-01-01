@@ -48,7 +48,21 @@
          (float-time (time-subtract before-user-init-time
                                     before-init-time)))
 
-;;;use-packages ;All with :defer :defer 30 s
+(use-package server
+  :defer t
+  :defer 3
+  :commands (server-running-p)
+  :config (or (server-running-p) (server-mode)))
+
+;;Daemon
+(defun ss/server-start ()
+  "start daemon based of server-running-p"
+  (interactive "")
+  (cond ((equal (server-running-p) ':other)(server-start))
+        ((server-running-p) (print server-name))
+        (t (server-start))))
+
+;;;use-packages ;All with :defer t :defer 30 s or disabled t
 (custom-set-variables '(package-selected-packages nil))
 
 (use-package conf-mode
@@ -329,6 +343,9 @@
 
 (use-package marginalia
   :defer t
+  :custom
+  (marginalia-max-relative-age 0)
+  (marginalia--align 'right)
   :hook (after-init . marginalia-mode))
 
 (use-package orderless
@@ -349,7 +366,8 @@
   :config
   (setq dired-recursive-copies 'always)
   (setq dired-recursive-deletes 'always)
-  (setq delete-by-moving-to-trash t))
+  (setq delete-by-moving-to-trash t)
+  (setq dired-listing-switches "-alh"))
 
 (use-package dired-subtree
   :defer t
@@ -386,8 +404,7 @@
   :hook (org-mode-hook . org-bullets-mode))
 (setq org-startup-truncated nil)
 
-(use-package
-  simple-modeline
+(use-package simple-modeline
   :defer t
   :init
   (setq simple-modeline-segments
@@ -432,6 +449,11 @@
 
                                         ;(org-link-set-parameters "http"  :image-data-fun #'org-http-image-data-fn)
                                         ;(org-link-set-parameters "https" :image-data-fun #'org-http-image-data-fn)
+(progn ;    `isearch'
+  (setq isearch-allow-scroll nil))
 
+'(use-package custom
+   :no-require t
+   :defer)
 
 ;;; post-init.el ends here
