@@ -110,6 +110,7 @@
 (global-set-key (kbd "M-m") #'backward-paragraph)
 (global-set-key (kbd "C-c l") #'inferior-lisp)
 (global-set-key (kbd "C-c b") #'eval-buffer)
+(global-set-key (kbd "C-c e") #'eval-last-sexp)
 (define-key key-translation-map (kbd "C-q") (kbd "C-g"))
 (global-set-key [remap list-buffers] 'ibuffer)
 
@@ -130,6 +131,7 @@
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'prog-mode-hook 'electric-pair-mode)
 (add-hook 'after-init-hook #'minibuffer-depth-indicate-mode)
+
 ;;Scroll
 (setq scroll-conservatively 101)
 (setq scroll-margin 0)
@@ -144,6 +146,14 @@
 
 ;;Ensure
 (setq use-package-always-ensure t)
+
+;;Env
+(set-language-environment "UTF-8")
+
+;;Performance
+(setq inhibit-compacting-font-cache t)
+
+(setq frame-resize-pixelwise t)
 
 ;;Display
 (setopt display-line-numbers-width 3)
@@ -165,6 +175,8 @@
       mouse-wheel-progressive-speed nil ;; don't accelerate scrolling
       mouse-wheel-follow-mouse 't ;; scroll window under mouse
       )
+;;Default
+(setq-default lexical-binding t)
 
 ;;Load
 (setq load-prefer-newer t)
@@ -198,7 +210,7 @@
 
 ;;Org
 (setq org-directory "B:\\C\\org")
-(setq org-startup-numerated t)
+;(setq org-startup-numerated t)
 
 ;;Inline-image
 '(defun org-http-image-data-fn (protocol link _description)
@@ -229,6 +241,7 @@
 ;;Buffer
 (setopt switch-to-buffer-obey-display-actions t)
 (modify-frame-parameters nil '((inhibit-double-buffering . nil)))
+(setq frame-inhibit-implied-resize t)
 
 ;;Server
 (setq server-auth-dir "C:\\Users\\Administrator\\emacs-server-auth-dir"
@@ -236,6 +249,12 @@
 
 ;;Treesit-font
 (setq treesit-font-lock-level 4)
+
+;;Custom.el
+(add-hook 'after-init-hook (lambda ()
+                             (let ((inhibit-message t))
+                               (when (file-exists-p custom-file)
+                                 (load-file custom-file)))))
 
 ;;Uncommented
                                         ;(setq fast-but-imprecise-scrolling t)
