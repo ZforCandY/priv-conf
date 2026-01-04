@@ -111,8 +111,23 @@
 (global-set-key (kbd "C-c l") #'inferior-lisp)
 (global-set-key (kbd "C-c b") #'eval-buffer)
 (global-set-key (kbd "C-c e") #'eval-last-sexp)
+(global-set-key (kbd "M-<up>") #'backward-sexp)
 (define-key key-translation-map (kbd "C-q") (kbd "C-g"))
 (global-set-key [remap list-buffers] 'ibuffer)
+
+;;Helpful
+(global-set-key (kbd "C-h f") #'helpful-function)
+(global-set-key (kbd "C-h v") #'helpful-variable)
+(global-set-key (kbd "C-h k") #'helpful-key)
+(global-set-key (kbd "C-h c") #'helpful-command)
+(global-set-key (kbd "C-c p") #'helpful-at-point)
+
+;;Paxedit
+(global-set-key (kbd "M-d") #'paxedit-delete)
+
+;;sexp
+(global-set-key (kbd "M-<up>") #'backward-sexp)
+(global-set-key (kbd "M-<down>") #'forward-sexp)
 
 ;;Windmove
 (windmove-default-keybindings 'shift)
@@ -175,6 +190,7 @@
       mouse-wheel-progressive-speed nil ;; don't accelerate scrolling
       mouse-wheel-follow-mouse 't ;; scroll window under mouse
       )
+
 ;;Default
 (setq-default lexical-binding t)
 
@@ -210,7 +226,9 @@
 
 ;;Org
 (setq org-directory "B:\\C\\org")
-;(setq org-startup-numerated t)
+                                        ;(setq org-startup-numerated t)
+(setq org-hide-leading-stars t)
+(setq org-fontify-quote-and-verse-blocks t)
 
 ;;Inline-image
 '(defun org-http-image-data-fn (protocol link _description)
@@ -246,6 +264,9 @@
 ;;Server
 (setq server-auth-dir "C:\\Users\\Administrator\\emacs-server-auth-dir"
       server-name "admin.txt")
+
+;;Slime
+
 
 ;;Treesit-font
 (setq treesit-font-lock-level 4)
