@@ -3,7 +3,6 @@
 
 ;;Compile Angel
 (use-package compile-angel
-  :defer t
   :defer 1
   ;;:demand t
   :ensure t
@@ -50,13 +49,12 @@
 
 (use-package server
   :defer t
-  :defer 3
   :commands (server-running-p)
   :config (or (server-running-p) (server-mode)))
 
 ;;Daemon
 (defun ss/server-start ()
-  "start daemon based of server-running-p"
+  "start daemon based on server-running-p"
   (interactive "")
   (cond ((equal (server-running-p) ':other)(server-start))
         ((server-running-p) (print server-name))
@@ -74,8 +72,7 @@
 
 (use-package vertico
   :ensure t
-  :defer  t
-  :defer 2
+  :defer 5
   :hook (minibuffer-setup . vertico-repeat-save)
   :config
   (vertico-mode)
@@ -86,7 +83,6 @@
 
 (use-package inhibit-mouse
   :defer t
-  :defer 5
   :ensure t
   :config
   (if (daemonp)
@@ -197,7 +193,6 @@
 
 (use-package org
   :defer t
-  :defer 10
   :ensure t
   :commands (org-mode org-version)
   :mode
@@ -270,6 +265,34 @@
   :config
   (define-key paredit-mode-map (kbd "RET") nil))
 
+(use-package paxedit
+  :defer t
+  :ensure t
+  :commands paxedit-mode
+  :hook
+  (emacs-lisp-mode . paxedit-mode)
+  (lisp-mode . paxedit-mode))
+
+(use-package sly
+  :defer t
+  :custom
+  (setq sly-lisp-implementations
+        '((sbcl ("sbcl" "noinform") :coding-system utf-8-unix)
+          (ccl ("wx86cl64.exe")))))
+
+'(use-package slime
+   :disabled t
+   :defer 30
+   :custom
+   (slime-setup '(slime-fancy slime-quicklisp))
+   (setq slime-lisp-implementations
+         '((sbcl ("sbcl") :coding-system utf-8-unix)
+           (ccl ("wx86cl64.exe")))))
+
+'(use-package magit
+   :defer t
+   )
+
 (use-package avy
   :defer t
   :bind (("C-x j c" . avy-goto-char)
@@ -288,7 +311,6 @@
 
 (use-package reader
   :defer t
-  :defer 30
   :vc t
   :load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
 
@@ -343,18 +365,20 @@
 
 (use-package marginalia
   :defer t
+  :after vertico
   :custom
   (marginalia-max-relative-age 0)
   (marginalia--align 'right)
   :hook (after-init . marginalia-mode))
 
 (use-package orderless
+  :defer t
   :custom
   (completing-styles '(orderles basic))
   (orderless-matching-styles '(orderless-literal orderless-regexp))
   (completion-category-defaults nil)
   (completing-category-overrides nil)
-  :defer t)
+  )
 
 (use-package dired
   :defer t
@@ -394,7 +418,6 @@
   :hook ((prog-mode . rainbow-delimiters-mode)))
 
 (use-package expreg
-  :defer t
   :defer 2
   :config (global-set-key (kbd "M-j") 'expreg-expand))
 
@@ -455,5 +478,15 @@
 '(use-package custom
    :no-require t
    :defer)
+
+(use-package dash
+  :defer t
+  :config (global-dash-fontify-mode))
+
+(use-package eieio
+  :defer t)
+
+(use-package helpful
+  :defer t)
 
 ;;; post-init.el ends here
