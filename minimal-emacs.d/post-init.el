@@ -51,11 +51,6 @@
                                     before-init-time)))
 
 ;;Daemon
-(use-package server
-  :defer 2
-  :commands (server-running-p)
-  :config (or (server-running-p) (server-start)))
-
 (defun ss/server-start ()
   "Start daemon based on server-running-p."
   (interactive "")
@@ -63,7 +58,15 @@
         ((not (server-running-p))(server-start))
         (t (server-start))))
 
+(use-package server
+  :defer 2
+  :commands (server-running-p))
+
 (ss/server-start)
+                                        ;(or (server-running-p) (server-start))))
+
+
+
 
 ;;use-packages If config/init/hook then no defer
 (custom-set-variables '(package-selected-packages nil))
