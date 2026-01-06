@@ -1,10 +1,10 @@
 ;;; post-init.el --- post-init -*- no-byte-compile: t; lexical-binding: t; -*-
-(load custom-file 'noerror 'no-message)
+                                        ;(load custom-file 'noerror 'no-message)
 
 ;;Compile Angel
 (use-package compile-angel
+                                        ;:demand t
   :defer 1
-  ;;:demand t
   :ensure t
   :custom
   (compile-angel-verbose t)
@@ -33,6 +33,9 @@
                                         ;(load-theme 'leuven)
 (load-theme 'modus-operandi-tinted)
                                         ;For low light env
+                                        ;(use-package naysayer-theme
+
+                                        ;(load-theme 'naysayer)
                                         ;(load-theme 'modus-vivendi-tritanopia t)
                                         ;(load-theme 'leuven-dark t)
                                         ;(load-theme 'grandshell-twilly t)
@@ -47,20 +50,22 @@
          (float-time (time-subtract before-user-init-time
                                     before-init-time)))
 
-(use-package server
-  :defer t
-  :commands (server-running-p)
-  :config (or (server-running-p) (server-mode)))
-
 ;;Daemon
+(use-package server
+  :defer 2
+  :commands (server-running-p)
+  :config (or (server-running-p) (server-start)))
+
 (defun ss/server-start ()
-  "start daemon based on server-running-p"
+  "Start daemon based on server-running-p."
   (interactive "")
-  (cond ((equal (server-running-p) ':other)(server-start))
-        ((server-running-p) (print server-name))
+  (cond ((equal (server-running-p) t) (print server-name))
+        ((not (server-running-p))(server-start))
         (t (server-start))))
 
-;;;use-packages ;All with :defer t :defer 30 s or disabled t
+(ss/server-start)
+
+;;use-packages If config/init/hook then no defer
 (custom-set-variables '(package-selected-packages nil))
 
 (use-package conf-mode
@@ -71,8 +76,8 @@
   :defer t)
 
 (use-package vertico
+  :defer 3
   :ensure t
-  :defer 5
   :hook (minibuffer-setup . vertico-repeat-save)
   :config
   (vertico-mode)
@@ -82,16 +87,15 @@
   (vertico--count 12))
 
 (use-package inhibit-mouse
-  :defer t
-  :ensure t
+  :defer 3
   :config
   (if (daemonp)
       (add-hook 'server-after-make-frame-hook #'inhibit-mouse-mode)
     (inhibit-mouse-mode 1)))
 
 (use-package treesit-auto
-  :defer t
   :ensure t
+  :defer 3
   :custom
   (treesit-auto-install 'prompt)
   :config
@@ -99,7 +103,6 @@
   (global-treesit-auto-mode))
 
 (use-package autorevert
-  :defer t
   :ensure nil
   :commands (auto-revert-mode global-auto-revert-mode)
   :hook
@@ -120,13 +123,10 @@
 (auto-save-visited-mode 1)
 
 (use-package recentf
-  :defer t
   :ensure nil
   :commands (recentf-mode recentf-cleanup)
   :hook
   (after-init . recentf-mode)
-  :init
-  (recentf-mode 1)
   :bind (("C-c f" . recentf-open-files))
   :custom
   (setq recentf-max-saved-items 200)
@@ -144,9 +144,7 @@
   (add-hook 'kill-emacs-hook #'recentf-cleanup -90))
 
 (use-package savehist
-  :defer t
   :ensure nil
-  :init (savehist-mode 1)
   :commands (savehist-mode savehist-save)
   :hook
   (after-init . savehist-mode)
@@ -159,7 +157,6 @@
      search-ring regexp-search-ring)))
 
 (use-package saveplace
-  :defer t
   :ensure nil
   :commands (save-place-mode save-place-local-mode)
   :hook
@@ -168,7 +165,7 @@
   (save-place-limit 400))
 
 (use-package corfu
-  :defer t
+  :defer 10
   :ensure t
   :commands (corfu-mode global-corfu-mode)
   :hook ((prog-mode . corfu-mode)
@@ -177,23 +174,21 @@
   :custom
   (read-extended-command-predicate #'command-completion-default-include-p)
   (text-mode-ispell-word-completion nil)
-  (tab-always-indent 'complete)
-  :config
-  (global-corfu-mode))
+  (tab-always-indent 'complete))
 
 (use-package cape
-  :defer t
   :ensure t
+  :defer 3
   :commands (cape-dabbrev cape-file cape-elisp-block)
   :bind ("C-c p" . cape-prefix-map)
-  :init
+  :config
   (add-hook 'completion-at-point-functions #'cape-dabbrev)
   (add-hook 'completion-at-point-functions #'cape-file)
   (add-hook 'completion-at-point-functions #'cape-elisp-block))
 
 (use-package org
-  :defer t
   :ensure t
+  :defer 5
   :commands (org-mode org-version)
   :mode
   ("\\.org\\'" . org-mode)
@@ -209,8 +204,8 @@
   (org-startup-truncated t))
 
 (use-package auto-package-update
-  :defer t
   :ensure t
+  :defer 5
   :custom
   ;; Here, packages will only be updated if at least 7 days have passed
   ;; since the last successful update.
@@ -224,8 +219,8 @@
   (auto-package-update-at-time "7:30"))
 
 (use-package buffer-terminator
-  :defer t
   :ensure t
+  :defer 3
   :custom
   (buffer-terminator-verbose nil)
   ;; Set the inactivity timeout (in seconds) after which buffers are considered
@@ -234,22 +229,23 @@
   ;; Define how frequently the cleanup process should run (default is every 10
   ;; minutes):
   (buffer-terminator-interval (* 10 60)) ; 10 minutes
-  :config
-  (buffer-terminator-mode 1))
+  :hook
+  (after-init . buffer-terminator-mode))
 
 ;; Enables automatic indentation of code while typing
 (use-package aggressive-indent
-  :defer t
   :ensure t
+  :defer 3
   :commands aggressive-indent-mode
   :hook
   (c-mode . aggressive-indent-mode)
-  (emacs-lisp-mode . aggressive-indent-mode))
+  (emacs-lisp-mode . aggressive-indent-mode)
+  (after-init global-aggressive-indent-mode))
 
 ;; Highlights function and variable definitions in Emacs Lisp mode
 (use-package highlight-defined
-  :defer t
   :ensure t
+  :defer 3
   :commands highlight-defined-mode
   :hook
   (emacs-lisp-mode . highlight-defined-mode))
@@ -257,7 +253,7 @@
 ;; Prevent parenthesis imbalance
 
 (use-package paredit
-  :defer t
+  :defer 3
   :ensure t
   :commands paredit-mode
   :hook
@@ -266,7 +262,7 @@
   (define-key paredit-mode-map (kbd "RET") nil))
 
 (use-package paxedit
-  :defer t
+  :defer 3
   :ensure t
   :commands paxedit-mode
   :hook
@@ -274,11 +270,7 @@
   (lisp-mode . paxedit-mode))
 
 (use-package sly
-  :defer t
-  :custom
-  (setq sly-lisp-implementations
-        '((sbcl ("sbcl" "noinform") :coding-system utf-8-unix)
-          (ccl ("wx86cl64.exe")))))
+  :defer t)
 
 '(use-package slime
    :disabled t
@@ -294,7 +286,7 @@
    )
 
 (use-package avy
-  :defer t
+  :defer 5
   :bind (("C-x j c" . avy-goto-char)
          ("C-x j w" . avy-goto-word-1)
          ("C-x j l" . avy-goto-line)
@@ -309,19 +301,19 @@
   (setq avy-case-fold-search nil
         (setq avy-indent-line-overlay t)))
 
-(use-package reader
-  :defer t
-  :vc t
-  :load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
+'(use-package reader
+   :defer t
+   :vc t
+   :load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
 
 (use-package nov
-  :defer t
+  :defer 10
   :mode ("\\.epub\\'" . nov-mode)
   :config
   (setq nov-text-widith 95))
 
 (use-package vterm
-  :defer t
+  :defer 3
   :load-path "C:\\Users\\Administrator\\.emacs.d\\var\\elpa"
   :bind (("C-c t" . vterm))
   :init
@@ -332,47 +324,40 @@
   :config
   (when (eq system-type 'windows-nt)
     (setq vterm-shell "powershell")))
+
 '(setq vterm-shell "B:\\msys2//msys2_shell.cmd -defterm -here -no-start -ucrt64 -i")
 
 '(use-package hl-line-face
    '  :hook ((org-mode) . hl-line-mode))
 
 (use-package display-line-numbers
-  :defer t
+  :defer 3
   :hook ((prog-mode . display-line-numbers-mode)))
 
 (use-package ultra-scroll
-  :defer t
   :vc (:url "https://github.com/jdtsmith/ultra-scroll" :branch "main")
-  :init
-  (setq scroll-conservatively 101 ; important!
-        scroll-margin 0)
-  :config
-  (ultra-scroll-mode 1))
+  :hook
+  (after-init .ultra-scroll-mode))
 
 (use-package golden-ratio
-  :defer t
   :diminish golden-ratio-mode
-  :init
-  (golden-ratio-mode 0)
+  :hook (after-init . golden-ratio-mode)
   :custom
   (golden-ratio-auto-scale t))
 
 (use-package which-key
-  :defer t
-  :config
-  (which-key-mode))
+  :hook
+  (after-init .which-key-mode))
 
 (use-package marginalia
-  :defer t
-  :after vertico
   :custom
   (marginalia-max-relative-age 0)
   (marginalia--align 'right)
   :hook (after-init . marginalia-mode))
 
 (use-package orderless
-  :defer t
+  :defer 5
+  :ensure t
   :custom
   (completing-styles '(orderles basic))
   (orderless-matching-styles '(orderless-literal orderless-regexp))
@@ -381,7 +366,7 @@
   )
 
 (use-package dired
-  :defer t
+  :defer 5
   :ensure nil
   :commands (dired)
   :hook
@@ -394,7 +379,7 @@
   (setq dired-listing-switches "-alh"))
 
 (use-package dired-subtree
-  :defer t
+  :defer 6
   :after dired
   :bind
   ( :map dired-mode-map
@@ -406,15 +391,15 @@
   (setq dired-subtree-use-backgrounds nil))
 
 (use-package flycheck
-  :defer t
-  :init
+  :defer 10
+  :custom
   (setq flycheck-display-errors-delay 0.1)
   (setq flycheck-debug t)
   :after exec-path-from-shell
   :hook (prog-mode . global-flycheck-mode))
 
 (use-package rainbow-delimiters
-  :defer t
+  :defer 3
   :hook ((prog-mode . rainbow-delimiters-mode)))
 
 (use-package expreg
@@ -422,13 +407,12 @@
   :config (global-set-key (kbd "M-j") 'expreg-expand))
 
 (use-package org-bullets
-  :defer t
+  :defer 15
   :after org
   :hook (org-mode-hook . org-bullets-mode))
 (setq org-startup-truncated nil)
 
 (use-package simple-modeline
-  :defer t
   :init
   (setq simple-modeline-segments
         '((simple-modeline-segment-modified
@@ -446,11 +430,10 @@
   :hook (after-init . simple-modeline-mode))
 
 (use-package ultra-scroll
-  :defer t
-  :config (ultra-scroll-mode 1))
+  :hook (after-init . ultra-scroll-mode))
 
 (use-package stripspace
-  :defer t
+  :defer 5
   :ensure t
   :commands stripspace-local-mode
   :hook ((prog-mode . stripspace-local-mode)
@@ -480,13 +463,14 @@
    :defer)
 
 (use-package dash
-  :defer t
-  :config (global-dash-fontify-mode))
+  :hook (after-init . global-dash-fontify-mode))
 
 (use-package eieio
+  :ensure t
   :defer t)
 
 (use-package helpful
-  :defer t)
+  :ensure t
+  :defer 5)
 
 ;;; post-init.el ends here
