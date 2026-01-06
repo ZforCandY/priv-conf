@@ -1,12 +1,16 @@
 ;;; pre-init.el --- pre-init -*- no-byte-compile: t; lexical-binding: t; -*-
 
-;;Notes
+;;; Commentary:
 ;; shortcut runemacs.exe --daemon (in shell:startup)
 ;; add EMACS_SERVER_FILE user var to "server file dir"
 ;; Build native-compile-emacs 31 with MSYS2(UCRT64) bash-scrpit for auto
 ;;(.dlls)\msys2\ucrt64\bin to path Add conpty_proxy.exe/vterm.el/vtmodule.dll to path/
 ;;load-path compile setq vterm-shell"powershell"
 ;;see(https://emacs-china.org/t/windows-emacs-libvterm/30140/20)
+
+;;; Code:
+(require 'use-package)
+(setq use-package-compute-statistics t)
 
 ;;Selected Compile
 (let ((deny-list '("\\(?:[/\\\\]\\.dir-locals\\.el\\(?:\\.gz\\)?$\\)"
@@ -20,7 +24,10 @@
     (setq comp-deferred-compilation-deny-list deny-list)))
 (defvar old-value nil)
 (defvar original-noninteractive-value nil)
-(setq native-comp-speed 2)
+(setq native-comp-speed 3)
+(setq native-comp-compiler-options '("-march=znver3" "-Ofast" "-g0" "-fno-finite-math-only" "-fgraphite-identity" "-floop-nest-optimize" "-fdevirtualize-at-ltrans" "-fipa-pta" "-fno-semantic-interposition" "-flto=auto" "-fuse-linker-plugin"))
+
+(setq native-comp-driver-options '("-march=znver3" "-Ofast" "-g0" "-fno-finite-math-only" "-fgraphite-identity" "-floop-nest-optimize" "-fdevirtualize-at-ltrans" "-fipa-pta" "-fno-semantic-interposition" "-flto=auto" "-fuse-linker-plugin"))
 
 ;;GC
                                         ;(setq gc-cons-threshold 50000000)
@@ -40,7 +47,7 @@
 
 ;;Center-window
 (defun center-frame ()
-  "Center the frame on the screen, respecting the size set in default-frame-alist."
+  "Center the frame on the screen, respecting the size set in 'default-frame-alist'."
   (interactive)
   (let* ((desired-width
           (or (cdr (assq 'width default-frame-alist)) 80))
@@ -86,7 +93,7 @@
 
 (set-face-attribute 'default nil
                     :height 139 :weight 'regular :width 'normal :foundry "outline" :family "Consolas")
-(setq mode-line-position-column-line-format '("%l:%C"))
+'(setq mode-line-position-column-line-format '("%l:%C"))
 '(display-line-numbers-type (quote relative))
 (column-number-mode 1)
 
@@ -120,7 +127,7 @@
 (global-set-key (kbd "C-h v") #'helpful-variable)
 (global-set-key (kbd "C-h k") #'helpful-key)
 (global-set-key (kbd "C-h c") #'helpful-command)
-(global-set-key (kbd "C-c p") #'helpful-at-point)
+(global-set-key (kbd "C-c h") #'helpful-at-point)
 
 ;;Paxedit
 (global-set-key (kbd "M-d") #'paxedit-delete)
@@ -153,6 +160,11 @@
 (setq scroll-preserve-screen-position t)
 (setq auto-window-vscroll nil)
 
+;;Sly
+(setq sly-lisp-implementations
+      '((sbcl ("sbcl" "noinform") :coding-system utf-8-unix)
+        (ccl ("wx86cl64.exe"))))
+
 ;;Backups
 (setq make-backup-file t)
 (setq vc-make-backup-files t)
@@ -167,7 +179,9 @@
 
 ;;Performance
 (setq inhibit-compacting-font-cache t)
-
+(setenv "LSP_USE_PLISTS" "true")
+(setq lsp-use-plists t)
+(setq package-quickstart t)
 (setq frame-resize-pixelwise t)
 
 ;;Display
@@ -264,18 +278,17 @@
 ;;Server
 (setq server-auth-dir "C:\\Users\\Administrator\\emacs-server-auth-dir"
       server-name "admin.txt")
-
-;;Slime
-
+                                        ;(server-running-p)
 
 ;;Treesit-font
 (setq treesit-font-lock-level 4)
 
 ;;Custom.el
-(add-hook 'after-init-hook (lambda ()
-                             (let ((inhibit-message t))
-                               (when (file-exists-p custom-file)
-                                 (load-file custom-file)))))
+'(add-hook 'after-init-hook (lambda ()
+                              (let ((inhibit-message t))
+                                (when (file-exists-p custom-file)
+                                  (load-file custom-file)))))
+(setq custom-file nil)
 
 ;;Uncommented
                                         ;(setq fast-but-imprecise-scrolling t)
