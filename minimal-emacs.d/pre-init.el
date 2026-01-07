@@ -7,6 +7,7 @@
 ;;(.dlls)\msys2\ucrt64\bin to path Add conpty_proxy.exe/vterm.el/vtmodule.dll to path/
 ;;load-path compile setq vterm-shell"powershell"
 ;;see(https://emacs-china.org/t/windows-emacs-libvterm/30140/20)
+;;add.dlls kiennq/treesit-langs to treesits
 
 ;;; Code:
 (require 'use-package)
@@ -165,6 +166,10 @@
       '((sbcl ("sbcl" "noinform") :coding-system utf-8-unix)
         (ccl ("wx86cl64.exe"))))
 
+;;Flycheck
+(setq flycheck-display-errors-delay 0.1)
+(setq flycheck-debug t)
+
 ;;Backups
 (setq make-backup-file t)
 (setq vc-make-backup-files t)
@@ -198,6 +203,8 @@
 (setq x-stretch-cursor t)
 (setq help-window-select t)
 (setq-default cursor-in-non-selected-windows nil)
+
+;;Company
 
 ;;Mouse
 (setq mouse-wheel-scroll-amount '(2 ((shift) . 1)) ;; one line at a time
