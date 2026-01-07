@@ -1,9 +1,9 @@
 ;;; post-init.el --- post-init -*- no-byte-compile: t; lexical-binding: t; -*-
                                         ;(load custom-file 'noerror 'no-message)
-
+;;; Commentary:
+;;; Code:
 ;;Compile Angel
 (use-package compile-angel
-                                        ;:demand t
   :defer 1
   :ensure t
   :custom
@@ -74,8 +74,6 @@
 (use-package conf-mode
   :defer t)
 (use-package esup
-  :defer t)
-(use-package powershell
   :defer t)
 
 (use-package vertico
@@ -167,27 +165,40 @@
   :custom
   (save-place-limit 400))
 
-(use-package corfu
-  :defer 10
+(use-package company
   :ensure t
-  :commands (corfu-mode global-corfu-mode)
-  :hook ((prog-mode . corfu-mode)
-         (shell-mode . corfu-mode)
-         (eshell-mode . corfu-mode))
-  :custom
-  (read-extended-command-predicate #'command-completion-default-include-p)
-  (text-mode-ispell-word-completion nil)
-  (tab-always-indent 'complete))
+  :hook
+  (after-init . global-company-mode))
 
-(use-package cape
-  :ensure t
-  :defer 3
-  :commands (cape-dabbrev cape-file cape-elisp-block)
-  :bind ("C-c p" . cape-prefix-map)
-  :config
-  (add-hook 'completion-at-point-functions #'cape-dabbrev)
-  (add-hook 'completion-at-point-functions #'cape-file)
-  (add-hook 'completion-at-point-functions #'cape-elisp-block))
+(use-package company-box
+  :after all-the-icons
+  :hook (company-mode . company-box-mode))
+
+(use-package all-the-icons
+  :after company
+  :if (display-graphic-p))
+
+'(use-package corfu
+   :defer 10
+   :ensure nil
+   :commands (corfu-mode global-corfu-mode)
+   :hook ((prog-mode . corfu-mode)
+          (shell-mode . corfu-mode)
+          (eshell-mode . corfu-mode))
+   :custom
+   (read-extended-command-predicate #'command-completion-default-include-p)
+   (text-mode-ispell-word-completion nil)
+   (tab-always-indent 'complete))
+
+'(use-package cape
+   :ensure t
+   :defer 3
+   :commands (cape-dabbrev cape-file cape-elisp-block)
+   :bind ("C-c p" . cape-prefix-map)
+   :config
+   (add-hook 'completion-at-point-functions #'cape-dabbrev)
+   (add-hook 'completion-at-point-functions #'cape-file)
+   (add-hook 'completion-at-point-functions #'cape-elisp-block))
 
 (use-package org
   :ensure t
@@ -222,18 +233,18 @@
   (auto-package-update-at-time "7:30"))
 
 (use-package buffer-terminator
-  :ensure t
-  :defer 3
-  :custom
-  (buffer-terminator-verbose nil)
-  ;; Set the inactivity timeout (in seconds) after which buffers are considered
-  ;; inactive (default is 30 minutes):
-  (buffer-terminator-inactivity-timeout (* 30 60)) ; 30 minutes
-  ;; Define how frequently the cleanup process should run (default is every 10
-  ;; minutes):
-  (buffer-terminator-interval (* 10 60)) ; 10 minutes
-  :hook
-  (after-init . buffer-terminator-mode))
+:ensure t
+:defer 3
+:custom
+(buffer-terminator-verbose nil)
+;; Set the inactivity timeout (in seconds) after which buffers are considered
+;; inactive (default is 30 minutes):
+(buffer-terminator-inactivity-timeout (* 30 60)) ; 30 minutes
+;; Define how frequently the cleanup process should run (default is every 10
+;; minutes):
+(buffer-terminator-interval (* 10 60)) ; 10 minutes
+:hook
+(after-init . buffer-terminator-mode))
 
 ;; Enables automatic indentation of code while typing
 (use-package aggressive-indent
@@ -394,12 +405,8 @@
   (setq dired-subtree-use-backgrounds nil))
 
 (use-package flycheck
-  :defer 10
-  :custom
-  (setq flycheck-display-errors-delay 0.1)
-  (setq flycheck-debug t)
-  :after exec-path-from-shell
-  :hook (prog-mode . global-flycheck-mode))
+  :ensure t
+  :hook (after-init . global-flycheck-mode))
 
 (use-package rainbow-delimiters
   :defer 3
@@ -475,5 +482,12 @@
 (use-package helpful
   :ensure t
   :defer 5)
+
+(use-package powershell
+  :defer t
+  :ensure )
+
+'(use-package lsp-mode
+   :defer t)
 
 ;;; post-init.el ends here
