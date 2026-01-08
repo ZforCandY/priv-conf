@@ -2,6 +2,7 @@
                                         ;(load custom-file 'noerror 'no-message)
 ;;; Commentary:
 ;;; Code:
+
 ;;Compile Angel
 (use-package compile-angel
   :defer 1
@@ -18,27 +19,37 @@
   (compile-angel-on-load-mode 1))
 
 ;;themes
-                                        ;(load-theme 'grandshell t)
-                                        ;(load-theme 'tomorrow-night-deepblue t)
-                                        ;(use-package grandshell-theme)
-                                        ;(use-package tomorrow-night-deepblue-theme)
-                                        ;(use-package leuven-theme)
-                                        ;(use-package ef-themes)
-
 (mapc #'disable-theme custom-enabled-themes)
 (add-to-list 'custom-theme-load-path "c:/Users/Administrator/.emacs.d/var/themes")
 (setq custom-theme-directory "c:/Users/Administrator/.emacs.d/var/themes")
                                         ;For high light env
-                                        ;(load-theme 'modus-operandi t)
-                                        ;(load-theme 'leuven)
-(load-theme 'modus-operandi-tinted)
                                         ;For low light env
-                                        ;(use-package naysayer-theme
 
-                                        ;(load-theme 'naysayer)
-                                        ;(load-theme 'modus-vivendi-tritanopia t)
-                                        ;(load-theme 'leuven-dark t)
-                                        ;(load-theme 'grandshell-twilly t)
+(use-package modus-themes
+  :ensure t
+  :defer t
+  :init
+  (modus-themes-include-derivatives-mode 1)
+  (modus-themes-load-theme 'modus-operandi-tinted)
+  :bind
+  (("M-/" . modus-themes-toggle)
+   ("C-*" . modus-themes-select)
+   ("M-*" . modus-themes-load-random))
+  :config
+  (setq modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi)
+        modus-themes-to-rotate modus-themes-items
+        modus-themes-mixed-fonts t
+        modus-themes-variable-pitch-ui t
+        modus-themes-italic-constructs t
+        modus-themes-bold-constructs t
+        modus-themes-completions '((t . (bold)))
+        modus-themes-prompts '(bold)
+        modus-themes-headings
+        '((agenda-structure . (variable-pitch light 2.2))
+          (agenda-date . (variable-pitch regular 1.3))
+          (t . (regular 1.15))))
+  (setq modus-themes-common-palette-overrides nil))
+
                                         ;(native-comp-available-p)
 :Straight.el
 (straight-use-package 'use-package)
@@ -63,10 +74,6 @@
   :commands (server-running-p))
 
 (ss/server-start)
-                                        ;(or (server-running-p) (server-start))))
-
-
-
 
 ;;use-packages If config/init/hook then no defer
 (custom-set-variables '(package-selected-packages nil))
@@ -489,5 +496,8 @@
 
 '(use-package lsp-mode
    :defer t)
+
+(use-package geiser-guile
+  :defer t)
 
 ;;; post-init.el ends here
