@@ -4,10 +4,10 @@
 ;; shortcut runemacs.exe --daemon (in shell:startup)
 ;; add EMACS_SERVER_FILE user var to "server file dir"
 ;; Build native-compile-emacs 31 with MSYS2(UCRT64) bash-scrpit for auto
-;;(.dlls)\msys2\ucrt64\bin to path Add conpty_proxy.exe/vterm.el/vtmodule.dll to path/
-;;load-path compile setq vterm-shell"powershell"
-;;see(https://emacs-china.org/t/windows-emacs-libvterm/30140/20)
-;;add.dlls kiennq/treesit-langs to treesits
+;; (.dlls)\msys2\ucrt64\bin to path Add conpty_proxy.exe/vterm.el/vtmodule.dll to path/
+;; load-path compile setq vterm-shell"powershell"
+;; see(https://emacs-china.org/t/windows-emacs-libvterm/30140/20)
+;; add.dlls kiennq/treesit-langs to treesits
 
 ;;; Code:
 (require 'use-package)
@@ -40,32 +40,32 @@
                                         ;(load (concat (file-name-directory user-init-file) "4g.el"))
 
 ;;Window-size
-                                        ;(add-to-list 'default-frame-alist '(fullscreen . maximized))
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
                                         ;(add-to-list 'default-frame-alist '(left . 150))
                                         ;(add-to-list 'default-frame-alist '(top . 50))
-(add-to-list 'default-frame-alist '(height . 40))
-(add-to-list 'default-frame-alist '(width . 160))
+                                        ;(add-to-list 'default-frame-alist '(height . 40))
+                                        ;(add-to-list 'default-frame-alist '(width . 160))
 
 ;;Center-window
-(defun center-frame ()
-  "Center the frame on the screen, respecting the size set in 'default-frame-alist'."
-  (interactive)
-  (let* ((desired-width
-          (or (cdr (assq 'width default-frame-alist)) 80))
-         (desired-height
-          (or (cdr (assq 'height default-frame-alist)) 24))
-         (screen-width (x-display-pixel-width))
-         (screen-height (x-display-pixel-height))
-         (char-width (frame-char-width))
-         (char-height (frame-char-height))
-         (frame-pixel-width (* desired-width char-width))
-         (frame-pixel-height (* desired-height char-height))
-         (left (max 0 (/ (- screen-width frame-pixel-width) 2)))
-         (top (max 0 (/ (- screen-height frame-pixel-height) 2))))
-    (set-frame-size (selected-frame) desired-width desired-height)
-    (set-frame-position (selected-frame) left top)
-    ))
-(add-hook 'window-setup-hook #'center-frame)
+'(defun center-frame ()
+   "Center the frame on the screen, respecting the size set in 'default-frame-alist'."
+   (interactive)
+   (let* ((desired-width
+           (or (cdr (assq 'width default-frame-alist)) 80))
+          (desired-height
+           (or (cdr (assq 'height default-frame-alist)) 24))
+          (screen-width (x-display-pixel-width))
+          (screen-height (x-display-pixel-height))
+          (char-width (frame-char-width))
+          (char-height (frame-char-height))
+          (frame-pixel-width (* desired-width char-width))
+          (frame-pixel-height (* desired-height char-height))
+          (left (max 0 (/ (- screen-width frame-pixel-width) 2)))
+          (top (max 0 (/ (- screen-height frame-pixel-height) 2))))
+     (set-frame-size (selected-frame) desired-width desired-height)
+     (set-frame-position (selected-frame) left top)
+     ))
+'(add-hook 'window-setup-hook #'center-frame)
 
 ;;Straight bootstrap
 (defvar bootstrap-version)
@@ -110,6 +110,7 @@
   "Set font size to SIZE, specified in tenth of a point."
   (interactive "nEnter the font size: ")
   (set-face-attribute 'default nil :height size))
+(fsize/set-font-size 200)
 
 ;;Keybind
 (global-set-key (kbd "<escape>") 'keyboard-quit)
@@ -117,11 +118,14 @@
 (global-set-key (kbd "M-n") #'forward-paragraph)
 (global-set-key (kbd "M-m") #'backward-paragraph)
 (global-set-key (kbd "C-c l") #'inferior-lisp)
-(global-set-key (kbd "C-c b") #'eval-buffer)
+                                        ;(global-set-key (kbd "C-c b") #'eval-buffer)
 (global-set-key (kbd "C-c e") #'eval-last-sexp)
 (global-set-key (kbd "M-<up>") #'backward-sexp)
+(global-set-key (kbd "C-c i") #'info-other-window)
 (define-key key-translation-map (kbd "C-q") (kbd "C-g"))
 (global-set-key [remap list-buffers] 'ibuffer)
+(global-set-key (kbd "C-c s") #'bookmark-save)
+(global-set-key (kbd "C-c b") #'bookmark-jump)
 
 ;;Helpful
 (global-set-key (kbd "C-h f") #'helpful-function)
