@@ -23,9 +23,15 @@
   (with-no-warnings
     (setq native-comp-deferred-compilation-deny-list deny-list)
     (setq comp-deferred-compilation-deny-list deny-list)))
+
+(setq package-native-compile t)
+(setq compile-angel-enable-byte-compile t)
+(setq compile-angel-enable-native-compile t)
 (defvar old-value nil)
 (defvar original-noninteractive-value nil)
 (setq native-comp-speed 3)
+(setq native-comp-async-query-on-exit t)
+(setq confirm-kill-processes t)
 (setq native-comp-compiler-options '("-march=znver3" "-Ofast" "-g0" "-fno-finite-math-only" "-fgraphite-identity" "-floop-nest-optimize" "-fdevirtualize-at-ltrans" "-fipa-pta" "-fno-semantic-interposition" "-flto=auto" "-fuse-linker-plugin"))
 
 (setq native-comp-driver-options '("-march=znver3" "-Ofast" "-g0" "-fno-finite-math-only" "-fgraphite-identity" "-floop-nest-optimize" "-fdevirtualize-at-ltrans" "-fipa-pta" "-fno-semantic-interposition" "-flto=auto" "-fuse-linker-plugin"))
@@ -36,11 +42,14 @@
 ;;Load-path
                                         ;(add-to-list 'load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
 (add-to-list 'load-path "B:\\msys2\\ucrt64\\bin")
+(load (concat (file-name-directory user-init-file) "buffer-move.el"))
+
                                         ;(add-to-list 'load-path "C:\\Users\\Administrator\\.emacs.d\\var/4g.el")
                                         ;(load (concat (file-name-directory user-init-file) "4g.el"))
 
 ;;Window-size
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
+(set-frame-parameter nil 'fullscreen 'fullboth)
+;(add-to-list 'default-frame-alist '(fullscreen . maximized))
                                         ;(add-to-list 'default-frame-alist '(left . 150))
                                         ;(add-to-list 'default-frame-alist '(top . 50))
                                         ;(add-to-list 'default-frame-alist '(height . 40))
@@ -124,8 +133,9 @@
 (global-set-key (kbd "C-c i") #'info-other-window)
 (define-key key-translation-map (kbd "C-q") (kbd "C-g"))
 (global-set-key [remap list-buffers] 'ibuffer)
-(global-set-key (kbd "C-c s") #'bookmark-save)
+(global-set-key (kbd "C-c s") #'bookmark-set)
 (global-set-key (kbd "C-c b") #'bookmark-jump)
+(global-set-key (kbd "C-c m") #'imenu)
 
 ;;Helpful
 (global-set-key (kbd "C-h f") #'helpful-function)
@@ -146,6 +156,11 @@
 (when (fboundp 'windmove-default-keybindings)
   (windmove-default-keybindings))
 
+;;Buffmove
+(global-set-key (kbd "C-<up>")     'buf-move-up)
+(global-set-key (kbd "C-<down>")   'buf-move-down)
+(global-set-key (kbd "C-<left>")   'buf-move-left)
+(global-set-key (kbd "C-<right>")  'buf-move-right)
 ;;;Configs
 ;;Hook
 (add-hook 'text-mode-hook 'visual-line-mode)
@@ -195,7 +210,7 @@
 
 ;;Display
 (setopt display-line-numbers-width 3)
-(setq display-time-day-and-date t)
+                                        ;(setq display-time-day-and-date t)
 (setq redisplay-skip-fontification-on-input t)
 
 ;;Paren
