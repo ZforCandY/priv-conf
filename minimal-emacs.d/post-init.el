@@ -24,6 +24,16 @@
 (setq custom-theme-directory "c:/Users/Administrator/.emacs.d/var/themes")
                                         ;For high light env
                                         ;For low light env
+(use-package naysayer-theme
+  :defer t)
+(use-package leuven-theme
+  :defer t)
+(use-package grandshell-theme
+  :defer t)
+(use-package tomorrow-night-deepblue-theme
+  :defer t)
+
+                                        ;(load-theme 'tomorrow-night-deepblue t)
 
 (use-package modus-themes
   :ensure t
@@ -36,7 +46,7 @@
    ("C-*" . modus-themes-select)
    ("M-*" . modus-themes-load-random))
   :config
-  (setq modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi)
+  (setq modus-themes-to-toggle '(modus-vivendi-tinted modus-operandi-tinted)
         modus-themes-to-rotate modus-themes-items
         modus-themes-mixed-fonts t
         modus-themes-variable-pitch-ui t
@@ -63,9 +73,9 @@
 
 ;;Daemon
 (defun ss/server-start ()
-  "Start daemon based on server-running-p."
+  "Start daemon based on 'server-running-p'."
   (interactive "")
-  (cond ((equal (server-running-p) t) (print server-name))
+  (cond ((eq (server-running-p) t) (print server-name))
         ((not (server-running-p))(server-start))
         (t (server-start))))
 
@@ -96,6 +106,9 @@
 
 (use-package inhibit-mouse
   :defer 3
+  :custom
+  (inhibit-mouse-adjust-mouse-highlight t)
+  (inhibit-mouse-adjust-show-help-function t)
   :config
   (if (daemonp)
       (add-hook 'server-after-make-frame-hook #'inhibit-mouse-mode)
@@ -279,16 +292,28 @@
   :commands paredit-mode
   :hook
   (emacs-lisp-mode . paredit-mode)
+                                        ;(lisp-mode . paredit-mode)
+  (common-lisp-mode . paredit-mode)
+  (scheme-mode . paredit-mode)
+  (racket-mode . paredit-mode)
   :config
   (define-key paredit-mode-map (kbd "RET") nil))
 
-(use-package paxedit
-  :defer 3
-  :ensure t
-  :commands paxedit-mode
-  :hook
-  (emacs-lisp-mode . paxedit-mode)
-  (lisp-mode . paxedit-mode))
+(defun tp/toggle-paredit ()
+  "Toggle paredit modes with Lisp dialets mode."
+  (interactive)
+  (cond
+   ((not paredit-mode)(setq paredit-mode 1))
+   ((paredit-mode)(setq paredit-mode nil))
+   ))
+
+  (use-package paxedit
+    :defer 3
+    :ensure t
+    :commands paxedit-mode
+    :hook
+    (emacs-lisp-mode . paxedit-mode)
+    (lisp-mode . paxedit-mode))
 
 (use-package sly
   :defer t)
@@ -436,7 +461,7 @@
            simple-modeline-segment-buffer-name
            simple-modeline-segment-position)
           (
-           ;; simple-modeline-segment-minor-modes
+           ;;simple-modeline-segment-minor-modes
            simple-modeline-segment-input-method
            simple-modeline-segment-eol
            simple-modeline-segment-encoding
@@ -494,10 +519,13 @@
   :defer t
   :ensure )
 
-'(use-package lsp-mode
-   :defer t)
-
 (use-package geiser-guile
+  :defer t)
+
+(use-package sicp
+  :defer t)
+
+(use-package racket-mode
   :defer t)
 
 ;;; post-init.el ends here
