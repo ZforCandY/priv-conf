@@ -8,6 +8,7 @@
 ;; load-path compile setq vterm-shell"powershell"
 ;; see(https://emacs-china.org/t/windows-emacs-libvterm/30140/20)
 ;; add.dlls kiennq/treesit-langs to treesits
+; ;add quick-sdcv /sdcv dictionary
 
 ;;; Code:
 (require 'use-package)
@@ -110,7 +111,7 @@
 '(when (version<= "26.0.50" emacs-version)
    (global-display-line-numbers-mode))
 (set-face-attribute 'line-number-current-line nil
-                    :foreground "#FFFFFF"
+                    :foreground "#0601ff"
                     :weight 'bold)
 
 ;;Defun
@@ -136,6 +137,8 @@
 (global-set-key (kbd "C-c s") #'bookmark-set)
 (global-set-key (kbd "C-c b") #'bookmark-jump)
 (global-set-key (kbd "C-c m") #'imenu)
+(global-set-key (kbd "C-c d") #'quick-sdcv-search-at-point)
+(global-set-key (kbd "C-c C-d") #'quick-sdcv-search-input)
 
 ;;Helpful
 (global-set-key (kbd "C-h f") #'helpful-function)
@@ -269,6 +272,7 @@
                                         ;(setq org-startup-numerated t)
 (setq org-hide-leading-stars t)
 (setq org-fontify-quote-and-verse-blocks t)
+(setq org-fontify-whole-heading-line t)
 
 ;;Inline-image
 '(defun org-http-image-data-fn (protocol link _description)
