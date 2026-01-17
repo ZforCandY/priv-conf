@@ -24,41 +24,47 @@
 (setq custom-theme-directory "c:/Users/Administrator/.emacs.d/var/themes")
                                         ;For high light env
                                         ;For low light env
-(use-package naysayer-theme
-  :defer t)
+'(use-package naysayer-theme
+   :defer t)
+
 (use-package leuven-theme
-  :defer t)
+  :ensure t
+  :config
+  (load-theme 'leuven t)
+  :init
+  (global-set-key (kbd "M-/") #'theme-choose-variant))
+
 (use-package grandshell-theme
   :defer t)
 (use-package tomorrow-night-deepblue-theme
   :defer t)
 
-                                        ;(load-theme 'tomorrow-night-deepblue t)
+;(load-theme 'leuven t)
 
-(use-package modus-themes
-  :ensure t
-  :defer t
-  :init
-  (modus-themes-include-derivatives-mode 1)
-  (modus-themes-load-theme 'modus-operandi-tinted)
-  :bind
-  (("M-/" . modus-themes-toggle)
-   ("C-*" . modus-themes-select)
-   ("M-*" . modus-themes-load-random))
-  :config
-  (setq modus-themes-to-toggle '(modus-vivendi-tinted modus-operandi-tinted)
-        modus-themes-to-rotate modus-themes-items
-        modus-themes-mixed-fonts t
-        modus-themes-variable-pitch-ui t
-        modus-themes-italic-constructs t
-        modus-themes-bold-constructs t
-        modus-themes-completions '((t . (bold)))
-        modus-themes-prompts '(bold)
-        modus-themes-headings
-        '((agenda-structure . (variable-pitch light 2.2))
-          (agenda-date . (variable-pitch regular 1.3))
-          (t . (regular 1.15))))
-  (setq modus-themes-common-palette-overrides nil))
+'(use-package modus-themes
+   :ensure t
+   :defer t
+   :init
+   (modus-themes-include-derivatives-mode 1)
+   (modus-themes-load-theme 'modus-operandi-tinted)
+   :bind
+   (("M-/" . modus-themes-toggle)
+    ("C-*" . modus-themes-select)
+    ("M-*" . modus-themes-load-random))
+   :config
+   (setq modus-themes-to-toggle '(modus-vivendi-tinted modus-operandi-tinted)
+         modus-themes-to-rotate modus-themes-items
+         modus-themes-mixed-fonts t
+         modus-themes-variable-pitch-ui t
+         modus-themes-italic-constructs t
+         modus-themes-bold-constructs t
+         modus-themes-completions '((t . (bold)))
+         modus-themes-prompts '(bold)
+         modus-themes-headings
+         '((agenda-structure . (variable-pitch light 2.2))
+           (agenda-date . (variable-pitch regular 1.3))
+           (t . (regular 1.15))))
+   (setq modus-themes-common-palette-overrides nil))
 
                                         ;(native-comp-available-p)
 :Straight.el
@@ -103,6 +109,12 @@
   (vertico-cycle t)
   (vertico--resize nil)
   (vertico--count 12))
+
+(use-package vertico-prescient
+  :ensure t
+  :after vertico
+  :hook
+  (after-init . vertico-prescient-mode))
 
 (use-package inhibit-mouse
   :defer 3
@@ -193,6 +205,12 @@
 (use-package company-box
   :after all-the-icons
   :hook (company-mode . company-box-mode))
+
+(use-package company-prescient
+  :after company
+  :ensure t
+  :hook
+  (after-init . company-prescient-mode))
 
 (use-package all-the-icons
   :after company
@@ -436,6 +454,31 @@
   :config
   (setq dired-subtree-use-backgrounds nil))
 
+;;nerd-icons
+
+(use-package nerd-icons
+  :after dired
+  :ensure t)
+
+(use-package nerd-icons-dired
+  :ensure t
+  :after nerd-icons
+  :hook
+  (dired-mode . nerd-icons-dired-mode))
+
+(use-package nerd-icons-completion
+  :after marginalia
+  :config
+  (nerd-icons-completion-mode)
+  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+
+(use-package nerd-icons-ibuffer
+  :ensure t
+  :hook (ibuffer-mode . nerd-icons-ibuffer-mode)
+  :init
+  (setq nerd-icons-ibuffer-human-readable-size t)
+  (setq inhibit-compacting-font-caches t))
+
 (use-package flycheck
   :ensure t
   :hook (after-init . global-flycheck-mode))
@@ -527,5 +570,18 @@
 
 (use-package racket-mode
   :defer t)
+
+(use-package quick-sdcv
+  :ensure t
+  :defer
+  :custom
+  (quick-sdcv-dictionary-prefix-symbol "►")
+  (quick-sdcv-ellipsis " ▼")
+  :init
+  (setq quick-sdcv-unique-buffers nil)
+  ;(setq quick-sdcv-exact-search t)
+  (setq quick-sdcv-hist-size 100)
+  (add-hook 'quick-sdcv-mode-hook #'goto-address-mode)
+  )
 
 ;;; post-init.el ends here
