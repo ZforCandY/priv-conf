@@ -8,7 +8,8 @@ Set-Alias c clear
 
 function t{e -nw}
 function dot{f $HOME\.emacs.d}
-function ec{f -n -c -a test.el}
+function m{f -n -c -a x}
+function d{e --daemon}
 
 function rs{redshift -c C:\redshift.conf -v}
 function rx{redshift -x}
