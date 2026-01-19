@@ -3,6 +3,8 @@
 ;;; Commentary:
 ;;; Code:
 
+                                        ;(profiler-report)
+
 ;;Compile Angel
 (use-package compile-angel
   :defer 1
@@ -24,22 +26,15 @@
 (setq custom-theme-directory "c:/Users/Administrator/.emacs.d/var/themes")
                                         ;For high light env
                                         ;For low light env
-'(use-package naysayer-theme
-   :defer t)
-
+                                        ;naysayer-theme
+                                        ;grandshell-theme
+                                        ;tomorrow-night-deepblue-theme
 (use-package leuven-theme
   :ensure t
   :config
   (load-theme 'leuven t)
   :init
   (global-set-key (kbd "M-/") #'theme-choose-variant))
-
-(use-package grandshell-theme
-  :defer t)
-(use-package tomorrow-night-deepblue-theme
-  :defer t)
-
-;(load-theme 'leuven t)
 
 '(use-package modus-themes
    :ensure t
@@ -89,15 +84,16 @@
   :defer 2
   :commands (server-running-p))
 
+(set-frame-parameter nil 'fullscreen 'fullboth)
 (ss/server-start)
 
 ;;use-packages If config/init/hook then no defer
 (custom-set-variables '(package-selected-packages nil))
 
 (use-package conf-mode
-  :defer t)
-(use-package esup
-  :defer t)
+  :defer t
+  :mode
+  ("\\.conf\\'" . conf-mode))
 
 (use-package vertico
   :defer 3
@@ -200,7 +196,16 @@
 (use-package company
   :ensure t
   :hook
-  (after-init . global-company-mode))
+  (after-init . global-company-mode)
+  :init
+  (setopt company-idle-delay 0
+          company-minimum-prefix-length 2)
+  (setopt company-dabbrev-code-everywhere t)
+  (setopt company-dabbrev-code-other-buffers t
+          company-dabbrev-code-time-limit 2)
+  (setopt company-show-quick-access t
+          company-tooltip-offset-display 'lines
+          company-tooltip-limit 10))
 
 (use-package company-box
   :after all-the-icons
@@ -216,31 +221,9 @@
   :after company
   :if (display-graphic-p))
 
-'(use-package corfu
-   :defer 10
-   :ensure nil
-   :commands (corfu-mode global-corfu-mode)
-   :hook ((prog-mode . corfu-mode)
-          (shell-mode . corfu-mode)
-          (eshell-mode . corfu-mode))
-   :custom
-   (read-extended-command-predicate #'command-completion-default-include-p)
-   (text-mode-ispell-word-completion nil)
-   (tab-always-indent 'complete))
-
-'(use-package cape
-   :ensure t
-   :defer 3
-   :commands (cape-dabbrev cape-file cape-elisp-block)
-   :bind ("C-c p" . cape-prefix-map)
-   :config
-   (add-hook 'completion-at-point-functions #'cape-dabbrev)
-   (add-hook 'completion-at-point-functions #'cape-file)
-   (add-hook 'completion-at-point-functions #'cape-elisp-block))
-
 (use-package org
   :ensure t
-  :defer 5
+  :defer t
   :commands (org-mode org-version)
   :mode
   ("\\.org\\'" . org-mode)
@@ -255,34 +238,34 @@
   (org-fontify-quote-and-verse-blocks t)
   (org-startup-truncated t))
 
-(use-package auto-package-update
-  :ensure t
-  :defer 5
-  :custom
-  ;; Here, packages will only be updated if at least 7 days have passed
-  ;; since the last successful update.
-  (auto-package-update-interval 7)
-  (auto-package-update-hide-results t)
-  (auto-package-update-delete-old-versions t)
-  :config
-  ;; Run package updates automatically at startup, but only if the configured
-  ;; interval has elapsed.
-  (auto-package-update-maybe)
-  (auto-package-update-at-time "7:30"))
+'(use-package auto-package-update
+   :ensure t
+   :defer 5
+   :custom
+   ;; Here, packages will only be updated if at least 7 days have passed
+   ;; since the last successful update.
+   (auto-package-update-interval 7)
+   (auto-package-update-hide-results t)
+   (auto-package-update-delete-old-versions t)
+   :config
+   ;; Run package updates automatically at startup, but only if the configured
+   ;; interval has elapsed.
+   (auto-package-update-maybe)
+   (auto-package-update-at-time "7:30"))
 
 (use-package buffer-terminator
-:ensure t
-:defer 3
-:custom
-(buffer-terminator-verbose nil)
-;; Set the inactivity timeout (in seconds) after which buffers are considered
-;; inactive (default is 30 minutes):
-(buffer-terminator-inactivity-timeout (* 30 60)) ; 30 minutes
-;; Define how frequently the cleanup process should run (default is every 10
-;; minutes):
-(buffer-terminator-interval (* 10 60)) ; 10 minutes
-:hook
-(after-init . buffer-terminator-mode))
+  :ensure t
+  :defer 3
+  :custom
+  (buffer-terminator-verbose nil)
+  ;; Set the inactivity timeout (in seconds) after which buffers are considered
+  ;; inactive (default is 30 minutes):
+  (buffer-terminator-inactivity-timeout (* 30 60)) ; 30 minutes
+  ;; Define how frequently the cleanup process should run (default is every 10
+  ;; minutes):
+  (buffer-terminator-interval (* 10 60)) ; 10 minutes
+  :hook
+  (after-init . buffer-terminator-mode))
 
 ;; Enables automatic indentation of code while typing
 (use-package aggressive-indent
@@ -336,15 +319,6 @@
 (use-package sly
   :defer t)
 
-'(use-package slime
-   :disabled t
-   :defer 30
-   :custom
-   (slime-setup '(slime-fancy slime-quicklisp))
-   (setq slime-lisp-implementations
-         '((sbcl ("sbcl") :coding-system utf-8-unix)
-           (ccl ("wx86cl64.exe")))))
-
 '(use-package magit
    :defer t
    )
@@ -389,10 +363,7 @@
   (when (eq system-type 'windows-nt)
     (setq vterm-shell "powershell")))
 
-'(setq vterm-shell "B:\\msys2//msys2_shell.cmd -defterm -here -no-start -ucrt64 -i")
-
-'(use-package hl-line-face
-   '  :hook ((org-mode) . hl-line-mode))
+                                        ;(setq vterm-shell "B:\\msys2//msys2_shell.cmd -defterm -here -no-start -ucrt64 -i")
 
 (use-package display-line-numbers
   :defer 3
@@ -401,7 +372,7 @@
 (use-package ultra-scroll
   :vc (:url "https://github.com/jdtsmith/ultra-scroll" :branch "main")
   :hook
-  (after-init .ultra-scroll-mode))
+  (after-init . ultra-scroll-mode))
 
 (use-package golden-ratio
   :diminish golden-ratio-mode
@@ -411,7 +382,7 @@
 
 (use-package which-key
   :hook
-  (after-init .which-key-mode))
+  (after-init . which-key-mode))
 
 (use-package marginalia
   :custom
@@ -426,8 +397,7 @@
   (completing-styles '(orderles basic))
   (orderless-matching-styles '(orderless-literal orderless-regexp))
   (completion-category-defaults nil)
-  (completing-category-overrides nil)
-  )
+  (completing-category-overrides nil))
 
 (use-package dired
   :defer 5
@@ -491,10 +461,10 @@
   :defer 2
   :config (global-set-key (kbd "M-j") 'expreg-expand))
 
-(use-package org-bullets
-  :defer 15
-  :after org
-  :hook (org-mode-hook . org-bullets-mode))
+'(use-package org-bullets
+   :defer 15
+   :after org
+   :hook (org-mode-hook . org-bullets-mode))
 (setq org-startup-truncated nil)
 
 (use-package simple-modeline
@@ -513,9 +483,6 @@
            simple-modeline-segment-process
            simple-modeline-segment-major-mode)))
   :hook (after-init . simple-modeline-mode))
-
-(use-package ultra-scroll
-  :hook (after-init . ultra-scroll-mode))
 
 (use-package stripspace
   :defer 5
@@ -543,43 +510,35 @@
 (progn ;    `isearch'
   (setq isearch-allow-scroll nil))
 
-'(use-package custom
-   :no-require t
-   :defer)
-
-(use-package dash
-  :hook (after-init . global-dash-fontify-mode))
-
 (use-package eieio
-  :ensure t
   :defer t)
 
 (use-package helpful
   :ensure t
   :defer 5)
 
-(use-package powershell
-  :defer t
-  :ensure )
+'(use-package powershell
+   :defer t
+   :ensure )
 
 (use-package geiser-guile
   :defer t)
 
 (use-package sicp
-  :defer t)
+  :after racket-mode)
 
 (use-package racket-mode
   :defer t)
 
 (use-package quick-sdcv
   :ensure t
-  :defer
+  :defer t
   :custom
   (quick-sdcv-dictionary-prefix-symbol "►")
   (quick-sdcv-ellipsis " ▼")
   :init
   (setq quick-sdcv-unique-buffers nil)
-  ;(setq quick-sdcv-exact-search t)
+                                        ;(setq quick-sdcv-exact-search t)
   (setq quick-sdcv-hist-size 100)
   (add-hook 'quick-sdcv-mode-hook #'goto-address-mode)
   )
