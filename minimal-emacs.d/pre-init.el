@@ -8,7 +8,7 @@
 ;; load-path compile setq vterm-shell"powershell"
 ;; see(https://emacs-china.org/t/windows-emacs-libvterm/30140/20)
 ;; add.dlls kiennq/treesit-langs to treesits
-; ;add quick-sdcv /sdcv dictionary
+;; add quick-sdcv /sdcv dictionary
 
 ;;; Code:
 (require 'use-package)
@@ -37,8 +37,12 @@
 
 (setq native-comp-driver-options '("-march=znver3" "-Ofast" "-g0" "-fno-finite-math-only" "-fgraphite-identity" "-floop-nest-optimize" "-fdevirtualize-at-ltrans" "-fipa-pta" "-fno-semantic-interposition" "-flto=auto" "-fuse-linker-plugin"))
 
+;;Debug-ignored
+;;(add-to-list 'debug-ignored-errors ')
+
 ;;GC
-                                        ;(setq gc-cons-threshold 50000000)
+(setopt garbage-collection-messages t)
+;(setq gc-cons-threshold 50000000)
 
 ;;Load-path
                                         ;(add-to-list 'load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
@@ -49,7 +53,7 @@
                                         ;(load (concat (file-name-directory user-init-file) "4g.el"))
 
 ;;Window-size
-(set-frame-parameter nil 'fullscreen 'fullboth)
+;(set-frame-parameter nil 'fullscreen 'fullboth)
 ;(add-to-list 'default-frame-alist '(fullscreen . maximized))
                                         ;(add-to-list 'default-frame-alist '(left . 150))
                                         ;(add-to-list 'default-frame-alist '(top . 50))
@@ -102,10 +106,46 @@
 (setf custom-safe-themes 't)
 (setq frame-title-format "λ: %b")
 
-(set-face-attribute 'default nil
-                    :height 139 :weight 'regular :width 'normal :foundry "outline" :family "Consolas")
+;;Defun
+                                        ;change font size
+
+(defun fsize/set-font-size (size)
+  "Set font size to SIZE, specified in tenth of a point."
+  (interactive "nEnter the font size: ")
+  (set-face-attribute 'default nil :height size))
+
+                                        ;(set-face-attribute 'default nil
+                                        ;                   :height 200 :weight 'regular :width 'normal :foundry "outline" :family "Consolas")
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (let* ((font       "Maple Mono NF CN:slant:weight=medium:width=normal:spacing")
+                   (attributes (font-face-attributes font)                                   )
+                   (family     (plist-get attributes :family)                                ))
+
+              ;; Default font.
+              (apply #'set-face-attribute
+                     'default nil
+                     attributes)
+              ;; For all Unicode characters.
+              (set-fontset-font t 'symbol
+                                (font-spec :family "Segoe UI Symbol")
+                                nil 'prepend)
+              ;; Emoji.
+              (set-fontset-font t 'emoji
+                                (font-spec :family "Segoe UI Emoji")
+                                nil 'prepend)
+              ;; For Chinese characters.
+              (set-fontset-font t '(#x4e00 . #x9fff)
+                                (font-spec :family family)))))
+
+(fsize/set-font-size 250)
+
 '(setq mode-line-position-column-line-format '("%l:%C"))
 '(display-line-numbers-type (quote relative))
+(setopt display-line-numbers-type t)
+(setopt line-number-display-limit nil)
+
 (column-number-mode 1)
 
 '(when (version<= "26.0.50" emacs-version)
@@ -114,13 +154,6 @@
                     :foreground "#0601ff"
                     :weight 'bold)
 
-;;Defun
-;change font size
-(defun fsize/set-font-size (size)
-  "Set font size to SIZE, specified in tenth of a point."
-  (interactive "nEnter the font size: ")
-  (set-face-attribute 'default nil :height size))
-(fsize/set-font-size 200)
 
 ;;Keybind
 (global-set-key (kbd "<escape>") 'keyboard-quit)
@@ -164,13 +197,10 @@
 (global-set-key (kbd "C-<down>")   'buf-move-down)
 (global-set-key (kbd "C-<left>")   'buf-move-left)
 (global-set-key (kbd "C-<right>")  'buf-move-right)
+
 ;;;Configs
 ;;Hook
 (add-hook 'text-mode-hook 'visual-line-mode)
-                                        ;(add-hook 'after-init-hook #'global-auto-revert-mode)
-                                        ;(add-hook 'after-init-hook #'recentf-mode)
-                                        ;(add-hook 'after-init-hook #'savehist-mode)
-                                        ;(add-hook 'after-init-hook #'save-place-mode)
 (add-hook 'after-init-hook #'display-time-mode)
 (add-hook 'after-init-hook #'window-divider-mode)
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
@@ -180,9 +210,14 @@
 ;;Scroll
 (setq scroll-conservatively 101)
 (setq scroll-margin 0)
-(setq scroll-preserve-screen-position t)
+(setq scroll-preserve-screen-position nil)
 (setq auto-window-vscroll nil)
+(setopt scroll-error-top-bottom nil)
 
+(setq jit-lock-defer-time 0.3
+      fast-but-imprecise-scrolling t
+      redisplay-skip-fontification-on-input t
+      recenter-redisplay 'tty)
 ;;Sly
 (setq sly-lisp-implementations
       '((sbcl ("sbcl" "noinform") :coding-system utf-8-unix)
@@ -208,12 +243,15 @@
 (setq inhibit-compacting-font-cache t)
 (setenv "LSP_USE_PLISTS" "true")
 (setq lsp-use-plists t)
-(setq package-quickstart t)
+(setopt package-quickstart nil
+        package-enable-at-startup t)
 (setq frame-resize-pixelwise t)
+(setq w32-get-true-file-attributes nil) ;local
+(setq w32-pipe-read-delay 0)
 
 ;;Display
 (setopt display-line-numbers-width 3)
-                                        ;(setq display-time-day-and-date t)
+;(setq display-time-day-and-date t)
 (setq redisplay-skip-fontification-on-input t)
 
 ;;Paren
@@ -223,6 +261,7 @@
 
 ;;Cursor
 (setq x-stretch-cursor t)
+(setopt visible-cursor t)
 (setq help-window-select t)
 (setq-default cursor-in-non-selected-windows nil)
 
@@ -273,6 +312,7 @@
 (setq org-hide-leading-stars t)
 (setq org-fontify-quote-and-verse-blocks t)
 (setq org-fontify-whole-heading-line t)
+(setq org-startup-truncated nil)
 
 ;;Inline-image
 '(defun org-http-image-data-fn (protocol link _description)
@@ -287,10 +327,23 @@
        (message "Download of image \"%s\" failed" link)
        nil)))
 
-(setq org-display-remote-inline-images 'cache)
+                                        ;(setq org-display-remote-inline-images 'cache)
 
 ;;Package
 (setq package-install-upgrade-built-in t)
+(setopt network-security-level 'low)
+'(setopt package-archives '(
+                            ("gnu"    . "https://mirrors.ustc.edu.cn/elpa/gnu/")
+                            ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")
+                            ("melpa"  . "https://mirrors.ustc.edu.cn/elpa/melpa/")
+                            ))
+'(setopt package-archive-priorities '(
+                                      ("gnu"    . 1)
+                                      ("nongnu" . 0)
+                                      ("melpa"  . 1))
+         package-menu-hide-low-priority t)
+
+(setopt package-check-signature nil)
 
 ;;Read
 (setq read-process-output-max (* 1024 1024))
@@ -303,15 +356,28 @@
 ;;Buffer
 (setopt switch-to-buffer-obey-display-actions t)
 (modify-frame-parameters nil '((inhibit-double-buffering . nil)))
+(setopt frame-background-mode nil)
 (setq frame-inhibit-implied-resize t)
 
 ;;Server
+(setopt server-use-tcp t)
+(setq server-log t)
+(setq server-msg-size (* 1024 1024))
 (setq server-auth-dir "C:\\Users\\Administrator\\emacs-server-auth-dir"
       server-name "admin.txt")
                                         ;(server-running-p)
 
 ;;Treesit-font
 (setq treesit-font-lock-level 4)
+
+;;Mode line
+                                        ;(size-indication-mode)
+(setopt uniquify-buffer-name-style 'forward
+        uniquify-strip-common-suffix t)
+(line-number-mode -1)
+(setopt mode-line-process t)
+(require 'time)
+(setopt display-time-24hr-format nil)
 
 ;;Custom.el
 '(add-hook 'after-init-hook (lambda ()
@@ -321,6 +387,12 @@
 (setq custom-file nil)
 
 ;;Uncommented
+(setopt indicate-empty-lines nil)
+(setopt overflow-newline-into-fringe t)
+(setopt display-hourglass t
+        hourglass-delay 0)
+(setopt no-redraw-on-reenter t)
+                                        ;(setopt visible-bell t)
                                         ;(setq fast-but-imprecise-scrolling t)
                                         ;(global-so-long-mode t)
 
