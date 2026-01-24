@@ -1,70 +1,166 @@
 {
-  "mode": "127.0.0.1:9050",
-  "sync": false,
+  "mode": "disable",
+  "sync": true,
   "autoBackup": false,
-  "passthrough": "127.0.0.1:7667\n127.0.0.1:7657\n127.0.0.1:7070",
-  "theme": "moonlight",
+  "passthrough": "",
+  "theme": "moonlight alt",
   "container": {},
   "commands": {
-    "excludeHost": "",
-    "includeHost": "",
     "setProxy": "",
-    "setTabProxy": ""
+    "setTabProxy": "",
+    "includeHost": "",
+    "excludeHost": ""
   },
   "data": [
     {
       "active": true,
-      "cc": "",
-      "city": "",
-      "color": "#ffffff",
-      "exclude": [],
-      "hostname": "127.0.0.1",
-      "include": [],
-      "pac": "",
-      "pacString": "",
-      "password": "",
-      "port": "8888",
-      "proxyDNS": true,
-      "tabProxy": [],
-      "title": "free",
+      "title": "I2P",
       "type": "http",
-      "username": ""
-    },
-    {
-      "active": true,
-      "cc": "",
-      "city": "",
-      "color": "#ffff00",
-      "exclude": [],
       "hostname": "127.0.0.1",
-      "include": [],
-      "pac": "",
-      "pacString": "",
-      "password": "",
       "port": "4444",
-      "proxyDNS": true,
-      "tabProxy": [],
-      "title": "i2p",
-      "type": "http",
-      "username": ""
+      "username": "",
+      "password": "",
+      "cc": "",
+      "city": "",
+      "color": "#dcdc00",
+      "pac": "",
+      "pacString": "",
+      "proxyDNS": false,
+      "include": [
+        {
+          "type": "wildcard",
+          "title": "all URLs",
+          "pattern": "*://*/",
+          "active": true
+        }
+      ],
+      "exclude": [
+        {
+          "type": "regex",
+          "title": "local hostnames (usually no dots in the name). Pattern exists because 'Do not use this proxy for localhost and intranet/private IP addresses' is checked.",
+          "pattern": "^[^:]+://(?:[^:@/]+(?::[^@/]+)?@)?(?:localhost|127\\.\\d+\\.\\d+\\.\\d+)(?::\\d+)?(?:/.*)?/",
+          "active": true
+        },
+        {
+          "type": "regex",
+          "title": "local subnets (IANA reserved address space). Pattern exists because 'Do not use this proxy for localhost and intranet/private IP addresses' is checked.",
+          "pattern": "^[^:]+://(?:[^:@/]+(?::[^@/]+)?@)?(?:192\\.168\\.\\d+\\.\\d+|10\\.\\d+\\.\\d+\\.\\d+|172\\.(?:1[6789]|2[0-9]|3[01])\\.\\d+\\.\\d+)(?::\\d+)?(?:/.*)?/",
+          "active": true
+        },
+        {
+          "type": "regex",
+          "title": "localhost - matches the local host optionally prefixed by a user:password authentication string and optionally suffixed by a port number. The entire local subnet (127.0.0.0/8) matches. Pattern exists because 'Do not use this proxy for localhost and intranet/private IP addresses' is checked.",
+          "pattern": "^[^:]+://(?:[^:@/]+(?::[^@/]+)?@)?[\\w-]+(?::\\d+)?(?:/.*)?/",
+          "active": true
+        }
+      ],
+      "tabProxy": []
     },
     {
       "active": true,
+      "title": "freenet",
+      "type": "https",
+      "hostname": "127.0.0.1",
+      "port": "8888",
+      "username": "",
+      "password": "",
       "cc": "",
       "city": "",
-      "color": "#7fffd4",
-      "exclude": [],
-      "hostname": "127.0.0.1",
-      "include": [],
+      "color": "#d9d9d9",
       "pac": "",
       "pacString": "",
-      "password": "",
-      "port": "9050",
-      "proxyDNS": true,
-      "tabProxy": [],
-      "title": "TOR",
+      "proxyDNS": false,
+      "include": [
+        {
+          "type": "wildcard",
+          "title": "all URLs",
+          "pattern": "*://*/",
+          "active": true
+        }
+      ],
+      "exclude": [
+        {
+          "type": "regex",
+          "title": "local hostnames (usually no dots in the name). Pattern exists because 'Do not use this proxy for localhost and intranet/private IP addresses' is checked.",
+          "pattern": "^[^:]+://(?:[^:@/]+(?::[^@/]+)?@)?(?:localhost|127\\.\\d+\\.\\d+\\.\\d+)(?::\\d+)?(?:/.*)?/",
+          "active": true
+        },
+        {
+          "type": "regex",
+          "title": "local subnets (IANA reserved address space). Pattern exists because 'Do not use this proxy for localhost and intranet/private IP addresses' is checked.",
+          "pattern": "^[^:]+://(?:[^:@/]+(?::[^@/]+)?@)?(?:192\\.168\\.\\d+\\.\\d+|10\\.\\d+\\.\\d+\\.\\d+|172\\.(?:1[6789]|2[0-9]|3[01])\\.\\d+\\.\\d+)(?::\\d+)?(?:/.*)?/",
+          "active": true
+        },
+        {
+          "type": "regex",
+          "title": "localhost - matches the local host optionally prefixed by a user:password authentication string and optionally suffixed by a port number. The entire local subnet (127.0.0.0/8) matches. Pattern exists because 'Do not use this proxy for localhost and intranet/private IP addresses' is checked.",
+          "pattern": "^[^:]+://(?:[^:@/]+(?::[^@/]+)?@)?[\\w-]+(?::\\d+)?(?:/.*)?/",
+          "active": true
+        }
+      ],
+      "tabProxy": []
+    },
+    {
+      "active": true,
+      "title": "Tor_socks5",
       "type": "socks5",
-      "username": ""
+      "hostname": "127.0.0.1",
+      "port": "9050",
+      "username": "",
+      "password": "",
+      "cc": "",
+      "city": "",
+      "color": "#cc1cc6",
+      "pac": "",
+      "pacString": "",
+      "proxyDNS": true,
+      "include": [
+        {
+          "type": "wildcard",
+          "title": "all URLs",
+          "pattern": "*://*/",
+          "active": true
+        }
+      ],
+      "exclude": [
+        {
+          "type": "regex",
+          "title": "local hostnames (usually no dots in the name). Pattern exists because 'Do not use this proxy for localhost and intranet/private IP addresses' is checked.",
+          "pattern": "^[^:]+://(?:[^:@/]+(?::[^@/]+)?@)?(?:localhost|127\\.\\d+\\.\\d+\\.\\d+)(?::\\d+)?(?:/.*)?/",
+          "active": true
+        },
+        {
+          "type": "regex",
+          "title": "local subnets (IANA reserved address space). Pattern exists because 'Do not use this proxy for localhost and intranet/private IP addresses' is checked.",
+          "pattern": "^[^:]+://(?:[^:@/]+(?::[^@/]+)?@)?(?:192\\.168\\.\\d+\\.\\d+|10\\.\\d+\\.\\d+\\.\\d+|172\\.(?:1[6789]|2[0-9]|3[01])\\.\\d+\\.\\d+)(?::\\d+)?(?:/.*)?/",
+          "active": true
+        },
+        {
+          "type": "regex",
+          "title": "localhost - matches the local host optionally prefixed by a user:password authentication string and optionally suffixed by a port number. The entire local subnet (127.0.0.0/8) matches. Pattern exists because 'Do not use this proxy for localhost and intranet/private IP addresses' is checked.",
+          "pattern": "^[^:]+://(?:[^:@/]+(?::[^@/]+)?@)?[\\w-]+(?::\\d+)?(?:/.*)?/",
+          "active": true
+        }
+      ],
+      "tabProxy": []
+    },
+    {
+      "active": true,
+      "title": "Tor_http",
+      "type": "http",
+      "hostname": "127.0.0.1",
+      "port": "9080",
+      "username": "",
+      "password": "",
+      "cc": "",
+      "city": "",
+      "color": "#e0ffff",
+      "pac": "",
+      "pacString": "",
+      "proxyDNS": true,
+      "include": [],
+      "exclude": [],
+      "tabProxy": []
     }
   ]
 }
