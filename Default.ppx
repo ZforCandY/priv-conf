@@ -8,19 +8,19 @@
 			<ExclusionList OnlyFromListMode="false">%ComputerName%; localhost; *.local</ExclusionList>
 			<DnsUdpMode>0</DnsUdpMode>
 		</Resolve>
-		<Encryption mode="disabled" />
-		<ConnectionLoopDetection enabled="false" resolve="true" />
+		<Encryption mode="basic" />
+		<ConnectionLoopDetection enabled="true" resolve="true" />
 		<Udp mode="mode_block_all" />
 		<LeakPreventionMode enabled="true" />
-		<ProcessOtherUsers enabled="false" />
-		<ProcessServices enabled="false" />
+		<ProcessOtherUsers enabled="true" />
+		<ProcessServices enabled="true" />
 		<HandleDirectConnections enabled="false" />
-		<HttpProxiesSupport enabled="false" />
+		<HttpProxiesSupport enabled="true" />
 	</Options>
 	<ProxyList>
-		<Proxy id="100" type="SOCKS5">
-			<Options>48</Options>
-			<Port>9050</Port>
+		<Proxy id="100" type="HTTPS">
+			<Options>176</Options>
+			<Port>9080</Port>
 			<Address>127.0.0.1</Address>
 		</Proxy>
 	</ProxyList>
