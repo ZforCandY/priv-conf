@@ -19,7 +19,7 @@
       ((prob1 (cdr l)))
       )))
 
-;(prob1 '(linux bsd windows mac_os you_name_it))
+(prob1 '(linux bsd windows mac_os you_name_it))
 
 ;;2
 (define prob2
@@ -34,9 +34,9 @@
         )
        ))))
 
-;(prob2 '(place. in
- ;               ,preferably list a reverses
-  ;              that function Write))
+(prob2 '(place. in
+               ,preferably list a reverses
+                that function Write))
 
 ;;3
 (define prob3
@@ -54,7 +54,7 @@
       (else #f)
       )))
 
-;(prob3 'as '(be f fuck asm a lol))
+(prob3 'as '(be f fuck asm a lol))
 
 ;;4
 (define prob4
@@ -67,7 +67,7 @@
         (car l)
         (prob4 (cddr l)))))))
 
-;(prob4 '(1 2 3 4 5 6 7 8 9 10 11))
+(prob4 '(1 2 3 4 5 6 7 8 9 10 11))
 
 ;;5
 (define prob5
@@ -82,7 +82,7 @@
         (1+ count)
        (prob5 (cdr l)))))))
 
-;(prob5 '(foo bar baz 3.14 = pi))
+(prob5 '(foo bar baz 3.14 = pi))
 
 ;;6
 (define prob6
@@ -90,7 +90,7 @@
     (cond ((equal? (prob2 l) l)#t)
           (else #f))))
 
-;(prob6 '(L O L O L))
+(prob6 '(L O L O L))
 
 ;;7
 
@@ -107,8 +107,8 @@
        ))
     0)))
 
-;(prob7-recursion '(1 9 8 9 6 4))
-;(prob7-recursion '(* slay 666 lambs))
+(prob7-recursion '(1 9 8 9 6 4))
+(prob7-recursion '(* slay 666 lambs))
 
 (define prob7-for
   (lambda (l)
@@ -118,7 +118,7 @@
       (loop (- i 1))
     ))))
 
-;(prob7-for '(1 3 5 7 9 11 13 17))
+(prob7-for '(1 3 5 7 9 11 13 17))
 
 (define prob7-while
   (lambda (l)
@@ -126,6 +126,6 @@
       (display (prob7-recursion l))
     )))
 
-;(prob7-while '(-15 0 -99 37))
+(prob7-while '(-15 0 -99 37))
 
 ;;8
