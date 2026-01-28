@@ -76,8 +76,8 @@
 (defun ss/server-start ()
   "Start daemon based on 'server-running-p'."
   (interactive "")
-  (cond ((eq (server-running-p) t) (print server-name))
-        ((not (server-running-p))(server-start))
+  (cond ((eq (server-running-p) t) (message server-name))
+        ((unless (server-running-p))(server-start))
         (t (server-start))))
 
 (use-package server
@@ -455,7 +455,19 @@
 
 (use-package rainbow-delimiters
   :defer 3
-  :hook ((prog-mode . rainbow-delimiters-mode)))
+  :hook ((prog-mode . rainbow-delimiters-mode))
+  :init
+  (with-eval-after-load 'rainbow-delimiters
+    (set-face-foreground 'rainbow-delimiters-depth-1-face "#c66")  ; red
+    (set-face-foreground 'rainbow-delimiters-depth-2-face "#6c6")  ; green
+    (set-face-foreground 'rainbow-delimiters-depth-3-face "#69f")  ; blue
+    (set-face-foreground 'rainbow-delimiters-depth-4-face "#cc6")  ; yellow
+    (set-face-foreground 'rainbow-delimiters-depth-5-face "#6cc")  ; cyan
+    (set-face-foreground 'rainbow-delimiters-depth-6-face "#c6c")  ; magenta
+    (set-face-foreground 'rainbow-delimiters-depth-7-face "#ccc")  ; light gray
+    (set-face-foreground 'rainbow-delimiters-depth-8-face "#999")  ; medium gray
+    (set-face-foreground 'rainbow-delimiters-depth-9-face "#666")) ; dark gray
+  )
 
 (use-package expreg
   :defer 2
@@ -528,7 +540,9 @@
   :after racket-mode)
 
 (use-package racket-mode
-  :defer t)
+  :defer t
+  :mode
+  ("\\.scm\\'" . racket-mode))
 
 (use-package quick-sdcv
   :ensure t
@@ -543,4 +557,20 @@
   (add-hook 'quick-sdcv-mode-hook #'goto-address-mode)
   )
 
+;;defun misc
+(defun jump-middle ()
+  "Jump to the middle of the line."
+  (interactive)
+  (let*
+      (
+       (begin (line-beginning-position))
+       (end (line-end-position))
+       (middle (/ (+ end begin) 2))
+       )
+    (goto-char middle))
+  )
+
+(global-set-key (kbd "C-<return>") 'jump-middle)
+
+(provide 'post-init)
 ;;; post-init.el ends here
