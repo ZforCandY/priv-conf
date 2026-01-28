@@ -163,7 +163,6 @@
 (global-set-key (kbd "C-c l") #'inferior-lisp)
                                         ;(global-set-key (kbd "C-c b") #'eval-buffer)
 (global-set-key (kbd "C-c e") #'eval-last-sexp)
-(global-set-key (kbd "M-<up>") #'backward-sexp)
 (global-set-key (kbd "C-c i") #'info-other-window)
 (define-key key-translation-map (kbd "C-q") (kbd "C-g"))
 (global-set-key [remap list-buffers] 'ibuffer)
@@ -366,6 +365,16 @@
 (setq server-auth-dir "C:\\Users\\Administrator\\emacs-server-auth-dir"
       server-name "admin.txt")
                                         ;(server-running-p)
+;;Indent
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+(setq c-basic-offset 4)
+(setq js-indent-level 2)
+(setq css-indent-offset 2)
+
+;;White-space
+(dolist (hook '(conf-mode-hook prog-mode-hook text-mode-hook))
+  (add-hook hook (lambda () (setq show-trailing-whitespace t))))
 
 ;;Treesit-font
 (setq treesit-font-lock-level 4)
@@ -376,8 +385,16 @@
         uniquify-strip-common-suffix t)
 (line-number-mode -1)
 (setopt mode-line-process t)
+
+;;Time
 (require 'time)
 (setopt display-time-24hr-format nil)
+
+(defun dt/display-time ()
+  "Display time string."
+  (interactive)
+  (message (current-time-string)))
+(global-set-key (kbd "<pause>")  'dt/display-time)
 
 ;;Custom.el
 '(add-hook 'after-init-hook (lambda ()
@@ -387,7 +404,11 @@
 (setq custom-file nil)
 
 ;;Uncommented
-(setopt indicate-empty-lines nil)
+(setopt indicate-empty-lines t)
+(setq-default indicate-buffer-boundaries 'left)
+(setq require-final-newline t)
+(setq sentence-end-double-space nil)
+
 (setopt overflow-newline-into-fringe t)
 (setopt display-hourglass t
         hourglass-delay 0)
@@ -395,5 +416,5 @@
                                         ;(setopt visible-bell t)
                                         ;(setq fast-but-imprecise-scrolling t)
                                         ;(global-so-long-mode t)
-
+(provide 'pre-init)
 ;;; pre-init.el ends here
