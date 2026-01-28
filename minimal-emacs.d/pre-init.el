@@ -1,420 +1,576 @@
-;;; pre-init.el --- pre-init -*- no-byte-compile: t; lexical-binding: t; -*-
-
+;;; post-init.el --- post-init -*- no-byte-compile: t; lexical-binding: t; -*-
+                                        ;(load custom-file 'noerror 'no-message)
 ;;; Commentary:
-;; shortcut runemacs.exe --daemon (in shell:startup)
-;; add EMACS_SERVER_FILE user var to "server file dir"
-;; Build native-compile-emacs 31 with MSYS2(UCRT64) bash-scrpit for auto
-;; (.dlls)\msys2\ucrt64\bin to path Add conpty_proxy.exe/vterm.el/vtmodule.dll to path/
-;; load-path compile setq vterm-shell"powershell"
-;; see(https://emacs-china.org/t/windows-emacs-libvterm/30140/20)
-;; add.dlls kiennq/treesit-langs to treesits
-;; add quick-sdcv /sdcv dictionary
-
 ;;; Code:
-(require 'use-package)
-(setq use-package-compute-statistics t)
 
-;;Selected Compile
-(let ((deny-list '("\\(?:[/\\\\]\\.dir-locals\\.el\\(?:\\.gz\\)?$\\)"
-                   "\\(?:[/\\\\]modus-vivendi-theme\\.el\\(?:\\.gz\\)?$\\)"
-                   "\\(?:[/\\\\][^/\\\\]+-loaddefs\\.el\\(?:\\.gz\\)?$\\)"
-                   "\\(?:[/\\\\][^/\\\\]+-autoloads\\.el\\(?:\\.gz\\)?$\\)")))
-  (setq native-comp-jit-compilation-deny-list deny-list)
-  ;; Deprecated
-  (with-no-warnings
-    (setq native-comp-deferred-compilation-deny-list deny-list)
-    (setq comp-deferred-compilation-deny-list deny-list)))
+                                        ;(profiler-report)
 
-(setq package-native-compile t)
-(setq compile-angel-enable-byte-compile t)
-(setq compile-angel-enable-native-compile t)
-(defvar old-value nil)
-(defvar original-noninteractive-value nil)
-(setq native-comp-speed 3)
-(setq native-comp-async-query-on-exit t)
-(setq confirm-kill-processes t)
-(setq native-comp-compiler-options '("-march=znver3" "-Ofast" "-g0" "-fno-finite-math-only" "-fgraphite-identity" "-floop-nest-optimize" "-fdevirtualize-at-ltrans" "-fipa-pta" "-fno-semantic-interposition" "-flto=auto" "-fuse-linker-plugin"))
+;;Compile Angel
+(use-package compile-angel
+  :defer 1
+  :ensure t
+  :custom
+  (compile-angel-verbose t)
+  :config
+  (push "/init.el" compile-angel-excluded-files)
+  (push "/early-init.el" compile-angel-excluded-files)
+  (push "/pre-init.el" compile-angel-excluded-files)
+  (push "/post-init.el" compile-angel-excluded-files)
+  (push "/pre-early-init.el" compile-angel-excluded-files)
+  (push "/post-early-init.el" compile-angel-excluded-files)
+  (compile-angel-on-load-mode 1))
 
-(setq native-comp-driver-options '("-march=znver3" "-Ofast" "-g0" "-fno-finite-math-only" "-fgraphite-identity" "-floop-nest-optimize" "-fdevirtualize-at-ltrans" "-fipa-pta" "-fno-semantic-interposition" "-flto=auto" "-fuse-linker-plugin"))
+;;themes
+(mapc #'disable-theme custom-enabled-themes)
+(add-to-list 'custom-theme-load-path "c:/Users/Administrator/.emacs.d/var/themes")
+(setq custom-theme-directory "c:/Users/Administrator/.emacs.d/var/themes")
+                                        ;For high light env
+                                        ;For low light env
+                                        ;naysayer-theme
+                                        ;grandshell-theme
+                                        ;tomorrow-night-deepblue-theme
+(use-package leuven-theme
+  :ensure t
+  :config
+  (load-theme 'leuven t)
+  :init
+  (global-set-key (kbd "M-/") #'theme-choose-variant))
 
-;;Debug-ignored
-;;(add-to-list 'debug-ignored-errors ')
+'(use-package modus-themes
+   :ensure t
+   :defer t
+   :init
+   (modus-themes-include-derivatives-mode 1)
+   (modus-themes-load-theme 'modus-operandi-tinted)
+   :bind
+   (("M-/" . modus-themes-toggle)
+    ("C-*" . modus-themes-select)
+    ("M-*" . modus-themes-load-random))
+   :config
+   (setq modus-themes-to-toggle '(modus-vivendi-tinted modus-operandi-tinted)
+         modus-themes-to-rotate modus-themes-items
+         modus-themes-mixed-fonts t
+         modus-themes-variable-pitch-ui t
+         modus-themes-italic-constructs t
+         modus-themes-bold-constructs t
+         modus-themes-completions '((t . (bold)))
+         modus-themes-prompts '(bold)
+         modus-themes-headings
+         '((agenda-structure . (variable-pitch light 2.2))
+           (agenda-date . (variable-pitch regular 1.3))
+           (t . (regular 1.15))))
+   (setq modus-themes-common-palette-overrides nil))
 
-;;GC
-(setopt garbage-collection-messages t)
-;(setq gc-cons-threshold 50000000)
+                                        ;(native-comp-available-p)
+:Straight.el
+(straight-use-package 'use-package)
 
-;;Load-path
-                                        ;(add-to-list 'load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
-(add-to-list 'load-path "B:\\msys2\\ucrt64\\bin")
-(load (concat (file-name-directory user-init-file) "buffer-move.el"))
+;;Measure time
+(defvar before-user-init-time (current-time)
+  "Value of `current-time' when Emacs begins loading `user-init-file'.")
+(message "Loading Emacs...done (%.3fs)"
+         (float-time (time-subtract before-user-init-time
+                                    before-init-time)))
 
-                                        ;(add-to-list 'load-path "C:\\Users\\Administrator\\.emacs.d\\var/4g.el")
-                                        ;(load (concat (file-name-directory user-init-file) "4g.el"))
+;;Daemon
+(defun ss/server-start ()
+  "Start daemon based on 'server-running-p'."
+  (interactive "")
+  (cond ((eq (server-running-p) t) (message server-name))
+        ((unless (server-running-p))(server-start))
+        (t (server-start))))
 
-;;Window-size
-;(set-frame-parameter nil 'fullscreen 'fullboth)
-;(add-to-list 'default-frame-alist '(fullscreen . maximized))
-                                        ;(add-to-list 'default-frame-alist '(left . 150))
-                                        ;(add-to-list 'default-frame-alist '(top . 50))
-                                        ;(add-to-list 'default-frame-alist '(height . 40))
-                                        ;(add-to-list 'default-frame-alist '(width . 160))
+(use-package server
+  :defer 2
+  :commands (server-running-p))
 
-;;Center-window
-'(defun center-frame ()
-   "Center the frame on the screen, respecting the size set in 'default-frame-alist'."
-   (interactive)
-   (let* ((desired-width
-           (or (cdr (assq 'width default-frame-alist)) 80))
-          (desired-height
-           (or (cdr (assq 'height default-frame-alist)) 24))
-          (screen-width (x-display-pixel-width))
-          (screen-height (x-display-pixel-height))
-          (char-width (frame-char-width))
-          (char-height (frame-char-height))
-          (frame-pixel-width (* desired-width char-width))
-          (frame-pixel-height (* desired-height char-height))
-          (left (max 0 (/ (- screen-width frame-pixel-width) 2)))
-          (top (max 0 (/ (- screen-height frame-pixel-height) 2))))
-     (set-frame-size (selected-frame) desired-width desired-height)
-     (set-frame-position (selected-frame) left top)
-     ))
-'(add-hook 'window-setup-hook #'center-frame)
+(set-frame-parameter nil 'fullscreen 'fullboth)
+(ss/server-start)
 
-;;Straight bootstrap
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name
-        "straight/repos/straight.el/bootstrap.el"
-        (or (bound-and-true-p straight-base-dir)
-            user-emacs-directory)))
-      (bootstrap-version 7))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+;;use-packages If config/init/hook then no defer
+(custom-set-variables '(package-selected-packages nil))
 
-;;Straight config
-(setq straight-vc-git-default-clone-depth 1)
+(use-package conf-mode
+  :defer t
+  :mode
+  ("\\.conf\\'" . conf-mode))
 
-;;Theme,font,line
-(global-prettify-symbols-mode 1)
-(setf custom-safe-themes 't)
-(setq frame-title-format "λ: %b")
+(use-package vertico
+  :defer 3
+  :ensure t
+  :hook (minibuffer-setup . vertico-repeat-save)
+  :config
+  (vertico-mode)
+  :custom
+  (vertico-cycle t)
+  (vertico--resize nil)
+  (vertico--count 12))
 
-;;Defun
-                                        ;change font size
+(use-package vertico-prescient
+  :ensure t
+  :after vertico
+  :hook
+  (after-init . vertico-prescient-mode))
 
-(defun fsize/set-font-size (size)
-  "Set font size to SIZE, specified in tenth of a point."
-  (interactive "nEnter the font size: ")
-  (set-face-attribute 'default nil :height size))
+(use-package inhibit-mouse
+  :defer 3
+  :custom
+  (inhibit-mouse-adjust-mouse-highlight t)
+  (inhibit-mouse-adjust-show-help-function t)
+  :config
+  (if (daemonp)
+      (add-hook 'server-after-make-frame-hook #'inhibit-mouse-mode)
+    (inhibit-mouse-mode 1)))
 
-                                        ;(set-face-attribute 'default nil
-                                        ;                   :height 200 :weight 'regular :width 'normal :foundry "outline" :family "Consolas")
+(use-package treesit-auto
+  :ensure t
+  :defer 3
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
 
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (let* ((font       "Maple Mono NF CN:slant:weight=medium:width=normal:spacing")
-                   (attributes (font-face-attributes font)                                   )
-                   (family     (plist-get attributes :family)                                ))
+(use-package autorevert
+  :ensure nil
+  :commands (auto-revert-mode global-auto-revert-mode)
+  :hook
+  (after-init . global-auto-revert-mode)
+  :custom
+  (auto-revert-interval 3)
+  (auto-revert-remote-file nil)
+  (auto-revert-use-notify t)
+  (auto-revert-avoid-polling nil)
+  (auto-revert-verbose t))
 
-              ;; Default font.
-              (apply #'set-face-attribute
-                     'default nil
-                     attributes)
-              ;; For all Unicode characters.
-              (set-fontset-font t 'symbol
-                                (font-spec :family "Segoe UI Symbol")
-                                nil 'prepend)
-              ;; Emoji.
-              (set-fontset-font t 'emoji
-                                (font-spec :family "Segoe UI Emoji")
-                                nil 'prepend)
-              ;; For Chinese characters.
-              (set-fontset-font t '(#x4e00 . #x9fff)
-                                (font-spec :family family)))))
+;; Enable `auto-save-mode' to prevent data loss. Use `recover-file' or
+;; `recover-session' to restore unsaved changes.
+(setq auto-save-default t)
+(setq auto-save-interval 300)
+(setq auto-save-timeout 30)
+(setq auto-save-visited-interval 5)   ; Save after 5 seconds if inactivity
+(auto-save-visited-mode 1)
 
-(fsize/set-font-size 250)
+(use-package recentf
+  :ensure nil
+  :commands (recentf-mode recentf-cleanup)
+  :hook
+  (after-init . recentf-mode)
+  :bind (("C-c f" . recentf-open-files))
+  :custom
+  (setq recentf-max-saved-items 200)
+  (setq recentf-max-menu-items 15)
+  (recentf-case-fold-search t)
+  (recentf-auto-clenanup (if (daemonp) 300 'never))
+  (recentf-exclude
+   (list "\\.tar$" "\\.tbz2$" "\\.tbz$" "\\.tgz$" "\\.bz2$"
+         "\\.bz$" "\\.gz$" "\\.gzip$" "\\.xz$" "\\.zip$"
+         "\\.7z$" "\\.rar$"
+         "COMMIT_EDITMSG\\'"
+         "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\|bmp\\|xpm\\)$"
+         "-autoloads\\.el$" "autoload\\.el$"))
+  :config
+  (add-hook 'kill-emacs-hook #'recentf-cleanup -90))
 
-'(setq mode-line-position-column-line-format '("%l:%C"))
-'(display-line-numbers-type (quote relative))
-(setopt display-line-numbers-type t)
-(setopt line-number-display-limit nil)
+(use-package savehist
+  :ensure nil
+  :commands (savehist-mode savehist-save)
+  :hook
+  (after-init . savehist-mode)
+  :custom
+  (savehist-autosave-interval 600)
+  (savehist-additional-variables
+   '(kill-ring
+     register-alist
+     mark-ring global-mark-ring
+     search-ring regexp-search-ring)))
 
-(column-number-mode 1)
+(use-package saveplace
+  :ensure nil
+  :commands (save-place-mode save-place-local-mode)
+  :hook
+  (after-init . save-place-mode)
+  :custom
+  (save-place-limit 400))
 
-'(when (version<= "26.0.50" emacs-version)
-   (global-display-line-numbers-mode))
-(set-face-attribute 'line-number-current-line nil
-                    :foreground "#0601ff"
-                    :weight 'bold)
+(use-package company
+  :ensure t
+  :hook
+  (after-init . global-company-mode)
+  :init
+  (setopt company-idle-delay 0
+          company-minimum-prefix-length 2)
+  (setopt company-dabbrev-code-everywhere t)
+  (setopt company-dabbrev-code-other-buffers t
+          company-dabbrev-code-time-limit 2)
+  (setopt company-show-quick-access t
+          company-tooltip-offset-display 'lines
+          company-tooltip-limit 10))
 
+(use-package company-box
+  :after all-the-icons
+  :hook (company-mode . company-box-mode))
 
-;;Keybind
-(global-set-key (kbd "<escape>") 'keyboard-quit)
-(global-unset-key (kbd "C-x <escape> <escape>"))
-(global-set-key (kbd "M-n") #'forward-paragraph)
-(global-set-key (kbd "M-m") #'backward-paragraph)
-(global-set-key (kbd "C-c l") #'inferior-lisp)
-                                        ;(global-set-key (kbd "C-c b") #'eval-buffer)
-(global-set-key (kbd "C-c e") #'eval-last-sexp)
-(global-set-key (kbd "C-c i") #'info-other-window)
-(define-key key-translation-map (kbd "C-q") (kbd "C-g"))
-(global-set-key [remap list-buffers] 'ibuffer)
-(global-set-key (kbd "C-c s") #'bookmark-set)
-(global-set-key (kbd "C-c b") #'bookmark-jump)
-(global-set-key (kbd "C-c m") #'imenu)
-(global-set-key (kbd "C-c d") #'quick-sdcv-search-at-point)
-(global-set-key (kbd "C-c C-d") #'quick-sdcv-search-input)
+(use-package company-prescient
+  :after company
+  :ensure t
+  :hook
+  (after-init . company-prescient-mode))
 
-;;Helpful
-(global-set-key (kbd "C-h f") #'helpful-function)
-(global-set-key (kbd "C-h v") #'helpful-variable)
-(global-set-key (kbd "C-h k") #'helpful-key)
-(global-set-key (kbd "C-h c") #'helpful-command)
-(global-set-key (kbd "C-c h") #'helpful-at-point)
+(use-package all-the-icons
+  :after company
+  :if (display-graphic-p))
 
-;;Paxedit
-(global-set-key (kbd "M-d") #'paxedit-delete)
+(use-package org
+  :ensure t
+  :defer t
+  :commands (org-mode org-version)
+  :mode
+  ("\\.org\\'" . org-mode)
+  :custom
+  (org-hide-leading-stars t)
+  (org-startup-indented t)
+  (org-adapt-indentation nil)
+  (org-edit-src-content-indentation 0)
+  (org-fontify-done-headline t)
+  (org-fontify-todo-headline t)
+  (org-fontify-whole-heading-line t)
+  (org-fontify-quote-and-verse-blocks t)
+  (org-startup-truncated t))
 
-;;sexp
-(global-set-key (kbd "M-<up>") #'backward-sexp)
-(global-set-key (kbd "M-<down>") #'forward-sexp)
+'(use-package auto-package-update
+   :ensure t
+   :defer 5
+   :custom
+   ;; Here, packages will only be updated if at least 7 days have passed
+   ;; since the last successful update.
+   (auto-package-update-interval 7)
+   (auto-package-update-hide-results t)
+   (auto-package-update-delete-old-versions t)
+   :config
+   ;; Run package updates automatically at startup, but only if the configured
+   ;; interval has elapsed.
+   (auto-package-update-maybe)
+   (auto-package-update-at-time "7:30"))
 
-;;Windmove
-(windmove-default-keybindings 'shift)
-(when (fboundp 'windmove-default-keybindings)
-  (windmove-default-keybindings))
+(use-package buffer-terminator
+  :ensure t
+  :defer 3
+  :custom
+  (buffer-terminator-verbose nil)
+  ;; Set the inactivity timeout (in seconds) after which buffers are considered
+  ;; inactive (default is 30 minutes):
+  (buffer-terminator-inactivity-timeout (* 30 60)) ; 30 minutes
+  ;; Define how frequently the cleanup process should run (default is every 10
+  ;; minutes):
+  (buffer-terminator-interval (* 10 60)) ; 10 minutes
+  :hook
+  (after-init . buffer-terminator-mode))
 
-;;Buffmove
-(global-set-key (kbd "C-<up>")     'buf-move-up)
-(global-set-key (kbd "C-<down>")   'buf-move-down)
-(global-set-key (kbd "C-<left>")   'buf-move-left)
-(global-set-key (kbd "C-<right>")  'buf-move-right)
+;; Enables automatic indentation of code while typing
+(use-package aggressive-indent
+  :ensure t
+  :defer 3
+  :commands aggressive-indent-mode
+  :hook
+  (c-mode . aggressive-indent-mode)
+  (emacs-lisp-mode . aggressive-indent-mode)
+  (after-init global-aggressive-indent-mode))
 
-;;;Configs
-;;Hook
-(add-hook 'text-mode-hook 'visual-line-mode)
-(add-hook 'after-init-hook #'display-time-mode)
-(add-hook 'after-init-hook #'window-divider-mode)
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-(add-hook 'prog-mode-hook 'electric-pair-mode)
-(add-hook 'after-init-hook #'minibuffer-depth-indicate-mode)
+;; Highlights function and variable definitions in Emacs Lisp mode
+(use-package highlight-defined
+  :ensure t
+  :defer 3
+  :commands highlight-defined-mode
+  :hook
+  (emacs-lisp-mode . highlight-defined-mode))
 
-;;Scroll
-(setq scroll-conservatively 101)
-(setq scroll-margin 0)
-(setq scroll-preserve-screen-position nil)
-(setq auto-window-vscroll nil)
-(setopt scroll-error-top-bottom nil)
+;; Prevent parenthesis imbalance
 
-(setq jit-lock-defer-time 0.3
-      fast-but-imprecise-scrolling t
-      redisplay-skip-fontification-on-input t
-      recenter-redisplay 'tty)
-;;Sly
-(setq sly-lisp-implementations
-      '((sbcl ("sbcl" "noinform") :coding-system utf-8-unix)
-        (ccl ("wx86cl64.exe"))))
+(use-package paredit
+  :defer 3
+  :ensure t
+  :commands paredit-mode
+  :hook
+  (emacs-lisp-mode . paredit-mode)
+                                        ;(lisp-mode . paredit-mode)
+  (common-lisp-mode . paredit-mode)
+  (scheme-mode . paredit-mode)
+  (racket-mode . paredit-mode)
+  :config
+  (define-key paredit-mode-map (kbd "RET") nil))
 
-;;Flycheck
-(setq flycheck-display-errors-delay 0.1)
-(setq flycheck-debug t)
+(defun tp/toggle-paredit ()
+  "Toggle paredit modes with Lisp dialets mode."
+  (interactive)
+  (cond
+   ((not paredit-mode)(setq paredit-mode 1))
+   ((paredit-mode)(setq paredit-mode nil))
+   ))
 
-;;Backups
-(setq make-backup-file t)
-(setq vc-make-backup-files t)
-(setq kept-old-versions 5)
-(setq kept-new-versions 10)
+  (use-package paxedit
+    :defer 3
+    :ensure t
+    :commands paxedit-mode
+    :hook
+    (emacs-lisp-mode . paxedit-mode)
+    (lisp-mode . paxedit-mode))
 
-;;Ensure
-(setq use-package-always-ensure t)
+(use-package sly
+  :defer t)
 
-;;Env
-(set-language-environment "UTF-8")
+'(use-package magit
+   :defer t
+   )
 
-;;Performance
-(setq inhibit-compacting-font-cache t)
-(setenv "LSP_USE_PLISTS" "true")
-(setq lsp-use-plists t)
-(setopt package-quickstart nil
-        package-enable-at-startup t)
-(setq frame-resize-pixelwise t)
-(setq w32-get-true-file-attributes nil) ;local
-(setq w32-pipe-read-delay 0)
+(use-package avy
+  :defer 5
+  :bind (("C-x j c" . avy-goto-char)
+         ("C-x j w" . avy-goto-word-1)
+         ("C-x j l" . avy-goto-line)
+         ("C-x j e" . avy-goto-end-of-line))
+  :config
+  (setq avy-all-windows nil
+        avy-all-windows-alt t
+        avy-background t
+        avy-style 'pre)
+  :custom
+  (avy-timeout-seconds 0.3)
+  (setq avy-case-fold-search nil
+        (setq avy-indent-line-overlay t)))
 
-;;Display
-(setopt display-line-numbers-width 3)
-;(setq display-time-day-and-date t)
-(setq redisplay-skip-fontification-on-input t)
+'(use-package reader
+   :defer t
+   :vc t
+   :load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
 
-;;Paren
-(show-paren-mode t)
-(setq show-paren-delay 0)
-(setq show-paren-style 'mixed)
+(use-package nov
+  :defer 10
+  :mode ("\\.epub\\'" . nov-mode)
+  :config
+  (setq nov-text-widith 95))
 
-;;Cursor
-(setq x-stretch-cursor t)
-(setopt visible-cursor t)
-(setq help-window-select t)
-(setq-default cursor-in-non-selected-windows nil)
+(use-package vterm
+  :defer 3
+  :load-path "C:\\Users\\Administrator\\.emacs.d\\var\\elpa"
+  :bind (("C-c t" . vterm))
+  :init
+  (setq vterm-copy-exclude-prompt nil)
+  (setq vterm-always-compile-module t)
+  (setq vterm-timer-delay 0.01)
+  (setq vterm-max-scrollback 20000)
+  :config
+  (when (eq system-type 'windows-nt)
+    (setq vterm-shell "powershell")))
 
-;;Company
+                                        ;(setq vterm-shell "B:\\msys2//msys2_shell.cmd -defterm -here -no-start -ucrt64 -i")
 
-;;Mouse
-(setq mouse-wheel-scroll-amount '(2 ((shift) . 1)) ;; one line at a time
-      mouse-wheel-progressive-speed nil ;; don't accelerate scrolling
-      mouse-wheel-follow-mouse 't ;; scroll window under mouse
-      )
+(use-package display-line-numbers
+  :defer 3
+  :hook ((prog-mode . display-line-numbers-mode)))
 
-;;Default
-(setq-default lexical-binding t)
+(use-package ultra-scroll
+  :vc (:url "https://github.com/jdtsmith/ultra-scroll" :branch "main")
+  :hook
+  (after-init . ultra-scroll-mode))
 
-;;Load
-(setq load-prefer-newer t)
+(use-package golden-ratio
+  :diminish golden-ratio-mode
+  :hook (after-init . golden-ratio-mode)
+  :custom
+  (golden-ratio-auto-scale t))
 
-;;Window
-(setq highlight-nonselected-windows nil)
-(setopt mouse-autoselect-window t)
+(use-package which-key
+  :hook
+  (after-init . which-key-mode))
 
-;;Delete
-(setq delete-by-moving-to-trash t)
+(use-package marginalia
+  :custom
+  (marginalia-max-relative-age 0)
+  (marginalia--align 'right)
+  :hook (after-init . marginalia-mode))
 
-;;Kill
-(setq confirm-kill-emacs 'y-or-n-p)
-(setopt confirm-kill-processes nil)
+(use-package orderless
+  :defer 5
+  :ensure t
+  :custom
+  (completing-styles '(orderles basic))
+  (orderless-matching-styles '(orderless-literal orderless-regexp))
+  (completion-category-defaults nil)
+  (completing-category-overrides nil))
 
-;;Scratch
-(setq initial-scratch-message "┌┬┐┬ ┬┬
- │ ││││
- ┴ └┴┘┴
-      ┬  ┬┌─┐┬ ┬┌┬┐
-      │  ││ ┬├─┤ │
-      ┴─┘┴└─┘┴ ┴ ┴
-                ┌─┐┌─┐┌─┐┬─┐┬┌─┬ ┌─┐
-                └─┐├─┘├─┤├┬┘├┴┐│ ├┤
-                └─┘┴  ┴ ┴┴└─┴ ┴┴─└─┘
-")
+(use-package dired
+  :defer 5
+  :ensure nil
+  :commands (dired)
+  :hook
+  ((dired-mode . dired-hide-details-mode)
+   (dired-mode . hl-line-mode))
+  :config
+  (setq dired-recursive-copies 'always)
+  (setq dired-recursive-deletes 'always)
+  (setq delete-by-moving-to-trash t)
+  (setq dired-listing-switches "-alh"))
 
-;;Lisp
-(setq inferior-lisp-program "sbcl")
-(setq inferior-lisp-program "B:\\SBCL/sbcl.exe")
+(use-package dired-subtree
+  :defer 6
+  :after dired
+  :bind
+  ( :map dired-mode-map
+    ("<tab>" . dired-subtree-toggle)
+    ("TAB" . dired-subtree-toggle)
+    ("<backtab>" . dired-subtree-remove)
+    ("S-TAB" . dired-subtree-remove))
+  :config
+  (setq dired-subtree-use-backgrounds nil))
 
-;;Org
-(setq org-directory "B:\\C\\org")
-                                        ;(setq org-startup-numerated t)
-(setq org-hide-leading-stars t)
-(setq org-fontify-quote-and-verse-blocks t)
-(setq org-fontify-whole-heading-line t)
+;;nerd-icons
+
+(use-package nerd-icons
+  :after dired
+  :ensure t)
+
+(use-package nerd-icons-dired
+  :ensure t
+  :after nerd-icons
+  :hook
+  (dired-mode . nerd-icons-dired-mode))
+
+(use-package nerd-icons-completion
+  :after marginalia
+  :config
+  (nerd-icons-completion-mode)
+  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+
+(use-package nerd-icons-ibuffer
+  :ensure t
+  :hook (ibuffer-mode . nerd-icons-ibuffer-mode)
+  :init
+  (setq nerd-icons-ibuffer-human-readable-size t)
+  (setq inhibit-compacting-font-caches t))
+
+(use-package flycheck
+  :ensure t
+  :hook (after-init . global-flycheck-mode))
+
+(use-package rainbow-delimiters
+  :defer 3
+  :hook ((prog-mode . rainbow-delimiters-mode))
+  :init
+  (with-eval-after-load 'rainbow-delimiters
+    (set-face-foreground 'rainbow-delimiters-depth-1-face "#c66")  ; red
+    (set-face-foreground 'rainbow-delimiters-depth-2-face "#6c6")  ; green
+    (set-face-foreground 'rainbow-delimiters-depth-3-face "#69f")  ; blue
+    (set-face-foreground 'rainbow-delimiters-depth-4-face "#cc6")  ; yellow
+    (set-face-foreground 'rainbow-delimiters-depth-5-face "#6cc")  ; cyan
+    (set-face-foreground 'rainbow-delimiters-depth-6-face "#c6c")  ; magenta
+    (set-face-foreground 'rainbow-delimiters-depth-7-face "#ccc")  ; light gray
+    (set-face-foreground 'rainbow-delimiters-depth-8-face "#999")  ; medium gray
+    (set-face-foreground 'rainbow-delimiters-depth-9-face "#666")) ; dark gray
+  )
+
+(use-package expreg
+  :defer 2
+  :config (global-set-key (kbd "M-j") 'expreg-expand))
+
+'(use-package org-bullets
+   :defer 15
+   :after org
+   :hook (org-mode-hook . org-bullets-mode))
 (setq org-startup-truncated nil)
 
-;;Inline-image
-'(defun org-http-image-data-fn (protocol link _description)
-   "Interpret LINK as an URL to an image file."
-   (when (and (image-type-from-file-name link)
-              (not (eq org-display-remote-inline-images 'skip)))
-     (if-let (buf (url-retrieve-synchronously (concat protocol ":" link)))
-         (with-current-buffer buf
-           (goto-char (point-min))
-           (re-search-forward "\r?\n\r?\n" nil t)
-           (buffer-substring-no-properties (point) (point-max)))
-       (message "Download of image \"%s\" failed" link)
-       nil)))
+(use-package simple-modeline
+  :init
+  (setq simple-modeline-segments
+        '((simple-modeline-segment-modified
+           simple-modeline-segment-buffer-name
+           simple-modeline-segment-position)
+          (
+           ;;simple-modeline-segment-minor-modes
+           simple-modeline-segment-input-method
+           simple-modeline-segment-eol
+           simple-modeline-segment-encoding
+           simple-modeline-segment-vc
+           simple-modeline-segment-misc-info
+           simple-modeline-segment-process
+           simple-modeline-segment-major-mode)))
+  :hook (after-init . simple-modeline-mode))
 
-                                        ;(setq org-display-remote-inline-images 'cache)
+(use-package stripspace
+  :defer 5
+  :ensure t
+  :commands stripspace-local-mode
+  :hook ((prog-mode . stripspace-local-mode)
+         (text-mode . stripspace-local-mode)
+         (conf-mode . stripspace-local-mode))
+  :custom
+  (stripspace-only-if-initially-clean nil)
+  (stripspace-restore-column t))
 
-;;Package
-(setq package-install-upgrade-built-in t)
-(setopt network-security-level 'low)
-'(setopt package-archives '(
-                            ("gnu"    . "https://mirrors.ustc.edu.cn/elpa/gnu/")
-                            ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")
-                            ("melpa"  . "https://mirrors.ustc.edu.cn/elpa/melpa/")
-                            ))
-'(setopt package-archive-priorities '(
-                                      ("gnu"    . 1)
-                                      ("nongnu" . 0)
-                                      ("melpa"  . 1))
-         package-menu-hide-low-priority t)
+'(straight-use-package '(org-yt
+                         :type git
+                         :host github
+                         :repo "TobiasZawada/org-yt"
+                         :ensure t
+                         :defer t
+                         :defer 10))
+                                        ;(require 'org-yt)
 
-(setopt package-check-signature nil)
 
-;;Read
-(setq read-process-output-max (* 1024 1024))
+                                        ;(org-link-set-parameters "http"  :image-data-fun #'org-http-image-data-fn)
+                                        ;(org-link-set-parameters "https" :image-data-fun #'org-http-image-data-fn)
+(progn ;    `isearch'
+  (setq isearch-allow-scroll nil))
 
-;;Tab-bar
-(setopt tab-bar-show 1
-        tab-bar-close-button nil
-        tab-bar-format '(tab-bar-format-history tab-bar-format-tabs tab-bar-separator))
+(use-package eieio
+  :defer t)
 
-;;Buffer
-(setopt switch-to-buffer-obey-display-actions t)
-(modify-frame-parameters nil '((inhibit-double-buffering . nil)))
-(setopt frame-background-mode nil)
-(setq frame-inhibit-implied-resize t)
+(use-package helpful
+  :ensure t
+  :defer 5)
 
-;;Server
-(setopt server-use-tcp t)
-(setq server-log t)
-(setq server-msg-size (* 1024 1024))
-(setq server-auth-dir "C:\\Users\\Administrator\\emacs-server-auth-dir"
-      server-name "admin.txt")
-                                        ;(server-running-p)
-;;Indent
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 4)
-(setq c-basic-offset 4)
-(setq js-indent-level 2)
-(setq css-indent-offset 2)
+'(use-package powershell
+   :defer t
+   :ensure )
 
-;;White-space
-(dolist (hook '(conf-mode-hook prog-mode-hook text-mode-hook))
-  (add-hook hook (lambda () (setq show-trailing-whitespace t))))
+(use-package geiser-guile
+  :defer t)
 
-;;Treesit-font
-(setq treesit-font-lock-level 4)
+(use-package sicp
+  :after racket-mode)
 
-;;Mode line
-                                        ;(size-indication-mode)
-(setopt uniquify-buffer-name-style 'forward
-        uniquify-strip-common-suffix t)
-(line-number-mode -1)
-(setopt mode-line-process t)
+(use-package racket-mode
+  :defer t
+  :mode
+  ("\\.scm\\'" . racket-mode))
 
-;;Time
-(require 'time)
-(setopt display-time-24hr-format nil)
+(use-package quick-sdcv
+  :ensure t
+  :defer t
+  :custom
+  (quick-sdcv-dictionary-prefix-symbol "►")
+  (quick-sdcv-ellipsis " ▼")
+  :init
+  (setq quick-sdcv-unique-buffers nil)
+                                        ;(setq quick-sdcv-exact-search t)
+  (setq quick-sdcv-hist-size 100)
+  (add-hook 'quick-sdcv-mode-hook #'goto-address-mode)
+  )
 
-(defun dt/display-time ()
-  "Display time string."
+;;defun misc
+(defun jump-middle ()
+  "Jump to the middle of the line."
   (interactive)
-  (message (current-time-string)))
-(global-set-key (kbd "<pause>")  'dt/display-time)
+  (let*
+      (
+       (begin (line-beginning-position))
+       (end (line-end-position))
+       (middle (/ (+ end begin) 2))
+       )
+    (goto-char middle))
+  )
 
-;;Custom.el
-'(add-hook 'after-init-hook (lambda ()
-                              (let ((inhibit-message t))
-                                (when (file-exists-p custom-file)
-                                  (load-file custom-file)))))
-(setq custom-file nil)
+(global-set-key (kbd "C-<return>") 'jump-middle)
 
-;;Uncommented
-(setopt indicate-empty-lines t)
-(setq-default indicate-buffer-boundaries 'left)
-(setq require-final-newline t)
-(setq sentence-end-double-space nil)
-
-(setopt overflow-newline-into-fringe t)
-(setopt display-hourglass t
-        hourglass-delay 0)
-(setopt no-redraw-on-reenter t)
-                                        ;(setopt visible-bell t)
-                                        ;(setq fast-but-imprecise-scrolling t)
-                                        ;(global-so-long-mode t)
-(provide 'pre-init)
-;;; pre-init.el ends here
+(provide 'post-init)
+;;; post-init.el ends here
