@@ -2,7 +2,7 @@
                                         ;(load custom-file 'noerror 'no-message)
 ;;; Commentary:
 ;;; Code:
-
+;(require 'cl)
                                         ;(profiler-report)
 
 ;;Compile Angel
