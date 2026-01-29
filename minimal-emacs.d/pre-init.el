@@ -11,7 +11,9 @@
 ;; add quick-sdcv /sdcv dictionary
 
 ;;; Code:
+(setq message-log-max t)
 (require 'use-package)
+
 (setq use-package-compute-statistics t)
 
 ;;Selected Compile
@@ -52,9 +54,30 @@
                                         ;(add-to-list 'load-path "C:\\Users\\Administrator\\.emacs.d\\var/4g.el")
                                         ;(load (concat (file-name-directory user-init-file) "4g.el"))
 
+;;Load-func
+(defun loadup-gen ()
+  "Generate the lines to include in the lisp/loadup.el file.
+to place all of the libraries that are loaded by your InitFile
+into the main dumped Emacs"
+  (interactive)
+  (defun get-loads-from-*Messages* ()
+    (save-excursion
+      (let ((retval ()))
+	    (set-buffer "*Messages*")
+	    (beginning-of-buffer)
+	    (while (search-forward-regexp "^Loading " nil t)
+	      (let ((start (point)))
+	        (search-forward "...")
+	        (backward-char 3)
+	        (setq retval (cons (buffer-substring-no-properties start (point)) retval))))
+	    retval)))
+  (map 'list
+       (lambda (file) (princ (format "(load \"%s\")\n" file)))
+       (get-loads-from-*Messages*)))
+
 ;;Window-size
-;(set-frame-parameter nil 'fullscreen 'fullboth)
-;(add-to-list 'default-frame-alist '(fullscreen . maximized))
+                                        ;(set-frame-parameter nil 'fullscreen 'fullboth)
+                                        ;(add-to-list 'default-frame-alist '(fullscreen . maximized))
                                         ;(add-to-list 'default-frame-alist '(left . 150))
                                         ;(add-to-list 'default-frame-alist '(top . 50))
                                         ;(add-to-list 'default-frame-alist '(height . 40))
@@ -104,7 +127,8 @@
 ;;Theme,font,line
 (global-prettify-symbols-mode 1)
 (setf custom-safe-themes 't)
-(setq frame-title-format "λ: %b")
+(setq frame-title-format "λ . Learner: %b")
+(setq user-full-name "Learner")
 
 ;;Defun
                                         ;change font size
@@ -263,6 +287,7 @@
 (setopt visible-cursor t)
 (setq help-window-select t)
 (setq-default cursor-in-non-selected-windows nil)
+(setq mouse-yank-at-point t)
 
 ;;Company
 
@@ -375,6 +400,7 @@
 ;;White-space
 (dolist (hook '(conf-mode-hook prog-mode-hook text-mode-hook))
   (add-hook hook (lambda () (setq show-trailing-whitespace t))))
+(global-set-key (kbd "C-c <deletechar>")  'delete-trailing-whitespace)
 
 ;;Treesit-font
 (setq treesit-font-lock-level 4)
@@ -395,6 +421,12 @@
   (interactive)
   (message (current-time-string)))
 (global-set-key (kbd "<pause>")  'dt/display-time)
+
+;;Image
+(auto-image-file-mode t)
+
+;;Edit
+(delete-selection-mode t)
 
 ;;Custom.el
 '(add-hook 'after-init-hook (lambda ()
