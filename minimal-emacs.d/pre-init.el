@@ -7,6 +7,7 @@
 ;; (.dlls)\msys2\ucrt64\bin to path Add conpty_proxy.exe/vterm.el/vtmodule.dll to path/
 ;; load-path compile setq vterm-shell"powershell"
 ;; see(https://emacs-china.org/t/windows-emacs-libvterm/30140/20)
+;; also check mintty https://github.com/chansey97/mintty-standalone
 ;; add.dlls kiennq/treesit-langs to treesits
 ;; add quick-sdcv /sdcv dictionary
 
@@ -180,6 +181,7 @@ into the main dumped Emacs"
 
 
 ;;Keybind
+(global-set-key (kbd "C-*") 'undo-redo)
 (global-set-key (kbd "<escape>") 'keyboard-quit)
 (global-unset-key (kbd "C-x <escape> <escape>"))
 (global-set-key (kbd "M-n") #'forward-paragraph)
@@ -193,6 +195,8 @@ into the main dumped Emacs"
 (global-set-key (kbd "C-c s") #'bookmark-set)
 (global-set-key (kbd "C-c b") #'bookmark-jump)
 (global-set-key (kbd "C-c m") #'imenu)
+(global-set-key (kbd "C-c a") #'find-file)
+(global-set-key (kbd "C-c k") #'kill-process)
 (global-set-key (kbd "C-c d") #'quick-sdcv-search-at-point)
 (global-set-key (kbd "C-c C-d") #'quick-sdcv-search-input)
 
@@ -269,8 +273,14 @@ into the main dumped Emacs"
 (setopt package-quickstart nil
         package-enable-at-startup t)
 (setq frame-resize-pixelwise t)
-(setq w32-get-true-file-attributes nil) ;local
-(setq w32-pipe-read-delay 0)
+
+;;W32
+(when (eq system-type 'windows-nt)
+  (setq w32-allow-system-shell t)
+  (setq w32-use-native-image-API t)
+  (setq w32-get-true-file-attributes nil) ;local
+  (setq w32-pipe-read-delay 0)
+  )
 
 ;;Display
 (setopt display-line-numbers-width 3)
@@ -435,7 +445,12 @@ into the main dumped Emacs"
                                   (load-file custom-file)))))
 (setq custom-file nil)
 
+;; open browser when click hyperlink
+(add-hook 'prog-mode-hook 'goto-address-prog-mode)
+(setq goto-address-mail-face 'link)
+
 ;;Uncommented
+(save-place-mode 1)
 (setopt indicate-empty-lines t)
 (setq-default indicate-buffer-boundaries 'left)
 (setq require-final-newline t)
@@ -448,5 +463,6 @@ into the main dumped Emacs"
                                         ;(setopt visible-bell t)
                                         ;(setq fast-but-imprecise-scrolling t)
                                         ;(global-so-long-mode t)
+
 (provide 'pre-init)
 ;;; pre-init.el ends here
