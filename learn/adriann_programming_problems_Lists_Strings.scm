@@ -129,3 +129,82 @@
 (prob7-while '(-15 0 -99 37))
 
 ;;8
+(define prob8
+  (lambda (l)
+    (define (sqr e) (* e e))
+    (cond
+      ((null? l)0)
+      ((eq?(cdr l)'())(sqr(car l)))
+      (else
+       (cons
+        (sqr(car l))
+        (prob8(cdr l))
+        )
+       ))))
+
+(prob8 '(1 2 3 4 5 6 7 8 9 10 11 12))
+
+;;9
+(define prob9
+  (lambda (l1 l2)
+    (if (and (pair? l1)
+             (pair? l2))
+        (append l1 l2)
+        #f)))
+
+(prob9 '(a b c) '(1 2 3))
+(prob9 'a '(b c))
+
+;;10
+(define prob10
+  (lambda (l1 l2)
+    (if (eq? l1 '())
+        l2
+        (if (eq? l2 '())
+            l1
+            (cond
+              ((not(eq? (car l1) '()))
+               (cons(car l1)
+                    (prob10 l2 (cdr l1))
+              )))))))
+
+(prob10 '(a b c) '(1 2 3))
+
+;;11
+;;WIP
+(define prob11
+  (lambda (l1 l2)
+    (let ((l3 (prob10 l1 l2)))
+    (if (eq? l1 '())
+        l2
+        (if (eq? l2 '())
+            l1
+            l3)))))
+    (prob11 '(1 4 6) '(2 3 5))
+
+;;12
+
+;;13
+;;recursion slow after 40+
+(define prob13-recursion
+  (lambda (n)
+    (cond
+      ((<= n 2)1)
+      (else
+       (+ (prob13-recursion(- n 1))
+          (prob13-recursion(- n 2))))
+      )))
+
+(define fib-Binet
+  (lambda (n)
+    (define (1+ x) (+ x 1))
+    (round
+     (/ (expt (/ (+ 1 (sqrt 5)) 2) (1+ n))
+        (sqrt 5)))))
+
+(time
+(do ((i -1 (+ i 1)))  ;;after 94 e+ occur
+     ((= i 100) 'done) ;;scheme_max=1474 till +inf.0
+   (display (fib-Binet i))
+   (newline)))
+
