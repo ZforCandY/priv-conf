@@ -325,10 +325,10 @@
 
 (use-package avy
   :defer 5
-  :bind (("C-x j c" . avy-goto-char)
-         ("C-x j w" . avy-goto-word-1)
-         ("C-x j l" . avy-goto-line)
-         ("C-x j e" . avy-goto-end-of-line))
+  :bind (("C-c v c" . avy-goto-char)
+         ("C-c v w" . avy-goto-word-1)
+         ("C-c v l" . avy-goto-line)
+         ("C-c v e" . avy-goto-end-of-line))
   :config
   (setq avy-all-windows nil
         avy-all-windows-alt t
@@ -363,7 +363,7 @@
   (when (eq system-type 'windows-nt)
     (setq vterm-shell "powershell")))
 
-                                        ;(setq vterm-shell "B:\\msys2//msys2_shell.cmd -defterm -here -no-start -ucrt64 -i")
+;;(setq vterm-shell "B:\\msys2//msys2_shell.cmd -defterm -here -no-start -ucrt64 -i")
 
 (use-package display-line-numbers
   :defer 3
@@ -557,7 +557,22 @@
   (add-hook 'quick-sdcv-mode-hook #'goto-address-mode)
   )
 
-;;defun misc
+(use-package doc-view
+  :defer t
+  )
+                                        ;(doc-view-ghostscript-program
+                                        ;"B:/gs10.06.0/bin/gswin64c.exe")
+;;ripgrep
+(use-package rg
+  :defer t
+  )
+
+(with-eval-after-load 'rg
+  (global-set-key (kbd "C-c r") #'rg)
+  ;; Your settings goes here.
+  (setq rg-w32-unicode t))
+
+  ;;defun misc
 (defun jump-middle ()
   "Jump to the middle of the line."
   (interactive)
