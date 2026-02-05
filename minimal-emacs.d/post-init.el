@@ -2,7 +2,7 @@
                                         ;(load custom-file 'noerror 'no-message)
 ;;; Commentary:
 ;;; Code:
-;(require 'cl)
+                                        ;(require 'cl)
                                         ;(profiler-report)
 
 ;;Compile Angel
@@ -86,6 +86,132 @@
 
 (set-frame-parameter nil 'fullscreen 'fullboth)
 (ss/server-start)
+
+;;Meow
+(require 'meow)
+
+(use-package meow
+  :ensure t)
+
+(defun meow-setup ()
+  "Meow-setup."
+  (setq meow-cheatsheet-physical-layout meow-cheatsheet-physical-layout-iso)
+  (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+  ;;Digits
+  (meow-leader-define-key
+   '("1" . meow-digit-argument)
+   '("2" . meow-digit-argument)
+   '("3" . meow-digit-argument)
+   '("4" . meow-digit-argument)
+   '("5" . meow-digit-argument)
+   '("6" . meow-digit-argument)
+   '("7" . meow-digit-argument)
+   '("8" . meow-digit-argument)
+   '("9" . meow-digit-argument)
+   '("0" . meow-digit-argument)
+   '("-" . meow-keypad-describe-key)
+   '("_" . meow-cheatsheet))
+  (meow-normal-define-key
+   ;;Basic move
+   '("i" . meow-prev)
+   '("k" . meow-next)
+   '("j" . meow-left)
+   '("l" . meow-right)
+   ;;Expand move
+   '("I" . meow-prev-expand)
+   '("K" . meow-next-expand)
+   '("J" . meow-left-expand)
+   '("L" . meow-right-expand)
+   ;;Expand
+   '("0" . meow-expand-0)
+   '("9" . meow-expand-9)
+   '("8" . meow-expand-8)
+   '("7" . meow-expand-7)
+   '("6" . meow-expand-6)
+   '("5" . meow-expand-5)
+   '("4" . meow-expand-4)
+   '("3" . meow-expand-3)
+   '("2" . meow-expand-2)
+   '("1" . meow-expand-1)
+   ;;Word&symbol
+   '("u" . meow-back-word)
+   '("o" . meow-next-word)
+   '("U" . meow-back-symbol)
+   '("O" . meow-next-symbol)
+   ;;Selected command
+   '("s" . meow-visit)
+   '("S" . meow-goto-line)
+   '("p" . meow-cancel-selection)
+   '("P" . meow-pop-selection)
+   '("y" . meow-find)
+   '("x" . meow-till)
+   '("/" . meow-quit)
+   '("a" . meow-mark-word)
+   '("A" . meow-mark-symbol)
+   '("e" . meow-line)
+   '("E" . meow-block)
+   '("m" . meow-reverse)
+   ;;Undo&redo
+   '("h" . undo-only)
+   '("H" . undo-redo)
+   ;;Edit
+   '("d" . meow-delete)
+   '("D" . meow-kill)
+   '("f" . meow-change)
+   '("v" . meow-yank)
+   '("V" . meow-replace)
+   '("c" . meow-save) ;;copy
+   '("g" . meow-grab)
+   '("G" . meow-sync-grab)
+   ;;Insert
+   '("w" . meow-insert)
+   '("r" . meow-open-above)
+   '("R" . meow-open-below)
+   '("n" . meow-join)
+   '("N" . meow-append)
+   ;;Thing
+   '("," . meow-beginning-of-thing)
+   '("." . meow-end-of-thing)
+   '(";" . meow-inner-of-thing)
+   '(":" . meow-bounds-of-thing)
+   ;;Line
+   '("z" . open-line)
+   '("Z" . split-line)
+   ;;Indent
+   '("-" . indent-rigidly-left-to-tab-stop)
+   '("=" . indent-rigidly-right-to-tab-stop)
+   ;;Windows
+   '("}" . split-window-right)
+   '("{" . split-window-below)
+   '("+" . delete-other-windows)
+   ;;High frequency
+   '("<apps>" . "C-x C-s")
+   '("Q" . "C-x C-c")
+   '("C" . comment-dwim)
+   '("b" . switch-to-buffer)
+   '("M" . imenu)
+   '("F" . toggle-frame-fullscreen)
+   ;;Misc
+   '("<escape>" . ignore)
+   '("`" . repeat)
+   ))
+
+(setq meow-use-cursor-position-hack t)
+(setq meow-update-interval 0.05)
+(setq meow-esc-delay 0.001)
+(setq meow-cursor-type-insert '(bar . 4))
+
+(meow-setup)
+(unless (bound-and-true-p meow-global-mode)
+  (meow-global-mode 1))
+(meow-global-mode 1)
+
+(add-hook 'find-file-hook
+          (lambda ()
+            (when (> (buffer-size) 1048576)
+              (setq-local meow-highlight-selection nil))))
+
+;;Meow config ends here
 
 ;;use-packages If config/init/hook then no defer
 (custom-set-variables '(package-selected-packages nil))
@@ -308,13 +434,19 @@
    ((paredit-mode)(setq paredit-mode nil))
    ))
 
-  (use-package paxedit
-    :defer 3
-    :ensure t
-    :commands paxedit-mode
-    :hook
-    (emacs-lisp-mode . paxedit-mode)
-    (lisp-mode . paxedit-mode))
+(use-package paxedit
+  :defer 3
+  :ensure t
+  :commands paxedit-mode
+  :hook
+  (emacs-lisp-mode . paxedit-mode)
+  (lisp-mode . paxedit-mode))
+
+(use-package smartparens
+  :ensure smartparens
+  :hook (prog-mode text-mode)
+  :config
+  (require 'smartparens-config))
 
 (use-package sly
   :defer t)
@@ -565,14 +697,11 @@
 ;;ripgrep
 (use-package rg
   :defer t
-  )
-
-(with-eval-after-load 'rg
+  :init
   (global-set-key (kbd "C-c r") #'rg)
-  ;; Your settings goes here.
   (setq rg-w32-unicode t))
 
-  ;;defun misc
+;;defun misc
 (defun jump-middle ()
   "Jump to the middle of the line."
   (interactive)
