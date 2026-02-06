@@ -36,30 +36,30 @@
   :init
   (global-set-key (kbd "M-/") #'theme-choose-variant))
 
-'(use-package modus-themes
-   :ensure t
-   :defer t
-   :init
-   (modus-themes-include-derivatives-mode 1)
-   (modus-themes-load-theme 'modus-operandi-tinted)
-   :bind
-   (("M-/" . modus-themes-toggle)
-    ("C-*" . modus-themes-select)
-    ("M-*" . modus-themes-load-random))
-   :config
-   (setq modus-themes-to-toggle '(modus-vivendi-tinted modus-operandi-tinted)
-         modus-themes-to-rotate modus-themes-items
-         modus-themes-mixed-fonts t
-         modus-themes-variable-pitch-ui t
-         modus-themes-italic-constructs t
-         modus-themes-bold-constructs t
-         modus-themes-completions '((t . (bold)))
-         modus-themes-prompts '(bold)
-         modus-themes-headings
-         '((agenda-structure . (variable-pitch light 2.2))
-           (agenda-date . (variable-pitch regular 1.3))
-           (t . (regular 1.15))))
-   (setq modus-themes-common-palette-overrides nil))
+;; (use-package modus-themes
+;;   :ensure t
+;;   :defer t
+;;   :init
+;;   (modus-themes-include-derivatives-mode 1)
+;;   (modus-themes-load-theme 'modus-operandi-tinted)
+;;   :bind
+;;   (("M-/" . modus-themes-toggle)
+;;    ("C-*" . modus-themes-select)
+;;    ("M-*" . modus-themes-load-random))
+;;   :config
+;;   (setq modus-themes-to-toggle '(modus-vivendi-tinted modus-operandi-tinted)
+;;         modus-themes-to-rotate modus-themes-items
+;;         modus-themes-mixed-fonts t
+;;         modus-themes-variable-pitch-ui t
+;;         modus-themes-italic-constructs t
+;;         modus-themes-bold-constructs t
+;;         modus-themes-completions '((t . (bold)))
+;;         modus-themes-prompts '(bold)
+;;         modus-themes-headings
+;;         '((agenda-structure . (variable-pitch light 2.2))
+;;           (agenda-date . (variable-pitch regular 1.3))
+;;           (t . (regular 1.15))))
+;;   (setq modus-themes-common-palette-overrides nil))
 
                                         ;(native-comp-available-p)
 :Straight.el
@@ -95,7 +95,7 @@
 
 (defun meow-setup ()
   "Meow-setup."
-  (setq meow-cheatsheet-physical-layout meow-cheatsheet-physical-layout-iso)
+  (setq meow-cheatsheet-physical-layout meow-cheatsheet-physical-layout-ansi)
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
   ;;Digits
   (meow-leader-define-key
@@ -364,20 +364,20 @@
   (org-fontify-quote-and-verse-blocks t)
   (org-startup-truncated t))
 
-'(use-package auto-package-update
-   :ensure t
-   :defer 5
-   :custom
-   ;; Here, packages will only be updated if at least 7 days have passed
-   ;; since the last successful update.
-   (auto-package-update-interval 7)
-   (auto-package-update-hide-results t)
-   (auto-package-update-delete-old-versions t)
-   :config
-   ;; Run package updates automatically at startup, but only if the configured
-   ;; interval has elapsed.
-   (auto-package-update-maybe)
-   (auto-package-update-at-time "7:30"))
+;; (use-package auto-package-update
+;;   :ensure t
+;;   :defer 5
+;;   :custom
+;;   ;; Here, packages will only be updated if at least 7 days have passed
+;;   ;; since the last successful update.
+;;   (auto-package-update-interval 7)
+;;   (auto-package-update-hide-results t)
+;;   (auto-package-update-delete-old-versions t)
+;;   :config
+;;   ;; Run package updates automatically at startup, but only if the configured
+;;   ;; interval has elapsed.
+;;   (auto-package-update-maybe)
+;;   (auto-package-update-at-time "7:30"))
 
 (use-package buffer-terminator
   :ensure t
@@ -451,9 +451,9 @@
 (use-package sly
   :defer t)
 
-'(use-package magit
-   :defer t
-   )
+;; (use-package magit
+;;   :defer t
+;;   )
 
 (use-package avy
   :defer 5
@@ -471,10 +471,10 @@
   (setq avy-case-fold-search nil
         (setq avy-indent-line-overlay t)))
 
-'(use-package reader
-   :defer t
-   :vc t
-   :load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
+;; (use-package reader
+;;   :defer t
+;;   :vc t
+;;   :load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
 
 (use-package nov
   :defer 10
@@ -499,6 +499,8 @@
 
 (use-package display-line-numbers
   :defer 3
+  :init
+  (setq display-line-numbers-type (quote relative))
   :hook ((prog-mode . display-line-numbers-mode)))
 
 (use-package ultra-scroll
@@ -605,10 +607,10 @@
   :defer 2
   :config (global-set-key (kbd "M-j") 'expreg-expand))
 
-'(use-package org-bullets
-   :defer 15
-   :after org
-   :hook (org-mode-hook . org-bullets-mode))
+;; (use-package org-bullets
+;;   :defer 15
+;;   :after org
+;;   :hook (org-mode-hook . org-bullets-mode))
 (setq org-startup-truncated nil)
 
 (use-package simple-modeline
@@ -639,13 +641,13 @@
   (stripspace-only-if-initially-clean nil)
   (stripspace-restore-column t))
 
-'(straight-use-package '(org-yt
-                         :type git
-                         :host github
-                         :repo "TobiasZawada/org-yt"
-                         :ensure t
-                         :defer t
-                         :defer 10))
+;; (straight-use-package '(org-yt
+;;                         :type git
+;;                         :host github
+;;                         :repo "TobiasZawada/org-yt"
+;;                         :ensure t
+;;                         :defer t
+;;                         :defer 10))
                                         ;(require 'org-yt)
 
 
