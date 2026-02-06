@@ -4,13 +4,14 @@
 ;; shortcut runemacs.exe --daemon (in shell:startup)
 ;; add EMACS_SERVER_FILE user var to "server file dir"
 ;; Build native-compile-emacs 31 with MSYS2(UCRT64) bash-scrpit for auto
+;; Also pre-build :scoop bucket add kiennq-scoop https://github.com/kiennq/scoop-misc
 ;; (.dlls)\msys2\ucrt64\bin to path Add conpty_proxy.exe/vterm.el/vtmodule.dll to path/
 ;; load-path compile setq vterm-shell"powershell"
 ;; see(https://emacs-china.org/t/windows-emacs-libvterm/30140/20)
 ;; also check mintty https://github.com/chansey97/mintty-standalone
 ;; add.dlls kiennq/treesit-langs to treesits
 ;; add quick-sdcv /sdcv dictionary
-
+;; meow make editing 10x faster
 ;;; Code:
 (setq message-log-max t)
 (require 'use-package)
@@ -85,25 +86,25 @@ into the main dumped Emacs"
                                         ;(add-to-list 'default-frame-alist '(width . 160))
 
 ;;Center-window
-'(defun center-frame ()
-   "Center the frame on the screen, respecting the size set in 'default-frame-alist'."
-   (interactive)
-   (let* ((desired-width
-           (or (cdr (assq 'width default-frame-alist)) 80))
-          (desired-height
-           (or (cdr (assq 'height default-frame-alist)) 24))
-          (screen-width (x-display-pixel-width))
-          (screen-height (x-display-pixel-height))
-          (char-width (frame-char-width))
-          (char-height (frame-char-height))
-          (frame-pixel-width (* desired-width char-width))
-          (frame-pixel-height (* desired-height char-height))
-          (left (max 0 (/ (- screen-width frame-pixel-width) 2)))
-          (top (max 0 (/ (- screen-height frame-pixel-height) 2))))
-     (set-frame-size (selected-frame) desired-width desired-height)
-     (set-frame-position (selected-frame) left top)
-     ))
-'(add-hook 'window-setup-hook #'center-frame)
+;; (defun center-frame ()
+;;   "Center the frame on the screen, respecting the size set in 'default-frame-alist'."
+;;   (interactive)
+;;   (let* ((desired-width
+;;           (or (cdr (assq 'width default-frame-alist)) 80))
+;;          (desired-height
+;;           (or (cdr (assq 'height default-frame-alist)) 24))
+;;          (screen-width (x-display-pixel-width))
+;;          (screen-height (x-display-pixel-height))
+;;          (char-width (frame-char-width))
+;;          (char-height (frame-char-height))
+;;          (frame-pixel-width (* desired-width char-width))
+;;          (frame-pixel-height (* desired-height char-height))
+;;          (left (max 0 (/ (- screen-width frame-pixel-width) 2)))
+;;          (top (max 0 (/ (- screen-height frame-pixel-height) 2))))
+;;     (set-frame-size (selected-frame) desired-width desired-height)
+;;     (set-frame-position (selected-frame) left top)
+;;     ))
+;; (add-hook 'window-setup-hook #'center-frame)
 
 ;;Straight bootstrap
 (defvar bootstrap-version)
@@ -166,22 +167,21 @@ into the main dumped Emacs"
 
 (fsize/set-font-size 250)
 
-'(setq mode-line-position-column-line-format '("%l:%C"))
-'(display-line-numbers-type (quote relative))
+;; (setq mode-line-position-column-line-format '("%l:%C"))
 (setopt display-line-numbers-type t)
 (setopt line-number-display-limit nil)
 
 (column-number-mode 1)
 
-'(when (version<= "26.0.50" emacs-version)
-   (global-display-line-numbers-mode))
+;; (when (version<= "26.0.50" emacs-version)
+;;   (global-display-line-numbers-mode))
 (set-face-attribute 'line-number-current-line nil
                     :foreground "#0601ff"
                     :weight 'bold)
 
-
 ;;Keybind
 (global-set-key (kbd "C-*") 'undo-redo)
+(global-set-key (kbd "C-c c") 'shell-command)
 (global-set-key (kbd "<escape>") 'keyboard-quit)
 (global-unset-key (kbd "C-x <escape> <escape>"))
 (global-set-key (kbd "M-n") #'forward-paragraph)
@@ -208,7 +208,7 @@ into the main dumped Emacs"
 (global-set-key (kbd "C-c h") #'helpful-at-point)
 
 ;;Paxedit
-(global-set-key (kbd "M-d") #'paxedit-delete)
+;; (global-set-key (kbd "M-d") #'paxedit-delete)
 
 ;;sexp
 (global-set-key (kbd "M-<up>") #'backward-sexp)
@@ -349,33 +349,33 @@ into the main dumped Emacs"
 (setq org-startup-truncated nil)
 
 ;;Inline-image
-'(defun org-http-image-data-fn (protocol link _description)
-   "Interpret LINK as an URL to an image file."
-   (when (and (image-type-from-file-name link)
-              (not (eq org-display-remote-inline-images 'skip)))
-     (if-let (buf (url-retrieve-synchronously (concat protocol ":" link)))
-         (with-current-buffer buf
-           (goto-char (point-min))
-           (re-search-forward "\r?\n\r?\n" nil t)
-           (buffer-substring-no-properties (point) (point-max)))
-       (message "Download of image \"%s\" failed" link)
-       nil)))
+;; (defun org-http-image-data-fn (protocol link _description)
+;;   "Interpret LINK as an URL to an image file."
+;;   (when (and (image-type-from-file-name link)
+;;              (not (eq org-display-remote-inline-images 'skip)))
+;;     (if-let (buf (url-retrieve-synchronously (concat protocol ":" link)))
+;;         (with-current-buffer buf
+;;           (goto-char (point-min))
+;;           (re-search-forward "\r?\n\r?\n" nil t)
+;;           (buffer-substring-no-properties (point) (point-max)))
+;;       (message "Download of image \"%s\" failed" link)
+;;       nil)))
 
                                         ;(setq org-display-remote-inline-images 'cache)
 
 ;;Package
 (setq package-install-upgrade-built-in t)
 (setopt network-security-level 'low)
-'(setopt package-archives '(
-                            ("gnu"    . "https://mirrors.ustc.edu.cn/elpa/gnu/")
-                            ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")
-                            ("melpa"  . "https://mirrors.ustc.edu.cn/elpa/melpa/")
-                            ))
-'(setopt package-archive-priorities '(
-                                      ("gnu"    . 1)
-                                      ("nongnu" . 0)
-                                      ("melpa"  . 1))
-         package-menu-hide-low-priority t)
+;; (setopt package-archives '(
+;;                            ("gnu"    . "https://mirrors.ustc.edu.cn/elpa/gnu/")
+;;                            ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")
+;;                            ("melpa"  . "https://mirrors.ustc.edu.cn/elpa/melpa/")
+;;                            ))
+;; (setopt package-archive-priorities '(
+;;                                      ("gnu"    . 1)
+;;                                      ("nongnu" . 0)
+;;                                      ("melpa"  . 1))
+;;         package-menu-hide-low-priority t)
 
 (setopt package-check-signature nil)
 
@@ -439,10 +439,10 @@ into the main dumped Emacs"
 (delete-selection-mode t)
 
 ;;Custom.el
-'(add-hook 'after-init-hook (lambda ()
-                              (let ((inhibit-message t))
-                                (when (file-exists-p custom-file)
-                                  (load-file custom-file)))))
+;; (add-hook 'after-init-hook (lambda ()
+;;                              (let ((inhibit-message t))
+;;                                (when (file-exists-p custom-file)
+;;                                  (load-file custom-file)))))
 (setq custom-file nil)
 
 ;; open browser when click hyperlink
