@@ -37,15 +37,17 @@
 (setq native-comp-speed 3)
 (setq native-comp-async-query-on-exit t)
 (setq confirm-kill-processes t)
-(setq native-comp-compiler-options '("-march=znver3" "-Ofast" "-g0" "-fno-finite-math-only" "-fgraphite-identity" "-floop-nest-optimize" "-fdevirtualize-at-ltrans" "-fipa-pta" "-fno-semantic-interposition" "-flto=auto" "-fuse-linker-plugin"))
-
-(setq native-comp-driver-options '("-march=znver3" "-Ofast" "-g0" "-fno-finite-math-only" "-fgraphite-identity" "-floop-nest-optimize" "-fdevirtualize-at-ltrans" "-fipa-pta" "-fno-semantic-interposition" "-flto=auto" "-fuse-linker-plugin"))
+;;Disabled:cause lto compile error (also when switch to other emacs build)
+;; (setq native-comp-compiler-options '("-march=znver3" "-Ofast" "-g0" "-fno-finite-math-only" "-fgraphite-identity" "-floop-nest-optimize" "-fdevirtualize-at-ltrans" "-fipa-pta" "-fno-semantic-interposition" "-flto=auto" "-fuse-linker-plugin"))
+;; (setq native-comp-driver-options '("-march=znver3" "-Ofast" "-g0" "-fno-finite-math-only" "-fgraphite-identity" "-floop-nest-optimize" "-fdevirtualize-at-ltrans" "-fipa-pta" "-fno-semantic-interposition" "-flto=auto" "-fuse-linker-plugin"))
 
 ;;Debug-ignored
-;;(add-to-list 'debug-ignored-errors ')
+;; (add-to-list 'debug-ignored-errors ')
+;; (ignore-error error
+;;   (read "Unknown address family")
 
 ;;GC
-(setopt garbage-collection-messages t)
+(setopt garbage-collection-messages nil)
 ;(setq gc-cons-threshold 50000000)
 
 ;;Load-path
@@ -196,6 +198,7 @@ into the main dumped Emacs"
 (global-set-key (kbd "C-c b") #'bookmark-jump)
 (global-set-key (kbd "C-c m") #'imenu)
 (global-set-key (kbd "C-c a") #'find-file)
+(global-set-key (kbd "C-c g") #'bongo-library)
 (global-set-key (kbd "C-c k") #'kill-process)
 (global-set-key (kbd "C-c d") #'quick-sdcv-search-at-point)
 (global-set-key (kbd "C-c C-d") #'quick-sdcv-search-input)
