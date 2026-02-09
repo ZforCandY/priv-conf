@@ -90,8 +90,16 @@
 ;;Meow
 (require 'meow)
 
+(defun meow-config-mode ()
+  "Mode-to-insert."
+  (cl-pushnew '(vterm-mode . insert) meow-mode-state-list)
+  (cl-pushnew '(inferior-lisp-mode . insert) meow-mode-state-list))
+
 (use-package meow
-  :ensure t)
+  :ensure t
+  :custom
+  (meow-use-clipboard t)
+  :config (meow-config-mode))
 
 (defun meow-setup ()
   "Meow-setup."
@@ -186,6 +194,7 @@
    '("+" . delete-other-windows)
    ;;High frequency
    '("<apps>" . "C-x C-s")
+   '("g" . "C-c g")
    '("Q" . "C-x C-c")
    '("C" . comment-dwim)
    '("b" . switch-to-buffer)
@@ -348,8 +357,8 @@
   :if (display-graphic-p))
 
 (use-package org
-  :ensure t
   :defer t
+  :ensure t
   :commands (org-mode org-version)
   :mode
   ("\\.org\\'" . org-mode)
@@ -519,6 +528,7 @@
   (after-init . which-key-mode))
 
 (use-package marginalia
+  :ensure t
   :custom
   (marginalia-max-relative-age 0)
   (marginalia--align 'right)
@@ -703,7 +713,74 @@
   (global-set-key (kbd "C-c r") #'rg)
   (setq rg-w32-unicode t))
 
+(with-eval-after-load 'rg
+  (require 'rg-isearch)
+  (define-key isearch-mode-map "\M-sr" 'rg-isearch-menu))
+
+;;media
+(use-package bongo
+  :ensure t
+  :defer t
+  :config
+  (setq bongo-logo nil)
+  (setq bongo-display-track-icons nil)
+  (setq bongo-display-header-icons nil)
+  (setq bongo-display-inline-playback-progress t)
+  (setq bongo-mark-played-tracks t)
+  (setq bongo-field-separator (propertize " . " 'face 'shadow))
+  (setq bongo-default-directory "E:/Music/")
+  (setq bongo-insert-whole-directory-trees t)
+  (setq bongo-enabled-backends '(mpv))) ;mplayer
+
+(defun bf/bongo-fix-mpv ()
+  "Temporarily ignore mpv 'error cause by 'windows-nt (prevent Debugger entered)."
+  (interactive)
+  (when (string-equal (buffer-name) "*Bongo Library*")
+    (add-to-list 'debug-ignored-errors 'error)
+    ))
+(add-hook 'bongo-library-mode-hook 'bf/bongo-fix-mpv)
+
+(defun bf1/bongo-fix-ignore ()
+  "Remove 'error from 'debug-ignored-errors."
+  (interactive)
+  (setopt debug-ignored-errors
+          '(beginning-of-line
+            beginning-of-buffer end-of-line
+            end-of-buffer end-of-file buffer-read-only
+            file-supersession mark-inactive user-error)))
+
+(defun suppress-messages (old-fun &rest args)
+  "Suppress-message. 'OLD-FUN'ARGS'."
+  (cl-flet ((silence (&rest args1) (ignore)))
+    (advice-add 'message :around #'silence)
+    (unwind-protect
+        (apply old-fun args)
+      (advice-remove 'message #'silence))))
+
+;;(timer--function) "C-c h" jump to src
+;;'Error' running timer ‘bongo-mpv-player-tick’: (error "Unknown address family")
+(defun bf2/fix-echo ()
+  "Suppress-disgusting'Error'message spam on echo area."
+  (interactive)
+  (defadvice message (around my-message-filter activate)
+    (unless (string-match "Error running timer" (or (ad-get-arg 0) ""))
+      ad-do-it)))
+
+(add-hook 'bongo-library-mode-hook 'bf2/fix-echo)
+
+;;media ends here
+
 ;;defun misc
+(defun toggle-mode-line ()
+  "Toggles the modeline on and off."
+  (interactive)
+  (setq mode-line-format
+        (if (equal mode-line-format nil)
+            (default-value 'mode-line-format)) )
+  (redraw-display))
+
+(global-set-key [f12] 'toggle-mode-line)
+
 (defun jump-middle ()
   "Jump to the middle of the line."
   (interactive)
@@ -718,5 +795,10 @@
 
 (global-set-key (kbd "C-<return>") 'jump-middle)
 
+(defun www/search-website ()
+  "Browse url."
+  (interactive)
+  (browse-url (concat "https://search.marginalia.nu/search?profile=yolo&js=no-js&query="
+                      (read-string "Search: "))))
 (provide 'post-init)
 ;;; post-init.el ends here
