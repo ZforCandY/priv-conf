@@ -75,17 +75,18 @@
 ;;Daemon
 (defun ss/server-start ()
   "Start daemon based on 'server-running-p'."
-  (interactive "")
-  (cond ((eq (server-running-p) t) (message server-name))
-        ((unless (server-running-p))(server-start))
-        (t (server-start))))
+  (interactive)
+  (cond
+   ((unless (server-running-p))(server-start))
+   ((eq (server-running-p) t) (message server-name))
+   (t (server-start))))
 
 (use-package server
-  :defer 2
-  :commands (server-running-p))
+  ;;:defer 2
+  :commands (server-running-p)
+  :init (ss/server-start))
 
 (set-frame-parameter nil 'fullscreen 'fullboth)
-(ss/server-start)
 
 ;;Meow
 (require 'meow)
@@ -194,7 +195,11 @@
    '("+" . delete-other-windows)
    ;;High frequency
    '("<apps>" . "C-x C-s")
-   '("g" . "C-c g")
+   '("<f9>" . "C-c g")
+   '("?" . compile)
+   '("!" . previous-buffer)
+   '("@" . next-buffer)
+   '("$" . kill-buffer)
    '("Q" . "C-x C-c")
    '("C" . comment-dwim)
    '("b" . switch-to-buffer)
@@ -248,7 +253,7 @@
   (after-init . vertico-prescient-mode))
 
 (use-package inhibit-mouse
-  :defer 3
+  :after server
   :custom
   (inhibit-mouse-adjust-mouse-highlight t)
   (inhibit-mouse-adjust-show-help-function t)
@@ -371,7 +376,8 @@
   (org-fontify-todo-headline t)
   (org-fontify-whole-heading-line t)
   (org-fontify-quote-and-verse-blocks t)
-  (org-startup-truncated t))
+  (org-startup-truncated t)
+  (org-src-fontify-natively t))
 
 ;; (use-package auto-package-update
 ;;   :ensure t
@@ -442,6 +448,7 @@
    ((not paredit-mode)(setq paredit-mode 1))
    ((paredit-mode)(setq paredit-mode nil))
    ))
+(global-set-key (kbd "<f4>") 'tp/toggle-paredit)
 
 (use-package paxedit
   :defer 3
@@ -452,13 +459,18 @@
   (lisp-mode . paxedit-mode))
 
 (use-package smartparens
-  :ensure smartparens
-  :hook (prog-mode text-mode)
-  :config
+  :ensure t
+  :after paredit
+  :hook (prog-mode text-mode emacs-lisp-mode
+                   racket-mode scheme-mode common-lisp-mode
+                   vterm-mode))
+
+(with-eval-after-load 'smartparens
   (require 'smartparens-config))
 
 (use-package sly
-  :defer t)
+  :defer t
+  )
 
 ;; (use-package magit
 ;;   :defer t
@@ -504,6 +516,15 @@
   (when (eq system-type 'windows-nt)
     (setq vterm-shell "powershell")))
 
+(defun vm/vterm-mouse ()
+  "Vterm enable mouse."
+  (interactive)
+  (if (string-equal (buffer-name) "*vterm*")
+      (inhibit-mouse-mode 0)
+    (inhibit-mouse-mode 1))
+  )
+
+(add-hook 'fundamental-mode 'vterm-mode)
 ;;(setq vterm-shell "B:\\msys2//msys2_shell.cmd -defterm -here -no-start -ucrt64 -i")
 
 (use-package display-line-numbers
@@ -597,6 +618,30 @@
   :ensure t
   :hook (after-init . global-flycheck-mode))
 
+(use-package flyover
+  :ensure t
+  :after flycheck
+  :hook ((flycheck-mode . flyover-mode)
+         (flymake-mode . flyover-mode))
+  :custom
+  (flyover-checkers '(flycheck flymake))
+  (flyover-levels '(error warning info))
+  (flyover-use-theme-colors t)
+  (flyover-background-lightness 60)
+  (flyover-info-icon "ⓘ")
+  (flyover-warning-icon "⚠︎")
+  (flyover-error-icon "❌")
+  (flyover-border-style 'arrow)
+  (flyover-show-virtual-line t)
+  (flyover-virtual-line-type 'curved-dotted-arrow)
+  (flyover-line-position-offset 1)
+  (flyover-wrap-messages t)
+  (flyover-max-line-length 80)
+  (flyover-debounce-interval 0.2)
+  (flyover-cursor-debounce-interval 0.3)
+  (flyover-display-mode 'always)
+  (flyover-hide-during-completion t))
+
 (use-package rainbow-delimiters
   :defer 3
   :hook ((prog-mode . rainbow-delimiters-mode))
@@ -678,7 +723,8 @@
    :ensure )
 
 (use-package geiser-guile
-  :defer t)
+  :defer t
+  :mode ("\\.guile\\'" . scheme-mode))
 
 (use-package sicp
   :after racket-mode)
@@ -709,8 +755,9 @@
 ;;ripgrep
 (use-package rg
   :defer t
-  :init
-  (global-set-key (kbd "C-c r") #'rg)
+  :bind
+  (("C-c r" . rg))
+  :config
   (setq rg-w32-unicode t))
 
 (with-eval-after-load 'rg
@@ -724,21 +771,300 @@
   :config
   (setq bongo-logo nil)
   (setq bongo-display-track-icons nil)
-  (setq bongo-display-header-icons nil)
+  (setq bongo-display-header-icons t)
   (setq bongo-display-inline-playback-progress t)
   (setq bongo-mark-played-tracks t)
   (setq bongo-field-separator (propertize " . " 'face 'shadow))
   (setq bongo-default-directory "E:/Music/")
   (setq bongo-insert-whole-directory-trees t)
-  (setq bongo-enabled-backends '(mpv))) ;mplayer
+  (setq bongo-prefer-library-buffers nil)
+  (setq bongo-display-track-lengths t)
+  (setq bongo-display-playback-mode-indicator t)
+  (setq bongo-display-inline-playback-progress t)
+  (setq bongo-header-line-mode t)
+  (setq bongo-mode-line-indicator-mode t)
+  (setq bongo-enabled-backends '(mpv)) ;mpv/mplayer
+  ;;; Bongo playlist buffer
+  (defvar prot/bongo-playlist-delimiter
+    "\n******************************\n\n"
+    "Delimiter for inserted items in `bongo' playlist buffers.")
+
+  (defun prot/bongo-playlist-section ()
+    (bongo-insert-comment-text
+     prot/bongo-playlist-delimiter))
+
+  (defun prot/bongo-paylist-section-next ()
+    "Move to next `bongo' playlist custom section delimiter."
+    (interactive)
+    (let ((section "^\\*+$"))
+      (if (save-excursion (re-search-forward section nil t))
+          (progn
+            (goto-char (point-at-eol))
+            (re-search-forward section nil t))
+        (goto-char (point-max)))))
+
+  (defun prot/bongo-paylist-section-previous ()
+    "Move to previous `bongo' playlist custom section delimiter."
+    (interactive)
+    (let ((section "^\\*+$"))
+      (if (save-excursion (re-search-backward section nil t))
+          (progn
+            (goto-char (point-at-bol))
+            (re-search-backward section nil t))
+        (goto-char (point-min)))))
+
+  (defun prot/bongo-playlist-mark-section ()
+    "Mark `bongo' playlist section, delimited by custom markers.
+The marker is `prot/bongo-playlist-delimiter'."
+    (interactive)
+    (let ((section "^\\*+$"))
+      (search-forward-regexp section nil t)
+      (push-mark nil t)
+      (forward-line -1)
+      ;; REVIEW any predicate to replace this `save-excursion'?
+      (if (save-excursion (re-search-backward section nil t))
+          (progn
+            (search-backward-regexp section nil t)
+            (forward-line 1))
+        (goto-char (point-min)))
+      (activate-mark)))
+
+  (defun prot/bongo-playlist-kill-section ()
+    "Kill `bongo' playlist-section at point.
+This operates on a custom delimited section of the buffer.  See
+`prot/bongo-playlist-kill-section'."
+    (interactive)
+    (prot/bongo-playlist-mark-section)
+    (bongo-kill))
+
+  (defun prot/bongo-playlist-play-random ()
+    "Play random `bongo' track and determine further conditions."
+    (interactive)
+    (unless (bongo-playlist-buffer)
+      (bongo-playlist-buffer))
+    (when (or (bongo-playlist-buffer-p)
+              (bongo-library-buffer-p))
+      (unless (bongo-playing-p)
+        (with-current-buffer (bongo-playlist-buffer)
+          (bongo-play-random)
+          (bongo-random-playback-mode 1)
+          (bongo-recenter)))))
+
+  (defun prot/bongo-playlist-random-toggle ()
+    "Toggle `bongo-random-playback-mode' in playlist buffers."
+    (interactive)
+    (if (eq bongo-next-action 'bongo-play-random-or-stop)
+        (bongo-progressive-playback-mode)
+      (bongo-random-playback-mode)))
+
+  (defun prot/bongo-playlist-reset ()
+    "Stop playback and reset `bongo' playlist marks.
+To reset the playlist is to undo the marks produced by non-nil
+`bongo-mark-played-tracks'."
+    (interactive)
+    (when (bongo-playlist-buffer-p)
+      (bongo-stop)
+      (bongo-reset-playlist)))
+
+  (defun prot/bongo-playlist-terminate ()
+    "Stop playback and clear the entire `bongo' playlist buffer.
+Contrary to the standard `bongo-erase-buffer', this also removes
+the currently-playing track."
+    (interactive)
+    (when (bongo-playlist-buffer-p)
+      (bongo-stop)
+      (bongo-erase-buffer)))
+
+  (defun prot/bongo-playlist-insert-playlist-file ()
+    "Insert contents of playlist file to a `bongo' playlist.
+Upon insertion, playback starts immediately, in accordance with
+`prot/bongo-play-random'.
+
+The available options at the completion prompt point to files
+that hold filesystem paths of media items.  Think of them as
+'directories of directories' that mix manually selected media
+items.
+
+Also see `prot/bongo-dired-make-playlist-file'."
+    (interactive)
+    (let* ((path "E:/Music/")
+           (dotless directory-files-no-dot-files-regexp)
+           (playlists (mapcar
+                       'abbreviate-file-name
+                       (directory-files path nil dotless)))
+           (choice (completing-read "Insert playlist: " playlists nil t)))
+      (if (bongo-playlist-buffer-p)
+          (progn
+            (save-excursion
+              (goto-char (point-max))
+              (bongo-insert-playlist-contents
+               (format "%s%s" path choice))
+              (prot/bongo-playlist-section))
+            (prot/bongo-playlist-play-random))
+        (user-error "Not in a `bongo' playlist buffer"))))
+
+;;; Bongo + Dired (bongo library buffer)
+  (defmacro prot/bongo-dired-library (name doc val)
+    "Create `bongo' library function NAME with DOC and VAL."
+    `(defun ,name ()
+       ,doc
+       (when (string-match-p "\\`E:/Music/" default-directory)
+         (bongo-dired-library-mode ,val))))
+
+  (prot/bongo-dired-library
+   prot/bongo-dired-library-enable
+   "Set `bongo-dired-library-mode' when accessing ~/Music.
+
+Add this to `dired-mode-hook'.  Upon activation, the directory
+and all its sub-directories become a valid library buffer for
+Bongo, from where we can, among others, add tracks to playlists.
+The added benefit is that Dired will continue to behave as
+normal, making this a superior alternative to a purpose-specific
+library buffer.
+
+Note, though, that this will interfere with `wdired-mode'.  See
+`prot/bongo-dired-library-disable'."
+   1)
+
+  ;; NOTE `prot/bongo-dired-library-enable' does not get reactivated
+  ;; upon exiting `wdired-mode'.
+  ;;
+  ;; TODO reactivate bongo dired library upon wdired exit
+  (prot/bongo-dired-library
+   prot/bongo-dired-library-disable
+   "Unset `bongo-dired-library-mode' when accessing ~/Music.
+This should be added `wdired-mode-hook'.  For more, refer to
+`prot/bongo-dired-library-enable'."
+   -1)
+
+  (defun prot/bongo-dired-insert-files ()
+    "Add files in a `dired' buffer to the `bongo' playlist."
+    (let ((media (dired-get-marked-files)))
+      (with-current-buffer (bongo-playlist-buffer)
+        (goto-char (point-max))
+        (mapc 'bongo-insert-file media)
+        (prot/bongo-playlist-section))
+      (with-current-buffer (bongo-library-buffer)
+        (dired-next-line 1))))
+
+  (defun prot/bongo-dired-insert ()
+    "Add `dired' item at point or marks to `bongo' playlist.
+
+The playlist is created, if necessary, while some other tweaks
+are introduced.  See `prot/bongo-dired-insert-files' as well as
+`prot/bongo-playlist-play-random'.
+
+Meant to work while inside a `dired' buffer that doubles as a
+library buffer (see `prot/bongo-dired-library')."
+    (interactive)
+    (when (bongo-library-buffer-p)
+      (unless (bongo-playlist-buffer-p)
+        (bongo-playlist-buffer))
+      (prot/bongo-dired-insert-files)
+      (prot/bongo-playlist-play-random)))
+
+  (defun prot/bongo-dired-make-playlist-file ()
+    "Add `dired' marked items to playlist file using completion.
+
+These files are meant to reference filesystem paths.  They ease
+the task of playing media from closely related directory trees,
+without having to interfere with the user's directory
+structure (e.g. a playlist file 'rock' can include the paths of
+~/Music/Scorpions and ~/Music/Queen).
+
+This works by appending the absolute filesystem path of each item
+to the selected playlist file.  If no marks are available, the
+item at point will be used instead.
+
+Selecting a non-existent file at the prompt will create a new
+entry whose name matches user input.  Depending on the completion
+framework, such as with `icomplete-mode', this may require a
+forced exit (e.g. \\[exit-minibuffer] to parse the input without
+further questions).
+
+Also see `prot/bongo-playlist-insert-playlist-file'."
+    (interactive)
+    (let* ((dotless directory-files-no-dot-files-regexp)
+           (pldir "E:/Music/")
+           (playlists (mapcar
+                       'abbreviate-file-name
+                       (directory-files pldir nil dotless)))
+           (plname (completing-read "Select playlist: " playlists nil nil))
+           (plfile (format "%s/%s" pldir plname))
+           (media-paths
+            (if (derived-mode-p 'dired-mode)
+                ;; TODO more efficient way to do ensure newline ending?
+                ;;
+                ;; The issue is that we need to have a newline at the
+                ;; end of the file, so that when we append again we
+                ;; start on an empty line.
+                (concat
+                 (mapconcat #'identity
+                            (dired-get-marked-files)
+                            "\n")
+                 "\n")
+              (user-error "Not in a `dired' buffer"))))
+      ;; The following `when' just checks for an empty string.  If we
+      ;; wanted to make this more robust we should also check for names
+      ;; that contain only spaces and/or invalid characters…  This is
+      ;; good enough for me.
+      (when (string-empty-p plname)
+        (user-error "No playlist file has been specified"))
+      (unless (file-directory-p pldir)
+        (make-directory pldir))
+      (unless (and (file-exists-p plfile)
+                   (file-readable-p plfile)
+                   (not (file-directory-p plfile)))
+        (make-empty-file plfile))
+      (append-to-file media-paths nil plfile)
+      (with-current-buffer (find-file-noselect plfile)
+        (delete-duplicate-lines (point-min) (point-max))
+        (sort-lines nil (point-min) (point-max))
+        (save-buffer)
+        (kill-buffer))))
+;;;kbd that make sense
+  :hook ((dired-mode-hook . prot/bongo-dired-library-enable)
+         (wdired-mode-hook . prot/bongo-dired-library-disable))
+  :bind (:map bongo-playlist-mode-map
+              ("h" . bongo-undo)
+              ("d" . bongo-recenter)
+              ("<f2>" . bongo-pause/resume)
+              ("n" . bongo-next)
+              ("p" . bongo-previous)
+              ("<f1>" . bongo-start/stop)
+              ("c" . bongo-mark-region)
+              ("v" . bongo-kill-marked)
+              ("D" . bongo-delete-played-tracks)
+              ("a" . bongo-next-object)
+              ("w" . bongo-previous-object)
+              ("M-a" . prot/bongo-paylist-section-next)
+              ("M-w" . prot/bongo-paylist-section-previous)
+              ;; ("M-m" . prot/bongo-playlist-mark-section)
+              ;;("M-d" . prot/bongo-playlist-kill-section)
+              ("s" . bongo-play-previous)
+              ("x" . bongo-play-next)
+              ("M-r" . prot/bongo-playlist-reset)
+              ;; ("D" . prot/bongo-playlist-terminate)
+              ("r" . bongo-play-random)
+              ("R" . prot/bongo-playlist-random-toggle)
+              ;;("R" . bongo-rename-line)
+              ;;("l" . bongo-dired-line)       ; Jump to dir of file at point
+              ;;("J" . dired-jump)             ; Jump to library buffer
+              ;;("I" . prot/bongo-playlist-insert-playlist-file)
+              ("M-I" . bongo-insert-special)
+              :map bongo-dired-library-mode-map
+              ("<C-return>" . prot/bongo-dired-insert)
+              ("C-c SPC" . prot/bongo-dired-insert)
+              ("C-c +" . prot/bongo-dired-make-playlist-file))) ;mplayer
 
 (defun bf/bongo-fix-mpv ()
   "Temporarily ignore mpv 'error cause by 'windows-nt (prevent Debugger entered)."
   (interactive)
-  (when (string-equal (buffer-name) "*Bongo Library*")
+  (when (string-equal (buffer-name) "*Bongo Playlist*")
     (add-to-list 'debug-ignored-errors 'error)
     ))
-(add-hook 'bongo-library-mode-hook 'bf/bongo-fix-mpv)
+
+(add-hook 'bongo-playlist-mode-hook 'bf/bongo-fix-mpv)
 
 (defun bf1/bongo-fix-ignore ()
   "Remove 'error from 'debug-ignored-errors."
@@ -749,16 +1075,9 @@
             end-of-buffer end-of-file buffer-read-only
             file-supersession mark-inactive user-error)))
 
-(defun suppress-messages (old-fun &rest args)
-  "Suppress-message. 'OLD-FUN'ARGS'."
-  (cl-flet ((silence (&rest args1) (ignore)))
-    (advice-add 'message :around #'silence)
-    (unwind-protect
-        (apply old-fun args)
-      (advice-remove 'message #'silence))))
-
 ;;(timer--function) "C-c h" jump to src
 ;;'Error' running timer ‘bongo-mpv-player-tick’: (error "Unknown address family")
+
 (defun bf2/fix-echo ()
   "Suppress-disgusting'Error'message spam on echo area."
   (interactive)
@@ -766,9 +1085,14 @@
     (unless (string-match "Error running timer" (or (ad-get-arg 0) ""))
       ad-do-it)))
 
-(add-hook 'bongo-library-mode-hook 'bf2/fix-echo)
+(add-hook 'bongo-playlist-mode-hook 'bf2/fix-echo)
 
 ;;media ends here
+
+(use-package eros
+  :ensure t
+  :defer t
+  :config (eros-mode 1))
 
 ;;defun misc
 (defun toggle-mode-line ()
