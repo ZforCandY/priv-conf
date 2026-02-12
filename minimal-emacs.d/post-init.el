@@ -765,6 +765,46 @@
   (define-key isearch-mode-map "\M-sr" 'rg-isearch-menu))
 
 ;;media
+;; (defun config-emms ()
+;;   "Config-emms."
+;;   (emms-all)
+;;   (emms-add-directory-tree "E://Music//")
+;;   ;;mpd
+;;   (add-to-list 'emms-info-functions 'emms-info-mpd)
+;;   (add-to-list 'emms-player-list 'emms-player-mpd)
+;;   (setq emms-player-mpd-server-name "localhost")
+;;   (setq emms-player-mpd-server-port "6600")
+;;   (setq emms-player-mpd-music-directory "E://Music//"))
+;;
+;; (use-package emms
+;;   :ensure t
+;;   :defer t
+;;   :custom
+;;   (emms-player-list '(emms-player-mpd))
+;;   (setq emms-source-file-default-directory (expand-file-name "E://Music//"))
+;;   :config (config-emms))
+;;
+;; (add-hook 'emms-playlist-cleared-hook 'emms-player-mpd-clear)
+;;
+;; (use-package mpc
+;;   :ensure t
+;;   :defer t
+;;   :bind (:map mpc-mode-map
+;;               ("a" . mpc-playlist-add)
+;;               ("f" . mpc-ffwd)
+;;               ("M-D" . mpc-quit)
+;;               ("<f6>" . mpc-resume)
+;;               ("<f3>" . mpc-stop)
+;;               ("<f2>" . mpc-pause)
+;;               ("n" . mpc-next)
+;;               ("p" . mpc-prev)
+;;               ("<f1>" . mpc-toggle-play)
+;;               ("r" . mpc-rewind)
+;;               ("s" . mpc-select)
+;;               ("u" . mpc-update)))
+;;
+;; (emms-player-mpd-connect)
+
 (use-package bongo
   :ensure t
   :defer t
@@ -1027,6 +1067,8 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
          (wdired-mode-hook . prot/bongo-dired-library-disable))
   :bind (:map bongo-playlist-mode-map
               ("h" . bongo-undo)
+              ("q" . bongo-redisplay)
+              ("M-D" . bongo-quit)
               ("d" . bongo-recenter)
               ("<f2>" . bongo-pause/resume)
               ("n" . bongo-next)
