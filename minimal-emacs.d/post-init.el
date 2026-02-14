@@ -29,12 +29,12 @@
                                         ;naysayer-theme
                                         ;grandshell-theme
                                         ;tomorrow-night-deepblue-theme
-(use-package leuven-theme
-  :ensure t
-  :config
-  (load-theme 'leuven t)
-  :init
-  (global-set-key (kbd "M-/") #'theme-choose-variant))
+'(use-package leuven-theme
+   :ensure t
+   :config
+   (load-theme 'leuven t)
+   :init
+   (global-set-key (kbd "M-/") #'theme-choose-variant))
 
 ;; (use-package modus-themes
 ;;   :ensure t
@@ -153,7 +153,7 @@
    '("p" . meow-cancel-selection)
    '("P" . meow-pop-selection)
    '("y" . meow-find)
-   '("x" . meow-till)
+   '("X" . meow-till)
    '("/" . meow-quit)
    '("a" . meow-mark-word)
    '("A" . meow-mark-symbol)
@@ -191,9 +191,12 @@
    '("=" . indent-rigidly-right-to-tab-stop)
    ;;Windows
    '("}" . split-window-right)
+   '("]" . rf/split-window-right-and-focus)
    '("{" . split-window-below)
+   '("[" . bf/split-window-below-and-focus)
    '("+" . delete-other-windows)
    ;;High frequency
+   '("x" . execute-extended-command)
    '("<apps>" . "C-x C-s")
    '("<f9>" . "C-c g")
    '("?" . compile)
@@ -203,6 +206,7 @@
    '("Q" . "C-x C-c")
    '("C" . comment-dwim)
    '("b" . switch-to-buffer)
+   '("B" . ibuffer)
    '("M" . imenu)
    '("F" . toggle-frame-fullscreen)
    ;;Misc
@@ -337,7 +341,7 @@
   :ensure t
   :hook
   (after-init . global-company-mode)
-  :init
+  :config
   (setopt company-idle-delay 0
           company-minimum-prefix-length 2)
   (setopt company-dabbrev-code-everywhere t)
@@ -345,11 +349,24 @@
           company-dabbrev-code-time-limit 2)
   (setopt company-show-quick-access t
           company-tooltip-offset-display 'lines
-          company-tooltip-limit 10))
+          company-tooltip-limit 10)
+  (setq company-tooltip-align-annotations t
+        company-require-match 'never
+        ))
+
+(use-package company-dict
+  :after company-box
+  :straight (:build t)
+  :config
+  (setq company-dict-dir (expand-file-name "dicts" user-emacs-directory)))
 
 (use-package company-box
   :after all-the-icons
-  :hook (company-mode . company-box-mode))
+  :hook (company-mode . company-box-mode)
+  :config
+  (setq company-box-show-single-candidate t
+        company-box-backends-colors nil
+        ))
 
 (use-package company-prescient
   :after company
@@ -358,26 +375,36 @@
   (after-init . company-prescient-mode))
 
 (use-package all-the-icons
-  :after company
+  :after company-prescient
   :if (display-graphic-p))
 
 (use-package org
+  :straight t
   :defer t
   :ensure t
   :commands (org-mode org-version)
   :mode
   ("\\.org\\'" . org-mode)
-  :custom
-  (org-hide-leading-stars t)
-  (org-startup-indented t)
-  (org-adapt-indentation nil)
-  (org-edit-src-content-indentation 0)
-  (org-fontify-done-headline t)
-  (org-fontify-todo-headline t)
-  (org-fontify-whole-heading-line t)
-  (org-fontify-quote-and-verse-blocks t)
-  (org-startup-truncated t)
-  (org-src-fontify-natively t))
+  :config
+  (setq org-hide-leading-stars t
+        org-startup-indented t
+        org-adapt-indentation nil
+        org-edit-src-content-indentation 0
+        org-pretty-entities                t
+        org-fontify-done-headline t
+        org-fontify-todo-headline t
+        org-fontify-whole-heading-line t
+        org-fontify-quote-and-verse-blocks t
+        org-startup-truncated t
+        org-startup-align-all-tables       t
+        org-src-fontify-natively t
+        org-use-property-inheritance       t
+        org-list-allow-alphabetical        t
+        org-redisplay-inline-images        t
+        org-display-inline-images          t
+        org-startup-with-inline-images     "inlineimages"
+        org-default-notes-file             (expand-file-name "plan.org" org-directory)
+        ))
 
 ;; (use-package auto-package-update
 ;;   :ensure t
@@ -492,6 +519,7 @@
   (setq avy-case-fold-search nil
         (setq avy-indent-line-overlay t)))
 
+;;Read
 ;; (use-package reader
 ;;   :defer t
 ;;   :vc t
@@ -502,6 +530,14 @@
   :mode ("\\.epub\\'" . nov-mode)
   :config
   (setq nov-text-widith 95))
+
+;; (use-package elfeed
+;;   :defer t
+;;   :straight (:build t)
+;;   ;;:config
+;;   :custom
+;;   ((elfeed-db-directory  (expand-file-name ".elfeed-db"
+;;                                            user-emacs-directory))))
 
 (use-package vterm
   :defer 3
@@ -589,6 +625,21 @@
   :config
   (setq dired-subtree-use-backgrounds nil))
 
+;; (use-package bufler
+;;   :ensure t
+;;   :straight (bufler :build t)
+;;   :after dired
+;;   :bind (:map
+;;          bufler-list-mode-map
+;;          ("g" .  bufler)
+;;          ("f" .  bufler-list-group-frame)
+;;          ("F" .  bufler-list-group-make-frame)
+;;          ("N" .  bufler-list-buffer-name-workspace)
+;;          ("D" .  bufler-list-buffer-kill)
+;;          ("p" .  bufler-list-buffer-peek)
+;;          ("<apps>" .  bufler-list-buffer-save)
+;;          ("RET" . bufler-list-buffer-switch)))
+
 ;;nerd-icons
 
 (use-package nerd-icons
@@ -614,9 +665,26 @@
   (setq nerd-icons-ibuffer-human-readable-size t)
   (setq inhibit-compacting-font-caches t))
 
+;; (use-package ispell
+;;   :if (executable-find "aspell")
+;;   :defer t
+;;   :straight (:type built-in)
+;;   :config
+;;   (setq ispell-program-name "aspell"
+;;         ispell-extra-args   '("--sug-mode=ultra" "--run-together")
+;;         ispell-aspell-dict-dir (ispell-get-aspell-config-value "dict-dir")
+;;         ispell-aspell-data-dir (ispell-get-aspell-config-value "data-dir")
+;;         ))
+
 (use-package flycheck
   :ensure t
-  :hook (after-init . global-flycheck-mode))
+  :hook (after-init . global-flycheck-mode)
+  :config
+  (setq flycheck-idle-change-delay 2.0)
+  (delq 'new-line flycheck-check-syntax-automatically)
+  (setq flycheck-emacs-lisp-load-path 'inherit)
+  (setq flycheck-display-errors-delay 0.2)
+  )
 
 (use-package flyover
   :ensure t
@@ -727,7 +795,7 @@
   :mode ("\\.guile\\'" . scheme-mode))
 
 (use-package sicp
-  :after racket-mode)
+  :defer t)
 
 (use-package racket-mode
   :defer t
@@ -767,22 +835,38 @@
 ;;media
 ;; (defun config-emms ()
 ;;   "Config-emms."
+;;   (require 'emms-mark)
 ;;   (emms-all)
-;;   (emms-add-directory-tree "E://Music//")
-;;   ;;mpd
+;;   ;;MPD
 ;;   (add-to-list 'emms-info-functions 'emms-info-mpd)
 ;;   (add-to-list 'emms-player-list 'emms-player-mpd)
-;;   (setq emms-player-mpd-server-name "localhost")
-;;   (setq emms-player-mpd-server-port "6600")
-;;   (setq emms-player-mpd-music-directory "E://Music//"))
-;;
+;;   (emms-player-mpd-sync-from-mpd)
+;;   (emms-player-mpd-connect))
+
 ;; (use-package emms
 ;;   :ensure t
 ;;   :defer t
-;;   :custom
-;;   (emms-player-list '(emms-player-mpd))
-;;   (setq emms-source-file-default-directory (expand-file-name "E://Music//"))
-;;   :config (config-emms))
+;;   :straight (:build t)
+;;   :config
+;;   (setq emms-source-file-default-directory (expand-file-name "E://Music"))
+;;   (setq emms-player-mpd-server-name "localhost")
+;;   (setq emms-player-mpd-server-port "6600")
+;;   (setq emms-player-mpd-music-directory (expand-file-name "E://Music"))
+;;   (setq emms-player-list '(emms-player-mpd))
+;;   (setq emms-browser-thumbnail-small-size 64)
+;;   (setq emms-browser-thumbnail-medium-size 128)
+;;   (setq emms-browser-covers #'emms-browser-cache-thumbnail-async)
+;;   (setq emms-playlist-default-major-mode 'emms-mark-mode)
+;;   :init
+;;   (require 'emms-setup)
+;;   (require 'emms-mark)
+;;   (emms-all)
+;;   (add-to-list 'emms-info-functions 'emms-info-mpd)
+;;   (add-to-list 'emms-player-list 'emms-player-mpd)
+;;   (emms-player-mpd-sync-from-mpd)
+;;   (emms-player-mpd-connect)
+;;   )
+
 ;;
 ;; (add-hook 'emms-playlist-cleared-hook 'emms-player-mpd-clear)
 ;;
@@ -1135,6 +1219,12 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
   :ensure t
   :defer t
   :config (eros-mode 1))
+
+(use-package eww
+  :defer t
+  :straight (:type built-in)
+  :config
+  (setq eww-auto-rename-buffer 'title))
 
 ;;defun misc
 (defun toggle-mode-line ()
