@@ -12,11 +12,13 @@
 ;; add.dlls kiennq/treesit-langs to treesits
 ;; add quick-sdcv /sdcv dictionary
 ;; meow make editing 10x faster
+
 ;;; Code:
 (setq message-log-max t)
 (require 'use-package)
 
 (setq use-package-compute-statistics t)
+(setq use-package-always-ensure t)
 
 ;;Selected Compile
 (let ((deny-list '("\\(?:[/\\\\]\\.dir-locals\\.el\\(?:\\.gz\\)?$\\)"
@@ -67,14 +69,14 @@ into the main dumped Emacs"
   (defun get-loads-from-*Messages* ()
     (save-excursion
       (let ((retval ()))
-	    (set-buffer "*Messages*")
-	    (beginning-of-buffer)
-	    (while (search-forward-regexp "^Loading " nil t)
-	      (let ((start (point)))
-	        (search-forward "...")
-	        (backward-char 3)
-	        (setq retval (cons (buffer-substring-no-properties start (point)) retval))))
-	    retval)))
+        (set-buffer "*Messages*")
+        (beginning-of-buffer)
+        (while (search-forward-regexp "^Loading " nil t)
+          (let ((start (point)))
+            (search-forward "...")
+            (backward-char 3)
+            (setq retval (cons (buffer-substring-no-properties start (point)) retval))))
+        retval)))
   (map 'list
        (lambda (file) (princ (format "(load \"%s\")\n" file)))
        (get-loads-from-*Messages*)))
@@ -128,20 +130,46 @@ into the main dumped Emacs"
 ;;Straight config
 (setq straight-vc-git-default-clone-depth 1)
 
-;;Theme,font,line
+;;Theme,font,line,info
 (global-prettify-symbols-mode 1)
+(setq prettify-symbols-unprettify-at-point t)
 (setf custom-safe-themes 't)
 (setq frame-title-format "λ . Learner: %b")
-(setq user-full-name "Learner")
+(setq user-full-name "Learner"
+      user-real-login-name "Rafah"
+      user-login-name "fido"
+      user-mail-address "johndoe@anon.org")
 
-;;Defun
+;;Defun misc
                                         ;change font size
-
 (defun fsize/set-font-size (size)
   "Set font size to SIZE, specified in tenth of a point."
   (interactive "nEnter the font size: ")
   (set-face-attribute 'default nil :height size))
 
+(defun rf/split-window-right-and-focus ()
+  "Spawn a new window right of the current one and focus it."
+  (interactive)
+  (split-window-right)
+  (windmove-right))
+
+(defun bf/split-window-below-and-focus ()
+  "Spawn a new window below the current one and focus it."
+  (interactive)
+  (split-window-below)
+  (windmove-down))
+
+(defun mb/switch-to-messages-buffer ()
+  "Switch to Messages buffer."
+  (interactive)
+  (switch-to-buffer (messages-buffer)))
+
+(defun sb/switch-to-scratch-buffer ()
+  "Switch to Messages buffer."
+  (interactive)
+  (switch-to-buffer "*scratch*"))
+
+;;Defun ends here
                                         ;(set-face-attribute 'default nil
                                         ;                   :height 200 :weight 'regular :width 'normal :foundry "outline" :family "Consolas")
 
@@ -198,7 +226,7 @@ into the main dumped Emacs"
 (global-set-key (kbd "C-c b") #'bookmark-jump)
 (global-set-key (kbd "C-c m") #'imenu)
 (global-set-key (kbd "C-c a") #'find-file)
-(global-set-key (kbd "C-c g") #'bongo-library)
+(global-set-key (kbd "C-c g") #'bongo-playlist)
 (global-set-key (kbd "C-c k") #'kill-process)
 (global-set-key (kbd "C-c d") #'quick-sdcv-search-at-point)
 (global-set-key (kbd "C-c C-d") #'quick-sdcv-search-input)
@@ -236,6 +264,7 @@ into the main dumped Emacs"
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'prog-mode-hook 'electric-pair-mode)
 (add-hook 'after-init-hook #'minibuffer-depth-indicate-mode)
+(add-hook 'before-save-hook #'whitespace-cleanup)
 
 ;;Scroll
 (setq scroll-conservatively 101)
@@ -262,9 +291,7 @@ into the main dumped Emacs"
 (setq vc-make-backup-files t)
 (setq kept-old-versions 5)
 (setq kept-new-versions 10)
-
-;;Ensure
-(setq use-package-always-ensure t)
+(setq backup-by-copying t)
 
 ;;Env
 (set-language-environment "UTF-8")
@@ -319,6 +346,7 @@ into the main dumped Emacs"
 ;;Window
 (setq highlight-nonselected-windows nil)
 (setopt mouse-autoselect-window t)
+(setq window-combination-resize t)
 
 ;;Delete
 (setq delete-by-moving-to-trash t)
@@ -345,6 +373,8 @@ into the main dumped Emacs"
 
 ;;Org
 (setq org-directory "B:\\C\\org")
+(setq org-agenda-files (list "B:\\C\\org\\agenda" "B:\\C\\org\\plan.org"))
+
                                         ;(setq org-startup-numerated t)
 (setq org-hide-leading-stars t)
 (setq org-fontify-quote-and-verse-blocks t)
@@ -395,6 +425,8 @@ into the main dumped Emacs"
 (modify-frame-parameters nil '((inhibit-double-buffering . nil)))
 (setopt frame-background-mode nil)
 (setq frame-inhibit-implied-resize t)
+;; (set-frame-parameter nil 'alpha-background 90)
+;; (add-to-list 'default-frame-alist '(alpha-background . 0.9))
 
 ;;Server
 (setopt server-use-tcp t)
@@ -426,7 +458,7 @@ into the main dumped Emacs"
 (setopt mode-line-process t)
 
 ;;Time
-(require 'time)
+;(require 'time)
 (setopt display-time-24hr-format nil)
 
 (defun dt/display-time ()
@@ -437,6 +469,7 @@ into the main dumped Emacs"
 
 ;;Image
 (auto-image-file-mode t)
+(setq image-use-external-converter t)
 
 ;;Edit
 (delete-selection-mode t)
@@ -447,6 +480,9 @@ into the main dumped Emacs"
 ;;                                (when (file-exists-p custom-file)
 ;;                                  (load-file custom-file)))))
 (setq custom-file nil)
+
+;;Code fold
+(add-hook 'prog-mode-hook #'hs-minor-mode)
 
 ;; open browser when click hyperlink
 (add-hook 'prog-mode-hook 'goto-address-prog-mode)
@@ -466,6 +502,5 @@ into the main dumped Emacs"
                                         ;(setopt visible-bell t)
                                         ;(setq fast-but-imprecise-scrolling t)
                                         ;(global-so-long-mode t)
-
 (provide 'pre-init)
 ;;; pre-init.el ends here
