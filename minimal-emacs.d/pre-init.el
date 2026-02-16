@@ -365,6 +365,7 @@ into the main dumped Emacs"
                 ┌─┐┌─┐┌─┐┬─┐┬┌─┬ ┌─┐
                 └─┐├─┘├─┤├┬┘├┴┐│ ├┤
                 └─┘┴  ┴ ┴┴└─┴ ┴┴─└─┘
+Only when you creating you truly alive.
 ")
 
 ;;Lisp
@@ -488,7 +489,32 @@ into the main dumped Emacs"
 (add-hook 'prog-mode-hook 'goto-address-prog-mode)
 (setq goto-address-mail-face 'link)
 
+;;transparent
+(when (and (eq system-type 'windows-nt)
+           (or (display-graphic-p)
+               (daemonp)))
+  (ignore-error 'file-missing
+    ;; Put DLL into `load-path'.
+    (module-load "C:\\Users\\Administrator\\emacs\\bin//pop_select.dll")))
+
+(defconst transp 1)
+(defun tt/toggle-transparent ()
+  "Toggle-frame-transparency."
+  (interactive)
+  (if (> transp 0)
+      (progn
+        (pop-select/transparent-set-all-frame 255)
+        (defconst transp -1))
+    (progn
+      (pop-select/transparent-set-all-frame 200)
+      (defconst transp 1))
+    ))
+(global-set-key (kbd "M-<f12>") 'tt/toggle-transparent)
+
 ;;Uncommented
+
+;;(pop-select/transparent-set-background 255 255 255 255)
+
 (save-place-mode 1)
 (setopt indicate-empty-lines t)
 (setq-default indicate-buffer-boundaries 'left)
