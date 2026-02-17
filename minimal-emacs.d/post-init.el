@@ -29,12 +29,13 @@
                                         ;naysayer-theme
                                         ;grandshell-theme
                                         ;tomorrow-night-deepblue-theme
-'(use-package leuven-theme
-   :ensure t
-   :config
-   (load-theme 'leuven t)
-   :init
-   (global-set-key (kbd "M-/") #'theme-choose-variant))
+                                        ;(load-theme 'misterioso)
+(use-package leuven-theme
+  :ensure t
+  :config
+  (load-theme 'leuven t)
+  :init
+  (global-set-key (kbd "M-/") #'theme-choose-variant))
 
 ;; (use-package modus-themes
 ;;   :ensure t
@@ -89,7 +90,7 @@
 (set-frame-parameter nil 'fullscreen 'fullboth)
 
 ;;Meow
-(require 'meow)
+;;(require 'meow)
 
 (defun meow-config-mode ()
   "Mode-to-insert."
@@ -302,14 +303,14 @@
   (after-init . recentf-mode)
   :bind (("C-c f" . recentf-open-files))
   :custom
-  (setq recentf-max-saved-items 200)
-  (setq recentf-max-menu-items 15)
+  (setq recentf-max-saved-items 500)
+  (setq recentf-max-menu-items 250)
   (recentf-case-fold-search t)
   (recentf-auto-clenanup (if (daemonp) 300 'never))
   (recentf-exclude
    (list "\\.tar$" "\\.tbz2$" "\\.tbz$" "\\.tgz$" "\\.bz2$"
          "\\.bz$" "\\.gz$" "\\.gzip$" "\\.xz$" "\\.zip$"
-         "\\.7z$" "\\.rar$"
+         "\\.7z$" "\\.rar$" "\\.pdf$"
          "COMMIT_EDITMSG\\'"
          "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\|bmp\\|xpm\\)$"
          "-autoloads\\.el$" "autoload\\.el$"))
@@ -421,6 +422,9 @@
 ;;   (auto-package-update-maybe)
 ;;   (auto-package-update-at-time "7:30"))
 
+(use-package ibuffer
+  :ensure t)
+
 (use-package buffer-terminator
   :ensure t
   :defer 3
@@ -443,7 +447,8 @@
   :hook
   (c-mode . aggressive-indent-mode)
   (emacs-lisp-mode . aggressive-indent-mode)
-  (after-init global-aggressive-indent-mode))
+  (after-init . global-aggressive-indent-mode)
+  (racket-mode-hook . aggressive-indent-mode))
 
 ;; Highlights function and variable definitions in Emacs Lisp mode
 (use-package highlight-defined
@@ -526,7 +531,7 @@
 ;;   :load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
 
 (use-package nov
-  :defer 10
+  :defer t
   :mode ("\\.epub\\'" . nov-mode)
   :config
   (setq nov-text-widith 95))
@@ -592,7 +597,7 @@
   :hook (after-init . marginalia-mode))
 
 (use-package orderless
-  :defer 5
+  :defer t
   :ensure t
   :custom
   (completing-styles '(orderles basic))
@@ -608,6 +613,8 @@
   ((dired-mode . dired-hide-details-mode)
    (dired-mode . hl-line-mode))
   :config
+  ;;(dired-recursive-copies 'always)
+  ;;(dired-recursive-deletes 'always)
   (setq dired-recursive-copies 'always)
   (setq dired-recursive-deletes 'always)
   (setq delete-by-moving-to-trash t)
@@ -764,6 +771,7 @@
   (stripspace-only-if-initially-clean nil)
   (stripspace-restore-column t))
 
+;;Image
 ;; (straight-use-package '(org-yt
 ;;                         :type git
 ;;                         :host github
@@ -776,8 +784,8 @@
 
                                         ;(org-link-set-parameters "http"  :image-data-fun #'org-http-image-data-fn)
                                         ;(org-link-set-parameters "https" :image-data-fun #'org-http-image-data-fn)
-(progn ;    `isearch'
-  (setq isearch-allow-scroll nil))
+;; (progn ;    `isearch'
+;;   (setq isearch-allow-scroll nil))
 
 (use-package eieio
   :defer t)
@@ -828,9 +836,13 @@
   :config
   (setq rg-w32-unicode t))
 
-(with-eval-after-load 'rg
-  (require 'rg-isearch)
-  (define-key isearch-mode-map "\M-sr" 'rg-isearch-menu))
+(with-eval-after-load 'inhibit-mouse
+  (progn
+    (setq isearch-allow-scroll 'unlimited)
+    (setq isearch-lazy-count t)
+                                        ;(require 'rg-isearch)
+                                        ;(define-key isearch-mode-map "\M-sr" 'rg-isearch-menu)
+    ))
 
 ;;media
 ;; (defun config-emms ()
@@ -1148,7 +1160,7 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
         (kill-buffer))))
 ;;;kbd that make sense
   :hook ((dired-mode-hook . prot/bongo-dired-library-enable)
-         (wdired-mode-hook . prot/bongo-dired-library-disable))
+         (dired-mode-hook . prot/bongo-dired-library-disable))
   :bind (:map bongo-playlist-mode-map
               ("h" . bongo-undo)
               ("q" . bongo-redisplay)
@@ -1225,6 +1237,26 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
   :straight (:type built-in)
   :config
   (setq eww-auto-rename-buffer 'title))
+
+(use-package centered-cursor-mode
+  :ensure t
+  :config
+  (global-centered-cursor-mode))
+
+(use-package focus
+  :defer t)
+
+(use-package goggles
+  :hook ((prog-mode-hook . goggles-mode)
+         (text-mode-hook . goggles-mode))
+  :config
+  (setq-default goggles-pulse t))
+
+(use-package vundo
+  :bind (("C-c u" . vundo))
+  :config
+  (setq vundo-glyph-alist vundo-unicode-symbols)
+  )
 
 ;;defun misc
 (defun toggle-mode-line ()
