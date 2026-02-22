@@ -1,0 +1,6 @@
+﻿F5::Send "{Media_Prev}"
+F7::Send "{Media_Next}"
+F6::Send "{Media_Play_Pause}"
+F1::Send "{Volume_Mute}"
+F2::Send "{Volume_Down}"
+F3::Send "{Volume_Up}"
