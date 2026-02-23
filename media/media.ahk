@@ -7,8 +7,9 @@ F1::Send "{Volume_Mute}"
 F2::Send "{Volume_Down}"
 F3::Send "{Volume_Up}"
 
-!Left::ControlSend, , +{Left}, ahk_class mpv
-!Right::ControlSend, , +{Right}, ahk_class mpv
+!+Left::ControlSend, , +{Left}, ahk_class mpv
+!+Right::ControlSend, , +{Right}, ahk_class mpv
 +Left::ControlSend, , {Left}, ahk_class mpv
 +Right::ControlSend, , {Right}, ahk_class mpv
+
 
