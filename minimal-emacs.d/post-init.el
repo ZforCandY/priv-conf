@@ -3,7 +3,7 @@
 ;;; Commentary:
 ;;; Code:
                                         ;(require 'cl)
-                                        ;(profiler-report)
+;; (profiler-report)
 
 ;;Compile Angel
 (use-package compile-angel
@@ -20,77 +20,8 @@
   (push "/post-early-init.el" compile-angel-excluded-files)
   (compile-angel-on-load-mode 1))
 
-;;themes
-(mapc #'disable-theme custom-enabled-themes)
-(add-to-list 'custom-theme-load-path "c:/Users/Administrator/.emacs.d/var/themes")
-(setq custom-theme-directory "c:/Users/Administrator/.emacs.d/var/themes")
-                                        ;For high light env
-                                        ;For low light env
-                                        ;naysayer-theme
-                                        ;grandshell-theme
-                                        ;tomorrow-night-deepblue-theme
-                                        ;(load-theme 'misterioso)
-(use-package leuven-theme
-  :ensure t
-  :config
-  (load-theme 'leuven t)
-  :init
-  (global-set-key (kbd "M-/") #'theme-choose-variant))
-
-;; (use-package modus-themes
-;;   :ensure t
-;;   :defer t
-;;   :init
-;;   (modus-themes-include-derivatives-mode 1)
-;;   (modus-themes-load-theme 'modus-operandi-tinted)
-;;   :bind
-;;   (("M-/" . modus-themes-toggle)
-;;    ("C-*" . modus-themes-select)
-;;    ("M-*" . modus-themes-load-random))
-;;   :config
-;;   (setq modus-themes-to-toggle '(modus-vivendi-tinted modus-operandi-tinted)
-;;         modus-themes-to-rotate modus-themes-items
-;;         modus-themes-mixed-fonts t
-;;         modus-themes-variable-pitch-ui t
-;;         modus-themes-italic-constructs t
-;;         modus-themes-bold-constructs t
-;;         modus-themes-completions '((t . (bold)))
-;;         modus-themes-prompts '(bold)
-;;         modus-themes-headings
-;;         '((agenda-structure . (variable-pitch light 2.2))
-;;           (agenda-date . (variable-pitch regular 1.3))
-;;           (t . (regular 1.15))))
-;;   (setq modus-themes-common-palette-overrides nil))
-
-                                        ;(native-comp-available-p)
-:Straight.el
-(straight-use-package 'use-package)
-
-;;Measure time
-(defvar before-user-init-time (current-time)
-  "Value of `current-time' when Emacs begins loading `user-init-file'.")
-(message "Loading Emacs...done (%.3fs)"
-         (float-time (time-subtract before-user-init-time
-                                    before-init-time)))
-
-;;Daemon
-(defun ss/server-start ()
-  "Start daemon based on 'server-running-p'."
-  (interactive)
-  (cond
-   ((unless (server-running-p))(server-start))
-   ((eq (server-running-p) t) (message server-name))
-   (t (server-start))))
-
-(use-package server
-  ;;:defer 2
-  :commands (server-running-p)
-  :init (ss/server-start))
-
-(set-frame-parameter nil 'fullscreen 'fullboth)
-
 ;;Meow
-;;(require 'meow)
+;; (require 'meow)
 
 (defun meow-config-mode ()
   "Mode-to-insert."
@@ -98,6 +29,7 @@
   (cl-pushnew '(inferior-lisp-mode . insert) meow-mode-state-list))
 
 (use-package meow
+  :demand t
   :ensure t
   :custom
   (meow-use-clipboard t)
@@ -232,7 +164,90 @@
 
 ;;Meow config ends here
 
-;;use-packages If config/init/hook then no defer
+;;themes
+(mapc #'disable-theme custom-enabled-themes)
+(add-to-list 'custom-theme-load-path "c:/Users/Administrator/.emacs.d/var/themes")
+(setq custom-theme-directory "c:/Users/Administrator/.emacs.d/var/themes")
+                                        ;For high light env
+                                        ;For low light env
+                                        ;naysayer-theme
+                                        ;grandshell-theme
+                                        ;tomorrow-night-deepblue-theme
+                                        ;(load-theme 'misterioso)
+(use-package leuven-theme
+  :ensure t
+  :config
+  (load-theme 'leuven t)
+  :init
+  (global-set-key (kbd "M-/") #'theme-choose-variant))
+
+;; (use-package modus-themes
+;;   :ensure t
+;;   :defer t
+;;   :init
+;;   (modus-themes-include-derivatives-mode 1)
+;;   (modus-themes-load-theme 'modus-operandi-tinted)
+;;   :bind
+;;   (("M-/" . modus-themes-toggle)
+;;    ("C-*" . modus-themes-select)
+;;    ("M-*" . modus-themes-load-random))
+;;   :config
+;;   (setq modus-themes-to-toggle '(modus-vivendi-tinted modus-operandi-tinted)
+;;         modus-themes-to-rotate modus-themes-items
+;;         modus-themes-mixed-fonts t
+;;         modus-themes-variable-pitch-ui t
+;;         modus-themes-italic-constructs t
+;;         modus-themes-bold-constructs t
+;;         modus-themes-completions '((t . (bold)))
+;;         modus-themes-prompts '(bold)
+;;         modus-themes-headings
+;;         '((agenda-structure . (variable-pitch light 2.2))
+;;           (agenda-date . (variable-pitch regular 1.3))
+;;           (t . (regular 1.15))))
+;;   (setq modus-themes-common-palette-overrides nil)
+;;   (setq modus-themes-mode-line '(accented borderless padded))
+;;   (setq modus-themes-region '(bg-only no-extend))
+;;   (setq modus-themes-completions 'opinionated)
+;;   (setq modus-themes-paren-match '(bold intense underline))
+;;   (setq modus-themes-syntax '(alt-syntax))
+;;   (setq modus-themes-headings
+;;         '((1 . (rainbow overline background 1.4))
+;;           (2 . (rainbow background 1.3))
+;;           (3 . (rainbow bold 1.2))
+;;           (t . (semilight 1.1))))
+;;   (setq modus-themes-scale-headings t)
+;;   (setq modus-themes-org-blocks 'gray-background))
+
+                                        ;(native-comp-available-p)
+:Straight.el
+(straight-use-package 'use-package)
+
+;;Measure time
+(defvar before-user-init-time (current-time)
+  "Value of `current-time' when Emacs begins loading `user-init-file'.")
+(message "Loading Emacs...done (%.3fs)"
+         (float-time (time-subtract before-user-init-time
+                                    before-init-time)))
+
+;;Daemon
+(defun ss/server-start ()
+  "Start daemon based on 'server-running-p'."
+  (interactive)
+  (cond
+   ((unless (server-running-p))(server-start))
+   ((eq (server-running-p) t) (message server-name))
+   (t (server-start))))
+
+(use-package server
+  ;;:defer 2
+  :commands (server-running-p)
+  :init (ss/server-start))
+
+(set-frame-parameter nil 'fullscreen 'fullboth)
+
+;;'use-package' If :config/init/hook then no defer.
+;;W32 cut startup time trick:temp mv elpa/packages to trash,restart to test
+;;time if great diffrence,some depen packages slow emacs greatly(but beware rm break pack)
 (custom-set-variables '(package-selected-packages nil))
 
 (use-package conf-mode
@@ -247,9 +262,12 @@
   :config
   (vertico-mode)
   :custom
+  (read-buffer-completion-ignore-case t)
+  (read-file-name-completion-ignore-case t)
+  (completion-styles '(basic substring partial-completion flex))
   (vertico-cycle t)
-  (vertico--resize nil)
-  (vertico--count 12))
+  (setq vertico-resize nil)
+  (setq vertico-count 12))
 
 (use-package vertico-prescient
   :ensure t
@@ -340,8 +358,6 @@
 
 (use-package company
   :ensure t
-  :hook
-  (after-init . global-company-mode)
   :config
   (setopt company-idle-delay 0
           company-minimum-prefix-length 2)
@@ -353,7 +369,10 @@
           company-tooltip-limit 10)
   (setq company-tooltip-align-annotations t
         company-require-match 'never
-        ))
+        )
+  :hook
+  (after-init . global-company-mode)
+  )
 
 (use-package company-dict
   :after company-box
@@ -379,6 +398,7 @@
   :after company-prescient
   :if (display-graphic-p))
 
+;;Org
 (use-package org
   :straight t
   :defer t
@@ -405,7 +425,9 @@
         org-display-inline-images          t
         org-startup-with-inline-images     "inlineimages"
         org-default-notes-file             (expand-file-name "plan.org" org-directory)
-        ))
+        )
+  (setq org-ellipsis " ▾"
+        org-hide-emphasis-markers t))
 
 ;; (use-package auto-package-update
 ;;   :ensure t
@@ -423,7 +445,8 @@
 ;;   (auto-package-update-at-time "7:30"))
 
 (use-package ibuffer
-  :ensure t)
+  :ensure t
+  :after inhibit-mouse)
 
 (use-package buffer-terminator
   :ensure t
@@ -495,7 +518,7 @@
   :after paredit
   :hook (prog-mode text-mode emacs-lisp-mode
                    racket-mode scheme-mode common-lisp-mode
-                   vterm-mode))
+                   vterm-mode ielm-mode lisp-interaction-mode))
 
 (with-eval-after-load 'smartparens
   (require 'smartparens-config))
@@ -544,11 +567,13 @@
 ;;   ((elfeed-db-directory  (expand-file-name ".elfeed-db"
 ;;                                            user-emacs-directory))))
 
+;;Term/Shell
 (use-package vterm
   :defer 3
   :load-path "C:\\Users\\Administrator\\.emacs.d\\var\\elpa"
   :bind (("C-c t" . vterm))
   :init
+  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *")
   (setq vterm-copy-exclude-prompt nil)
   (setq vterm-always-compile-module t)
   (setq vterm-timer-delay 0.01)
@@ -585,16 +610,43 @@
   :custom
   (golden-ratio-auto-scale t))
 
-(use-package which-key
-  :hook
-  (after-init . which-key-mode))
+(defun my-which-key-sort (a b)
+  "Custom sort function to prioritize letters A B over numbers."
+  (let ((key-a (car a))
+        (key-b (car b)))
+    (if (and (string-match-p "[a-zA-Z]" (char-to-string (aref key-a 0)))
+             (not (string-match-p "[a-zA-Z]" (char-to-string (aref key-b 0)))))
+        -1
+      (if (and (not (string-match-p "[a-zA-Z]" (char-to-string (aref key-a 0))))
+               (string-match-p "[a-zA-Z]" (char-to-string (aref key-b 0))))
+          1
+        (string< (char-to-string (aref key-a 0)) (char-to-string (aref key-b 0)))))))
 
-(use-package marginalia
+(use-package which-key
   :ensure t
-  :custom
-  (marginalia-max-relative-age 0)
-  (marginalia--align 'right)
-  :hook (after-init . marginalia-mode))
+  :hook
+  (after-init . which-key-mode)
+  :config
+  (setq which-key-side-window-location 'bottom
+        which-key-sort-uppercase-first nil
+        which-key-sort-order #'my-which-key-sort
+        which-key-add-column-padding 1
+        which-key-max-display-columns nil
+        which-key-min-display-lines 6
+        which-key-side-window-slot -10
+        which-key-side-window-max-height 0.25
+        which-key-idle-delay 0.1
+        which-key-page-delay 0.1
+        which-key-max-description-length 25
+        which-key-allow-imprecise-window-fit t
+        which-key-separator " -> "))
+
+  (use-package marginalia
+    :ensure t
+    :custom
+    (marginalia-max-relative-age 0)
+    (marginalia--align 'right)
+    :hook (after-init . marginalia-mode))
 
 (use-package orderless
   :defer t
@@ -659,11 +711,11 @@
   :hook
   (dired-mode . nerd-icons-dired-mode))
 
-(use-package nerd-icons-completion
-  :after marginalia
-  :config
-  (nerd-icons-completion-mode)
-  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+;; (use-package nerd-icons-completion
+;;   :after marginalia
+;;   :config
+;;   (nerd-icons-completion-mode)
+;;   (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
 
 (use-package nerd-icons-ibuffer
   :ensure t
@@ -671,17 +723,6 @@
   :init
   (setq nerd-icons-ibuffer-human-readable-size t)
   (setq inhibit-compacting-font-caches t))
-
-;; (use-package ispell
-;;   :if (executable-find "aspell")
-;;   :defer t
-;;   :straight (:type built-in)
-;;   :config
-;;   (setq ispell-program-name "aspell"
-;;         ispell-extra-args   '("--sug-mode=ultra" "--run-together")
-;;         ispell-aspell-dict-dir (ispell-get-aspell-config-value "dict-dir")
-;;         ispell-aspell-data-dir (ispell-get-aspell-config-value "data-dir")
-;;         ))
 
 (use-package flycheck
   :ensure t
@@ -691,6 +732,7 @@
   (delq 'new-line flycheck-check-syntax-automatically)
   (setq flycheck-emacs-lisp-load-path 'inherit)
   (setq flycheck-display-errors-delay 0.2)
+  (add-hook 'c-mode-common-hook #'flycheck-mode)
   )
 
 (use-package flyover
@@ -716,6 +758,27 @@
   (flyover-cursor-debounce-interval 0.3)
   (flyover-display-mode 'always)
   (flyover-hide-during-completion t))
+
+(use-package ispell
+  ;;See https://rbrins.com/posts/2023-01-08-installing-spellcheck-emacs.html
+  :defer t
+  :ensure nil
+  :config
+  (setenv "LANG" "en_US")
+  (setq ispell-program-name "B:/Hunspell/bin/hunspell.exe")
+  (setq ispell-quietly t)
+  (setq flyspell-issue-welcome-flag nil)
+  (setq flyspell-issue-message-flag nil)
+  (setq ispell-dictionary "en_US")
+  (setq ispell-local-dictionary "en_US")
+  (setq ispell-extra-args '("-d" "en_US"))
+  (setq ispell-local-dictionary-alist
+        '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
+  (setq ispell-hunspell-dictionary-alist
+        '(("en_US"
+           "C:/Hunspell/en_US/en_US.aff"
+           "C:/Hunspell/en_US/en_US.dic"
+           nil nil nil "utf-8"))))
 
 (use-package rainbow-delimiters
   :defer 3
@@ -784,8 +847,8 @@
 
                                         ;(org-link-set-parameters "http"  :image-data-fun #'org-http-image-data-fn)
                                         ;(org-link-set-parameters "https" :image-data-fun #'org-http-image-data-fn)
-;; (progn ;    `isearch'
-;;   (setq isearch-allow-scroll nil))
+(progn ;    `isearch'
+  (setq isearch-allow-scroll nil))
 
 (use-package eieio
   :defer t)
@@ -794,13 +857,13 @@
   :ensure t
   :defer 5)
 
-'(use-package powershell
-   :defer t
-   :ensure )
-
-(use-package geiser-guile
+(use-package powershell
   :defer t
-  :mode ("\\.guile\\'" . scheme-mode))
+  :ensure t)
+
+;; (use-package geiser-guile
+;;   :defer t
+;;   :mode ("\\.guile\\'" . scheme-mode))
 
 (use-package sicp
   :defer t)
@@ -810,13 +873,30 @@
   :mode
   ("\\.scm\\'" . racket-mode))
 
+;; (use-package clojure-mode
+;;   :defer t
+;;   :mode
+;;   ("\\.clj\\'" . clojure-mode))
+
+(use-package ahk-mode
+  :defer t
+  :mode
+  ("\\.ahk\\'" . ahk-mode))
+
+;; (use-package asm-mode
+;;   :defer t
+;;   :mode
+;;   ("\\.asm\\'" . asm-mode)
+;;   :config
+;;   (setq asm-comment-char ?#))
+
 (use-package quick-sdcv
   :ensure t
-  :defer t
+  :defer
   :custom
   (quick-sdcv-dictionary-prefix-symbol "►")
   (quick-sdcv-ellipsis " ▼")
-  :init
+  :config
   (setq quick-sdcv-unique-buffers nil)
                                         ;(setq quick-sdcv-exact-search t)
   (setq quick-sdcv-hist-size 100)
@@ -901,6 +981,7 @@
 ;;
 ;; (emms-player-mpd-connect)
 
+;;Also check 'customize-group'
 (use-package bongo
   :ensure t
   :defer t
@@ -1182,7 +1263,7 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
               ("s" . bongo-play-previous)
               ("x" . bongo-play-next)
               ("M-r" . prot/bongo-playlist-reset)
-              ;; ("D" . prot/bongo-playlist-terminate)
+              ("M-D" . prot/bongo-playlist-terminate)
               ("r" . bongo-play-random)
               ("R" . prot/bongo-playlist-random-toggle)
               ;;("R" . bongo-rename-line)
@@ -1190,10 +1271,11 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
               ;;("J" . dired-jump)             ; Jump to library buffer
               ;;("I" . prot/bongo-playlist-insert-playlist-file)
               ("M-I" . bongo-insert-special)
-              :map bongo-dired-library-mode-map
-              ("<C-return>" . prot/bongo-dired-insert)
-              ("C-c SPC" . prot/bongo-dired-insert)
-              ("C-c +" . prot/bongo-dired-make-playlist-file))) ;mplayer
+              ;; :map bongo-dired-library-mode-map
+              ;; ("<C-return>" . prot/bongo-dired-insert)
+              ;; ("C-c SPC" . prot/bongo-dired-insert)
+              ;; ("C-c +" . prot/bongo-dired-make-playlist-file)
+              )) ;mplayer
 
 (defun bf/bongo-fix-mpv ()
   "Temporarily ignore mpv 'error cause by 'windows-nt (prevent Debugger entered)."
@@ -1230,7 +1312,8 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
 (use-package eros
   :ensure t
   :defer t
-  :config (eros-mode 1))
+  ;; :config (eros-mode 1)
+  )
 
 (use-package eww
   :defer t
@@ -1240,6 +1323,7 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
 
 (use-package centered-cursor-mode
   :ensure t
+  :after meow
   :config
   (global-centered-cursor-mode))
 
@@ -1257,6 +1341,20 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
   :config
   (setq vundo-glyph-alist vundo-unicode-symbols)
   )
+
+(use-package crux
+  :defer t
+  )
+
+;; (USE-package keyfreq
+;;   :hook
+;;   (after-init . keyfreq-mode)
+;;   :config
+;;   (keyfreq-autosave-mode))
+
+;; (use-package dash
+;;   :defer 5)
+;; (eval-after-load "dash" '(dash-enable-font-lock))
 
 ;;defun misc
 (defun toggle-mode-line ()
