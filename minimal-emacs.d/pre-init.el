@@ -8,7 +8,7 @@
 ;; (.dlls)\msys2\ucrt64\bin to path Add conpty_proxy.exe/vterm.el/vtmodule.dll to path/
 ;; load-path compile setq vterm-shell"powershell"
 ;; see(https://emacs-china.org/t/windows-emacs-libvterm/30140/20)
-;; also check mintty https://github.com/chansey97/mintty-standalone
+;; also check mintty https://github.com/chansey97/mintty-standalone ;-nw Wezterm faster
 ;; add.dlls kiennq/treesit-langs to treesits
 ;; add quick-sdcv /sdcv dictionary
 ;; meow make editing 10x faster
@@ -50,7 +50,7 @@
 
 ;;GC
 (setopt garbage-collection-messages nil)
-;(setq gc-cons-threshold 50000000)
+                                        ;(setq gc-cons-threshold 50000000)
 
 ;;Load-path
                                         ;(add-to-list 'load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
@@ -134,7 +134,8 @@ into the main dumped Emacs"
 (global-prettify-symbols-mode 1)
 (setq prettify-symbols-unprettify-at-point t)
 (setf custom-safe-themes 't)
-(setq frame-title-format "λ . Learner: %b")
+;; (setq frame-title-format "λ . Learner: %b")
+(setq frame-title-format "")
 (setq user-full-name "Learner"
       user-real-login-name "Rafah"
       user-login-name "fido"
@@ -210,8 +211,11 @@ into the main dumped Emacs"
                     :weight 'bold)
 
 ;;Keybind
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "M-+") 'text-scale-decrease)
 (global-set-key (kbd "C-*") 'undo-redo)
 (global-set-key (kbd "C-c c") 'shell-command)
+(global-set-key (kbd "C-x c") 'full-calc)
 (global-set-key (kbd "<escape>") 'keyboard-quit)
 (global-unset-key (kbd "C-x <escape> <escape>"))
 (global-set-key (kbd "M-n") #'forward-paragraph)
@@ -297,7 +301,10 @@ into the main dumped Emacs"
 (set-language-environment "UTF-8")
 
 ;;Performance
-(setq inhibit-compacting-font-cache t)
+(setq inhibit-compacting-font-caches t)
+(setq-default bidi-display-reordering 'left-to-right
+              bidi-paragraph-direction 'left-to-right)
+(setq bidi-inhibit-bpa t)
 (setenv "LSP_USE_PLISTS" "true")
 (setq lsp-use-plists t)
 (setopt package-quickstart nil
@@ -344,6 +351,7 @@ into the main dumped Emacs"
 (setq load-prefer-newer t)
 
 ;;Window
+(setq use-dialog-box nil)
 (setq highlight-nonselected-windows nil)
 (setopt mouse-autoselect-window t)
 (setq window-combination-resize t)
@@ -438,6 +446,7 @@ Only when you creating you truly alive.
                                         ;(server-running-p)
 ;;Indent
 (setq-default indent-tabs-mode nil)
+;; (setq-default c-default-style "linux")
 (setq-default tab-width 4)
 (setq c-basic-offset 4)
 (setq js-indent-level 2)
@@ -503,16 +512,15 @@ Only when you creating you truly alive.
   (interactive)
   (if (> transp 0)
       (progn
-        (pop-select/transparent-set-all-frame 255)
+        (pop-select/transparent-set-all-frame 200)
         (defconst transp -1))
     (progn
-      (pop-select/transparent-set-all-frame 200)
+      (pop-select/transparent-set-all-frame 255)
       (defconst transp 1))
     ))
 (global-set-key (kbd "M-<f12>") 'tt/toggle-transparent)
 
 ;;Uncommented
-
 ;;(pop-select/transparent-set-background 255 255 255 255)
 
 (save-place-mode 1)
