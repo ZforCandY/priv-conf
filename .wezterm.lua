@@ -17,11 +17,12 @@ local theme_rotator = wezterm.plugin.require 'https://github.com/koh-sh/wezterm-
 
 -- Key
 local leader = {
-	key = ':',
-	mods = 'SUPER|SHIFT',
-	timeout_milliseconds = math.maxinteger
+    key = ':',
+    mods = 'SUPER|SHIFT',
+    timeout_milliseconds = math.maxinteger
 }
 config.keys = {
+    { key = 'F11', mods = 'SHIFT|ALT', action =wezterm.action.ToggleFullScreen },
     { key = '|', mods = 'SHIFT|ALT', action = wezterm.action.SplitHorizontal },
     { key = '_', mods = 'SHIFT|ALT', action = wezterm.action.SplitVertical },
     { key = 'i', mods = 'SHIFT|ALT', action = wezterm.action.ActivatePaneDirection 'Up' },
@@ -55,7 +56,7 @@ config.inactive_pane_hsb = {
 
 -- Font size and color scheme.
 config.font_size = 25
-config.color_scheme = 'Paper (Gogh)'
+config.color_scheme = 'Modus Operandi Tinted (Gogh)' -- 'iTerm2 Solarized Light
 
 theme_rotator.apply_to_config(config, {
      -- "Random Theme" key
