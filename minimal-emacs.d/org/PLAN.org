@@ -1,0 +1,165 @@
+#+STARTUP: overview
+#+STARTUP: noindent
+#+title: Plan
+#+AUTHOR: F1DO
+#+DATE: 2025-12-10 wed.
+* Routines Everyday
+** Clock 7:30AM-10:00PM
+*** Courses
+**** TODO cs50 Week 0~10(done: +0 1 2 3 4(1:18:48 )+)
+**** TODO SICP
+** books to learn:
+*** TODO (C A Modern Approach> Beej's Guide To C > Computer.Systems > common-lisp > sicp)
+
+** books to read(for fun):
+*** TODO A Song of Ice and Fire 1~5(Progress:Vol:1 Chap43
+*** TODO haruhi
+** create indie projects(for fun /index by lang)
+*** Procedural
+**** C
+***** T4n Encrypt GUI Algorithm:CN
+***** TODO Simple Programming Problems
+***** lisp compiler
+***** Tik-Tak-Toe game
+***** WIP Pig latin translator
+***** Morse code
+**** Obj-c
+**** C#
+**** C++
+**** python
+**** java
+*** Functional
+**** lisp
+***** Elisp
+****** Twilight-Sparkle theme
+******
+***** Common lisp
+****** TODO learn REPL(SBCL) Quicklisp
+****** TODO L-99_Ninety-Nine_Lisp_Problems
+***** Scheme
+****** Simple Programming Problems
+***** Clojure
+***** guile
+**** TODO Haskell
+*** JS
+***** x/html,css
+*** shell
+***** pipe/env var
+***** bash scrpit
+***** powershell
+*** perl
+*** Assembly
+*** Self-hosted compiler
+** skills to learn
+*** TODO 正则表达式
+*** TODO Read source code
+*** DONE Binary Math
+*** TODO Pointer math
+*** TODO Complexity Analysis
+*** TODO Recursion
+*** TODO Basic number theories
+*** TODO Calculus or linear algebra or discrete math or graph theory
+*** TODO Boolean logic
+*** TODO lambda calc
+*** TODO Probability
+*** TODO Debugging
+*** TODO Database
+*** TODO Programming design
+* Org-mode trick
+***** Emacs tricks
+******* Shift-alt-! shell-command for fast excute
+******* emacs -f command a.e full-calc
+******* custom func M-x abbv/func-name
+******* F3 record macro F4 stop; C-u number C-x e excute macro
+******* C-x-o(Alt:Shift-↑\↓-<\>)change window
+******* S-<f10> context-menu-open
+******* C-h k/f/a/i kbd func name info(see helpful kbd)
+******* C-SPACE mark set M-j expreg
+******* C-SPACE-END mark line
+******* C-x-v Avy bind c/w/l/e char word line linend
+******* Build native-compile-emacs 31 with MSYS2(UCRT64)
+******* recentf bind C-c-f
+******* whitespace-mode check tab/space indent
+******* TODO wirte a bash scrpit for auto
+********* .dlls-add \msys2\ucrt64\bin to path
+***** Magit tricks
+******** p-n-tab
+***** Win10 tricks
+******* whereis name
+******* Alt/Win-tab switch software window alt-esc
+******* Win-r/~ run / pwsh
+***** misc tricks
+****** F11 for more focus browser read
+****** wezterm imgcat
+****** tldr anything
+****** mpv tricks
+******* g-p playlist
+***** vim tricks
+******* Esc-v y-copy p-paste(formOS "*p)
+******* :e find file
+***** launchy => tab parameters | <down> history | C-,option
+***** Calc tricks
+****** full/quick-calc,Del,U to undo,'algebra-notation, Q to sqrt
+****** tab to switch, _num=-num or num n, RET or space dup stack num
+****** +-* /,^ to square,C-u num opreator times at once
+****** C-u -num get stack n num,M-0 del clear all stack
+******
+***** TODO Learn org-agenda
+***** TODO learn
+*** C\M-RET Create=level headline
+*** C-c-^ many way to sort
+*** M-<\> + or - headline level
+*** TAB to fold
+*** M-↑\↓ ↑ or ↓ change headline
+*** <e-TAB create code exmple block
+*** <q-TAB create quote block
+* Misc
+#+begin_quote
+"All work and no play makes Jack a dull boy,
+"sexp it's like lisp but sexier.."
+ "Keep it simple, stupid"
+"谜底就在谜面上"
+All play and no work makes Jack a mere toy."
+#+end_quote
+[[file:C:\Users\Administrator\Desktop\202410__\1763029001507889.png][RMS]]
+** TODO learn: 1.git 2.vim ..
+** TODO Emacswiki discover
+** Useful software(programs)
+*** Archive: 7zip peazip
+*** Darkweb: Tor I2P freenet IPFS
+*** Draw: CLIPstudioP Sai
+*** Edit: emacs vim Notepad++
+*** File: everything WizTree Geek-Uninstaller Launchy
+*** Game: Steam
+*** Image: IrfanView
+*** Info: fastfetch
+*** Learn: Anki
+*** Media: mpc-be mpv foobar2k musicbee Quod Libet
+*** Mischievous: 图吧工具箱
+*** Mail:
+*** Package-M: UniGetUI
+*** Proxy: TorControlPanel foxyproxy Proxifier Clash-Verge
+*** Reader: SumatraPDF
+*** Torrent: Tixati qBittorrent WebTorrent
+*** VC: Git
+*** VM: OracleVb QEMU
+*** WWW: Icecat Ungoogle Palemoon
+*** OS: Gentoo Devuan Salix Artix
+*** Env: MSYS2 Racket
+*** Antivirus malwarebyte
+*** Rice open-shel
+** Scoop
+*** Top btop ntop
+*** Edit vim nano edit micro
+*** Fetch fastfetch
+*** Media ffmpeg mplayer mpd/mpc youtube-dl yt-dlp
+*** Must git Scoop-search
+*** Zip 7zip peazip
+*** Software geekuninstaller hwinfo
+*** Font Maple-mono-NF-CN
+*** Powerful ripgrep tldr
+*** TE wezterm windows-terminal
+** Counter 2 -3
+** TODO movies
+***
+* WIP
