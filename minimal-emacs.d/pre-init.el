@@ -3,16 +3,15 @@
 ;;; Commentary:
 ;; shortcut runemacs.exe --daemon (in shell:startup)
 ;; add EMACS_SERVER_FILE user var to "server file dir"
-;; Build native-compile-emacs 31 with MSYS2(UCRT64) bash-scrpit for auto
-;; Also pre-build :scoop bucket add kiennq-scoop https://github.com/kiennq/scoop-misc
-;; (.dlls)\msys2\ucrt64\bin to path Add conpty_proxy.exe/vterm.el/vtmodule.dll to path/
+;; Build native-compile-emacs 31 with MSYS2 (UCRT64) bash script for auto
+;; Also pre-build: scoop bucket add kiennq-scoop https://github.com/kiennq/scoop-misc
+;; (.dlls)\msys2\ucrt64\bin to path. Add conpty_proxy.exe/vterm.el/vtmodule.dll to the path.
 ;; load-path compile setq vterm-shell"powershell"
-;; see(https://emacs-china.org/t/windows-emacs-libvterm/30140/20)
-;; also check mintty https://github.com/chansey97/mintty-standalone ;-nw Wezterm faster
+;; see (https://emacs-china.org/t/windows-emacs-libvterm/30140/20)
+;; also check Mintty https://github.com/chansey97/mintty-standalone ;-nw Wezterm is faster.
 ;; add.dlls kiennq/treesit-langs to treesits
 ;; add quick-sdcv /sdcv dictionary
 ;; meow make editing 10x faster
-
 ;;; Code:
 (setq message-log-max t)
 (require 'use-package)
