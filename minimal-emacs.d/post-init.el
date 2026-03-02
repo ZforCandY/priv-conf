@@ -135,7 +135,7 @@
    '("?" . compile)
    '("!" . previous-buffer)
    '("@" . next-buffer)
-   '("$" . kill-buffer)
+   '("#" . kill-buffer)
    '("Q" . "C-x C-c")
    '("C" . comment-dwim)
    '("b" . switch-to-buffer)
@@ -245,9 +245,9 @@
 
 (set-frame-parameter nil 'fullscreen 'fullboth)
 
-;;'use-package' If :config/init/hook then no defer.
-;;W32 cut startup time trick:temp mv elpa/packages to trash,restart to test
-;;time if great diffrence,some depen packages slow emacs greatly(but beware rm break pack)
+;;'use-package' If :config/init/hook, then no defer.
+;;W32 cut startup time trick: temp mv elpa/packages to trash, restart to test
+;;time of great difference, some depen packages slow emacs greatly (but beware rm break package)
 (custom-set-variables '(package-selected-packages nil))
 
 (use-package conf-mode
@@ -271,9 +271,16 @@
 
 (use-package vertico-prescient
   :ensure t
-  :after vertico
+  :init
+  (setq vertico-prescient-mode 1)
+  ;; (vertico-reverse-mode)
+  (setq vertico-posframe-parameters nil))
+
+(use-package vertico-posframe
+  :ensure t
+  :after vertico-prescient
   :hook
-  (after-init . vertico-prescient-mode))
+  (after-init . vertico-posframe-mode))
 
 (use-package inhibit-mouse
   :after server
@@ -556,6 +563,11 @@
 (use-package nov
   :defer t
   :mode ("\\.epub\\'" . nov-mode)
+  :bind (:map nov-mode-map
+              ("b" . switch-to-buffer)
+              ("d" . nov-display-metadata)
+              ("x" . execute-extended-command)
+              ("i" . nov-goto-toc))
   :config
   (setq nov-text-widith 95))
 
@@ -890,9 +902,13 @@
 ;;   :config
 ;;   (setq asm-comment-char ?#))
 
+;;Dictionary
+(setq dictionary-server "dict.org")
 (use-package quick-sdcv
   :ensure t
   :defer
+  :bind (:map quick-sdcv-mode-map
+              ("q" . quit-window))
   :custom
   (quick-sdcv-dictionary-prefix-symbol "►")
   (quick-sdcv-ellipsis " ▼")
@@ -1287,7 +1303,7 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
 (add-hook 'bongo-playlist-mode-hook 'bf/bongo-fix-mpv)
 
 (defun bf1/bongo-fix-ignore ()
-  "Remove 'error from 'debug-ignored-errors."
+  "Remove 'error' from 'debug-ignored-errors'."
   (interactive)
   (setopt debug-ignored-errors
           '(beginning-of-line
@@ -1295,11 +1311,10 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
             end-of-buffer end-of-file buffer-read-only
             file-supersession mark-inactive user-error)))
 
-;;(timer--function) "C-c h" jump to src
-;;'Error' running timer ‘bongo-mpv-player-tick’: (error "Unknown address family")
+;;'Error' running timer ‘bongo-mpv-player-tick’: ('error' "Unknown address family")
 
 (defun bf2/fix-echo ()
-  "Suppress-disgusting'Error'message spam on echo area."
+  "Suppress disgusting 'error' message spam in the echo area."
   (interactive)
   (defadvice message (around my-message-filter activate)
     (unless (string-match "Error running timer" (or (ad-get-arg 0) ""))
@@ -1318,6 +1333,10 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
 (use-package eww
   :defer t
   :straight (:type built-in)
+  :bind (:map eww-mode-map
+              ("b" . switch-to-buffer)
+              ("x" . execute-extended-command)
+              )
   :config
   (setq eww-auto-rename-buffer 'title))
 
