@@ -1,3 +1,2 @@
-Done tinkering with tools
-
-Too boring and a waste of time.
+Personal usage also Archive for code/configs.
+May be helpful to Someone at Someday, may not.
