@@ -202,6 +202,7 @@ into the main dumped Emacs"
 (setopt line-number-display-limit nil)
 
 (column-number-mode 1)
+(setq-default fill-column 180)
 
 ;; (when (version<= "26.0.50" emacs-version)
 ;;   (global-display-line-numbers-mode))
@@ -230,6 +231,7 @@ into the main dumped Emacs"
 (global-set-key (kbd "C-c m") #'imenu)
 (global-set-key (kbd "C-c a") #'find-file)
 (global-set-key (kbd "C-c g") #'bongo-playlist)
+(global-set-key (kbd "C-x g") #'emms)
 (global-set-key (kbd "C-c k") #'kill-process)
 (global-set-key (kbd "C-c d") #'quick-sdcv-search-at-point)
 (global-set-key (kbd "C-c C-d") #'quick-sdcv-search-input)
@@ -300,6 +302,7 @@ into the main dumped Emacs"
 (set-language-environment "UTF-8")
 
 ;;Performance
+(advice-add #'display-startup-screen :override #'ignore)
 (setq inhibit-compacting-font-caches t)
 (setq-default bidi-display-reordering 'left-to-right
               bidi-paragraph-direction 'left-to-right)
@@ -322,6 +325,7 @@ into the main dumped Emacs"
 (setopt display-line-numbers-width 3)
 ;(setq display-time-day-and-date t)
 (setq redisplay-skip-fontification-on-input t)
+(setq-default redisplay-dont-pause t)
 
 ;;Paren
 (show-paren-mode t)
