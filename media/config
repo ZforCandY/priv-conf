@@ -1,0 +1,17 @@
+#mplayer config
+#w32 load path see https://mplayer-users.mplayerhq.narkive.com/fDN9fNom/recent-svn-mplayer-don-t-find-config-file-in-windows#post2
+vo=null #direct3d #for emacs emms
+ao=win32
+msgcolor=yes
+#fs=yes
+#zoom=yes
+#monitoraspect=16:9
+#ontop=yes
+# dr=yes
+framedrop=yes
+hardframedrop=no
+cache=327689
+cache-min=20.0
+cache-seek-min=50
+# slang=en
+lavdopts=threads=8
