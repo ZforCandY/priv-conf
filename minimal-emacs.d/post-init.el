@@ -7,7 +7,7 @@
 
 ;;Compile Angel
 (use-package compile-angel
-  :defer 1
+  :commands (compile-angel-on-load-mode)
   :ensure t
   :custom
   (compile-angel-verbose t)
@@ -25,7 +25,7 @@
 
 (defun meow-config-mode ()
   "Mode-to-insert."
-  (cl-pushnew '(vterm-mode . insert) meow-mode-state-list)
+  ;; (cl-pushnew '(vterm-mode . insert) meow-mode-state-list)
   (cl-pushnew '(inferior-lisp-mode . insert) meow-mode-state-list))
 
 (use-package meow
@@ -131,8 +131,8 @@
    ;;High frequency
    '("x" . execute-extended-command)
    '("<apps>" . "C-x C-s")
-   '("<f9>" . "C-c g")
-   '("M-<f9>" . "C-x g")
+   '("M-<f9>" . "C-c g")
+   '("<f9>" . "C-x g")
    '("?" . compile)
    '("!" . previous-buffer)
    '("@" . next-buffer)
@@ -252,7 +252,7 @@
 (custom-set-variables '(package-selected-packages nil))
 
 (use-package conf-mode
-  :defer t
+  :commands (conf-mode)
   :mode
   ("\\.conf\\'" . conf-mode))
 
@@ -269,14 +269,15 @@
   (setq vertico-resize nil)
   (setq vertico-count 12))
 
-(use-package vertico-prescient
-  :ensure t
-  ;; (vertico-reverse-mode)
-  :hook
-  (after-init . vertico-prescient-mode))
+;; (use-package vertico-prescient
+;;   :ensure t
+;;   ;; (vertico-reverse-mode)
+;;   :hook
+;;   (after-init . vertico-prescient-mode))
 
 (use-package vertico-posframe
   :ensure t
+  :commands (execute-extended-command)
   :hook
   (after-init . vertico-posframe-mode)
   :config
@@ -297,12 +298,12 @@
 ;;         corfu-auto-delay 0.1
 ;;         corfu-auto-prefix 1))
 
-(use-package cape
-  :ensure t
-  :defer t
-  :init
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev))
+;; (use-package cape
+;;   :ensure t
+;;   :defer t
+;;   :init
+;;   (add-to-list 'completion-at-point-functions #'cape-file)
+;;   (add-to-list 'completion-at-point-functions #'cape-dabbrev))
 
 (use-package inhibit-mouse
   :after server
@@ -316,7 +317,7 @@
 
 (use-package treesit-auto
   :ensure t
-  :defer 3
+  :commands (global-treesit-auto-mode)
   :custom
   (treesit-auto-install 'prompt)
   :config
@@ -369,13 +370,13 @@
   :commands (savehist-mode savehist-save)
   :hook
   (after-init . savehist-mode)
-  :custom
-  (savehist-autosave-interval 600)
-  (savehist-additional-variables
-   '(kill-ring
-     register-alist
-     mark-ring global-mark-ring
-     search-ring regexp-search-ring)))
+  :init
+  (setq savehist-autosave-interval 600
+        savehist-additional-variables
+        '(kill-ring extended-command-history
+                    register-alist
+                    mark-ring global-mark-ring
+                    search-ring regexp-search-ring)))
 
 (use-package saveplace
   :ensure nil
@@ -387,6 +388,7 @@
 
 (use-package company
   :ensure t
+  :commands (global-company-mode)
   :config
   (setopt company-idle-delay 0
           company-minimum-prefix-length 2)
@@ -410,7 +412,7 @@
   (setq company-dict-dir (expand-file-name "dicts" user-emacs-directory)))
 
 (use-package company-box
-  :after all-the-icons
+  :after nerd-icons
   :hook (company-mode . company-box-mode)
   :config
   (setq company-box-show-single-candidate t
@@ -424,7 +426,7 @@
   (after-init . company-prescient-mode))
 
 (use-package all-the-icons
-  :after company-prescient
+  :commands (vertico-prescient-mode)
   :if (display-graphic-p))
 
 ;;Org
@@ -475,7 +477,7 @@
 
 (use-package ibuffer
   :ensure nil
-  :after inhibit-mouse)
+  :commands (ibuffer))
 
 (use-package buffer-terminator
   :ensure t
@@ -513,7 +515,6 @@
 ;; Prevent parenthesis imbalance
 
 (use-package paredit
-  :defer 3
   :ensure t
   :commands paredit-mode
   :hook
@@ -544,7 +545,8 @@
 
 (use-package smartparens
   :ensure t
-  :after paredit
+  :commands (smartparens-global-mode)
+  :config (smartparens-global-mode)
   :hook (prog-mode text-mode emacs-lisp-mode
                    racket-mode scheme-mode common-lisp-mode
                    vterm-mode ielm-mode lisp-interaction-mode))
@@ -556,16 +558,16 @@
   :ensure nil)
 
 (use-package sly
-  :defer t
+  :commands (sly)
   )
 
 ;; (use-package magit
-;;   :defer t
+;;   :commands (magit)
 ;;   )
 
 (use-package avy
   :ensure t
-  :defer 5
+  :defer t
   :bind (("C-c v c" . avy-goto-char)
          ("C-c v w" . avy-goto-word-1)
          ("C-c v l" . avy-goto-line)
@@ -582,7 +584,7 @@
 
 (use-package better-jumper
   :ensure t
-  :defer t
+  :commands (better-jumper-mode)
   :init
   :config
   (better-jumper-mode +1)
@@ -596,7 +598,8 @@
 ;;   :load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
 
 (use-package nov
-  :defer t
+  :commands (nov-mode)
+  :ensure t
   :mode ("\\.epub\\'" . nov-mode)
   :bind (:map nov-mode-map
               ("b" . switch-to-buffer)
@@ -616,7 +619,7 @@
 
 ;;Term/Shell
 (use-package vterm
-  :defer 3
+  :commands (vterm)
   :load-path "C:\\Users\\Administrator\\.emacs.d\\var\\elpa"
   :bind (("C-c t" . vterm))
   :init
@@ -641,18 +644,19 @@
 ;;(setq vterm-shell "B:\\msys2//msys2_shell.cmd -defterm -here -no-start -ucrt64 -i")
 
 (use-package display-line-numbers
-  :defer 3
+  :commands (display-line-numbers-mode)
   :init
   (setq display-line-numbers-type (quote relative))
   :hook ((prog-mode . display-line-numbers-mode)))
 
 (use-package ultra-scroll
+  :commands (ultra-scroll-mode)
   :vc (:url "https://github.com/jdtsmith/ultra-scroll" :branch "main")
   :hook
   (after-init . ultra-scroll-mode))
 
 (use-package golden-ratio
-  :diminish golden-ratio-mode
+  :commands (golden-ratio-mode)
   :hook (after-init . golden-ratio-mode)
   :custom
   (golden-ratio-auto-scale t))
@@ -671,6 +675,7 @@
 
 (use-package which-key
   :ensure t
+  :commands (which-key-mode)
   :hook
   (after-init . which-key-mode)
   :config
@@ -690,6 +695,7 @@
 
 (use-package marginalia
   :ensure t
+  :commands (marginalia-mode)
   :custom
   (marginalia-max-relative-age 0)
   (marginalia--align 'right)
@@ -705,7 +711,6 @@
   (completing-category-overrides nil))
 
 (use-package dired
-  :defer 5
   :ensure nil
   :commands (dired)
   :hook
@@ -720,8 +725,7 @@
   (setq dired-listing-switches "-alh"))
 
 (use-package dired-subtree
-  :defer 6
-  :after dired
+  :commands (dired-subtree-toggle)
   :bind
   ( :map dired-mode-map
     ("<tab>" . dired-subtree-toggle)
@@ -773,6 +777,7 @@
 
 (use-package flycheck
   :ensure t
+  :commands (global-flycheck-mode)
   :hook (after-init . global-flycheck-mode)
   :config
   (setq flycheck-idle-change-delay 2.0)
@@ -808,7 +813,7 @@
 
 (use-package ispell
   ;;See https://rbrins.com/posts/2023-01-08-installing-spellcheck-emacs.html
-  :defer t
+  :commands (ispell-region)
   :ensure nil
   :config
   (setenv "LANG" "en_US")
@@ -828,7 +833,7 @@
            nil nil nil "utf-8"))))
 
 (use-package rainbow-delimiters
-  :defer 3
+  :commands (rainbow-delimiters-mode)
   :hook ((prog-mode . rainbow-delimiters-mode))
   :init
   (with-eval-after-load 'rainbow-delimiters
@@ -844,7 +849,7 @@
   )
 
 (use-package expreg
-  :defer 2
+  :after meow
   :config (global-set-key (kbd "M-j") 'expreg-expand))
 
 ;; (use-package org-bullets
@@ -871,7 +876,6 @@
   :hook (after-init . simple-modeline-mode))
 
 (use-package stripspace
-  :defer 5
   :ensure t
   :commands stripspace-local-mode
   :hook ((prog-mode . stripspace-local-mode)
@@ -905,18 +909,20 @@
   :defer 5)
 
 (use-package powershell
-  :defer t
-  :ensure t)
+  :ensure t
+  :commands (powershell-mode)
+  :mode
+  ("\\.ps1\\'" . powershell-mode))
 
 ;; (use-package geiser-guile
 ;;   :defer t
 ;;   :mode ("\\.guile\\'" . scheme-mode))
 
 (use-package sicp
-  :defer t)
+  :commands (info))
 
 (use-package racket-mode
-  :defer t
+  :commands (racket-mode)
   :mode
   ("\\.scm\\'" . racket-mode))
 
@@ -926,7 +932,7 @@
 ;;   ("\\.clj\\'" . clojure-mode))
 
 (use-package ahk-mode
-  :defer t
+  :commands (ahk-mode)
   :mode
   ("\\.ahk\\'" . ahk-mode))
 
@@ -941,7 +947,7 @@
 (setq dictionary-server "dict.org")
 (use-package quick-sdcv
   :ensure t
-  :defer
+  :commands (quick-sdcv-search-at-point)
   :bind (:map quick-sdcv-mode-map
               ("q" . quit-window))
   :custom
@@ -955,17 +961,20 @@
   )
 
 (use-package doc-view
-  :defer t
+  :commands (doc-view-mode)
   )
                                         ;(doc-view-ghostscript-program
                                         ;"B:/gs10.06.0/bin/gswin64c.exe")
 ;;ripgrep
-(use-package rg
-  :defer t
-  :bind
-  (("C-c r" . rg))
-  :config
-  (setq rg-w32-unicode t))
+;; (use-package rg
+;;   :commands (rg)
+;;   :bind
+;;   (("C-c r" . rg))
+;;   :config
+;;   (setq rg-w32-unicode t))
+
+(use-package deadgrep
+  :commands (deadgrep))
 
 (with-eval-after-load 'inhibit-mouse
   (progn
@@ -1015,32 +1024,10 @@
         emms-last-played-format-alist '(((t) . "%H:%M "))
         emms-show-format "🎧 Now: %s"))
 
-;;
-;; (add-hook 'emms-playlist-cleared-hook 'emms-player-mpd-clear)
-;;
-;; (use-package mpc
-;;   :ensure t
-;;   :defer t
-;;   :bind (:map mpc-mode-map
-;;               ("a" . mpc-playlist-add)
-;;               ("f" . mpc-ffwd)
-;;               ("M-D" . mpc-quit)
-;;               ("<f6>" . mpc-resume)
-;;               ("<f3>" . mpc-stop)
-;;               ("<f2>" . mpc-pause)
-;;               ("n" . mpc-next)
-;;               ("p" . mpc-prev)
-;;               ("<f1>" . mpc-toggle-play)
-;;               ("r" . mpc-rewind)
-;;               ("s" . mpc-select)
-;;               ("u" . mpc-update)))
-;;
-;; (emms-player-mpd-connect)
-
 ;;Also check 'customize-group'
 (use-package bongo
   :ensure t
-  :defer t
+  :commands (bongo-playlist)
   :config
   (setq bongo-logo nil)
   (setq bongo-display-track-icons nil)
@@ -1366,12 +1353,12 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
 
 (use-package eros
   :ensure t
-  :defer t
-  ;; :config (eros-mode 1)
-  )
+  :commands (eros-mode)
+  :config (eros-mode))
 
 (use-package eww
-  :defer t
+  :ensure nil
+  :commands (eww)
   :straight (:type built-in)
   :bind (:map eww-mode-map
               ("b" . switch-to-buffer)
@@ -1387,7 +1374,10 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
   (global-centered-cursor-mode))
 
 (use-package focus
-  :defer t)
+  :commands (focus-mode))
+
+(global-set-key (kbd "C-<f12>") 'focus-mode)
+
 
 (use-package goggles
   :hook ((prog-mode-hook . goggles-mode)
@@ -1417,6 +1407,14 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
 ;; (use-package dash
 ;;   :defer 5)
 ;; (eval-after-load "dash" '(dash-enable-font-lock))
+
+(use-package transient
+  :ensure nil)
+
+(use-package restart-emacs
+  :ensure t
+  :defer t
+  :commands restart-emacs)
 
 ;;Defun misc. Cool or Useful elisp 'func' I found
 (defun toggle-mode-line ()
