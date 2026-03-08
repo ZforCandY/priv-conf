@@ -1,8 +1,8 @@
 [Main]
-TorFileID=80B33D09
+TorFileID=E8916FFF
 Language=1033
 HashedControlPassword=
-FormPosition=0,972,1699,654
+FormPosition=5,230,233,726
 MinimizeOnEvent=3
 ConfigVersion=12
 UseConflux=0
@@ -11,9 +11,9 @@ ControlPassword=
 ConnectionPadding=0
 CircuitPadding=1
 Terminated=1
-Theme=CyanDusk
-LastPlace=1
-OptionsPage=0
+Theme=SmokeyQuartzKamri
+LastPlace=0
+OptionsPage=1
 ConnectOnStartup=1
 RestartOnControlFail=1
 MinimizeToTray=0
@@ -29,11 +29,11 @@ UseNetworkCache=1
 TrayIconType=0
 TrayIconFile=
 SortListData=0,1,1,1,1
-GeoFileID=73C84FCF
-SortData=2,3,2,5,2,4,1,3,2,0
+GeoFileID=F76C44A6
+SortData=2,3,2,5,2,5,1,1,2,0
 
 [Filter]
-FilterMode=2
+FilterMode=1
 EntryNodes=
 MiddleNodes=
 ExitNodes={no},{pl},{fr},{ch},{lu},{se},{de},{ro},{nl},{at}
@@ -44,7 +44,7 @@ ExcludeNodes=
 RoutersShowFlagsHint=1
 EntryNodes=
 MiddleNodes=
-ExitNodes=095855F752804827F3711261EE161789A60F43A9,05C6FC1D969C096BB9655A34841B536898FD3D47
+ExitNodes=
 CurrentFilter=15;-1;482;-1;10;0;0;3;
 
 [Lists]
@@ -56,10 +56,10 @@ FallbackDirsType=1
 UseTrackHostExits=0
 UseFavoritesEntry=0
 UseFavoritesMiddle=0
-UseFavoritesExit=1
+UseFavoritesExit=0
 UseExcludeNodes=0
 NodesListType=3
-UseHiddenServiceVanguards=1
+UseHiddenServiceVanguards=0
 VanguardLayerType=0
 
 [Network]
@@ -76,7 +76,7 @@ ReachableAddresses=80,443
 UsePreferredBridge=0
 BridgesList=webtunnel
 UseBridgesLimit=0
-ExcludeUnsuitableBridges=1
+ExcludeUnsuitableBridges=0
 CacheNewBridges=1
 ScanNewBridges=1
 BridgesPriority=3
@@ -144,7 +144,7 @@ AutoSelNodesWithPingOnly=1
 AutoSelMiddleNodesWithoutDir=1
 
 [Scanner]
-LastPartialScanDate=1769256335
+LastPartialScanDate=1772990579
 PartialScanInterval=12
 EnablePingMeasure=1
 EnableDetectAliveNodes=1
@@ -161,8 +161,8 @@ FullScanInterval=72
 PartialScansCounts=6
 AutoScanType=2
 AutoSelRoutersAfterScanType=1
-LastFullScanDate=1769107856
-LastPartialScansCounts=4
+LastFullScanDate=1772990579
+LastPartialScansCounts=6
 
 [Circuits]
 SelectExitCircuitWhenItChanges=1
@@ -175,23 +175,37 @@ WriteLogFile=0
 
 [Status]
 TotalStartDate=1764818398
-TotalDL=52568167418
-TotalUL=3270511983
+TotalDL=77854897259
+TotalUL=4691957572
 CurrentTrafficPeriod=1
 
 [FallbackDirs]
-0=88.133.57.147 orport=9001 id=DB2A9CB1D358D06656E272AE72600D90A590FF37
+0=23.129.64.147 orport=443 id=86C7A9A256A1ECB034FCFEAC820C638958455DCB ipv6=[2620:18c:0:192::e0:147]:443
+1=45.84.107.236 orport=80 id=1DF1A26A0E0F5559BA47532D572635DA34255D23
+2=45.84.107.236 orport=443 id=47EC8468CF423E087FCC746665DF74B2EF9D495D
+3=45.84.107.236 orport=587 id=8DE5884F8C976F1AF20982CDBEDA20F1B7155049
+4=45.84.107.236 orport=853 id=D1C2A03C04A4E40553F1E2B805C8E911AA54255A
+5=45.84.107.236 orport=993 id=6884F89D3E4A85012D9C328582E05A52B3151C05
+6=45.84.107.236 orport=8080 id=4956116E43354D2A832129A543C011EEE28A8789
+7=45.84.107.236 orport=8443 id=749642E07B1A33D167C771302E05104B6F12121F
+8=45.137.205.34 orport=9001 id=4FC5E22959474D9F686D2581941C949BCDAA43F9
+9=46.244.230.34 orport=9001 id=88C615AC5F9591BFD48DB578B252B89A72F5C3AB
+10=77.90.19.62 orport=9001 id=90255A98A49567E1FE16245F35BDB28D1A695DAF ipv6=[2a0d:5940:112:46::a]:9001
+11=77.176.159.35 orport=9001 id=20A33F5B6C751884A187D9FDA18F3E1C18CA80D6
+12=82.135.76.52 orport=8443 id=CAE8A64B79F61E58D9B8A9FAF5B2E48A321B2A93
+13=93.94.51.243 orport=9000 id=718657413744602A912BF943572421129B77396F
+14=93.94.51.243 orport=9100 id=54D8F46C9048914806D6BA35C503C74791EABF58
+15=93.94.51.243 orport=9200 id=85E27770DB94805C34483E0F66EF62166075D655
+16=93.128.43.41 orport=443 id=BFE40143B22C50F4261FC10750633F1731EE0C43
+17=111.249.226.163 orport=9001 id=58B5EE4A2718FDEA2CE3A7C4B9A9418AE90BE090
+18=140.86.211.218 orport=9001 id=563E29E94B95781F0A8D6AC9EAAB8757EB55B462
+19=149.28.212.142 orport=9001 id=ECDC6F8480194973FA62D4985FEEDC38A7D79591 ipv6=[2001:19f0:ac01:fbd:5400:4ff:fe8d:2ff9]:9001
 
 [Bridges]
-0=webtunnel [2001:db8:dee:4f60:9a4a:641b:71ff:7358]:443 664BEAA9A60B4C029258E4A19E13E26C6D961E0A url=https://hhynz.maledict.me/TLzq9HcRQDlLGmjHAQMff0Hu ver=0.0.3
-1=webtunnel [2001:db8:c525:22a6:6b6a:e916:9ef7:8152]:443 8A1EE5824071CA39E7D76BD579FB2AEF2B52E524 url=https://c.img-cdn.net/yE4s7KehTFyj/ ver=0.0.2
-2=webtunnel [2001:db8:6281:baa0:afc0:9579:b303:59a7]:443 377CF6FCBFD2E57D0775EA6F2E8D3EF0D8CDD02F url=https://cryptomeanscryptography.club/TfDS3X50Rf3dR5x3Q3vLS25o ver=0.0.3
-3=webtunnel [2001:db8:df91:d45f:47f9:2d09:3a9a:7c22]:443 A633EAF9A7DC0E715183359C38E4DAE4515D1EF7 url=https://nothing.localenby.is/srgV09L4fn4kdkoE0vP92nvK ver=0.0.3
-4=webtunnel [2001:db8:d356:23c3:ee0d:5a35:271a:30e]:443 40254C3F76F126C8D30C5FCEEAF9CE88C335FE0C url=https://1-cvt.sports-streams.org/4amFA6F3SRQ1HU47U5jSrLPU ver=0.0.1
-5=webtunnel [2001:db8:c5f0:7cab:74fe:d304:9ae9:531b]:443 991A8196069D1F5B8D33A0C3F462F294C0178C3C url=https://cdn.060914.xyz/JIQxbZL2eDF8FGMtBfJaLEem ver=0.0.3
-6=webtunnel [2001:db8:35ed:b91c:d25f:5603:5c77:ebeb]:443 57C218E285D2AA1E7077859761421E9C62B9123E url=https://wtb007.unshakled.net:8443/4oeMXyIPcCVtKH7jFkEBvueX ver=0.0.3
-7=webtunnel [2001:db8:4c9a:ffe8:70f8:d5af:a8f1:cf56]:443 DA1ECF055635C1A6ED7F5B5F36296A5E3015CE57 url=https://1axfa6xb.xoomlia.com/6qtxxkjw/ ver=0.0.3
-8=webtunnel [2001:db8:3c39:fa6c:6fe3:6ec6:ffa:aede]:443 B903D2B1EFA75C5014475CDA60DD694627B37D39 url=https://tearandnatureeco.net/9543cff3539d7c6e4d3f12c7c4e940e0f99a7e59 ver=0.0.3
+0=webtunnel [2001:db8:4153:2734:a5fd:324a:77fe:7d3b]:443 91DE3D9DBAFB8A583CEE02448BBA8CADDE54735E url=https://5-ams.sports-streams.org/jdyLcFWUBl1jEjIkL2Bo2LCT ver=0.0.1
+1=webtunnel [2001:db8:cc53:9d8f:41f4:ebdc:ef7d:adc1]:443 5AA94C138A5B9CCDB96EA0C7D6C587AF18230158 url=https://cdn.seo-manager.info/jXh2ONiCuMLsUyzJWq3HJaeE ver=0.0.3
+2=webtunnel [2001:db8:4b0:feea:81d8:72b9:95c1:cd62]:443 A6A5AF5E8410EB76647925F66AB2B5810A2C3791 url=https://wolkewolkewolke.zip/xrCyxOQH6HOe952fVtzKMGDN ver=0.0.2
+3=webtunnel [2001:db8:f37a:49d9:c85f:3e7b:eb39:853e]:443 7E8CB9592C97B8ADD03D374A8E207CAAE5121336 url=https://gia.shallotfarm.org/3IMx3r7r1hKVsW136nx9vVMD ver=0.0.1
 
 [Transports]
 1=snowflake|snowflake-client.exe|0|0|-log snowflake.log -log-to-state-dir -unsafe-logging|0
