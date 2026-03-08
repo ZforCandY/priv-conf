@@ -132,6 +132,7 @@
    '("x" . execute-extended-command)
    '("<apps>" . "C-x C-s")
    '("<f9>" . "C-c g")
+   '("M-<f9>" . "C-x g")
    '("?" . compile)
    '("!" . previous-buffer)
    '("@" . next-buffer)
@@ -256,7 +257,6 @@
   ("\\.conf\\'" . conf-mode))
 
 (use-package vertico
-  :defer 3
   :ensure t
   :hook (minibuffer-setup . vertico-repeat-save)
   :config
@@ -271,16 +271,38 @@
 
 (use-package vertico-prescient
   :ensure t
-  :init
-  (setq vertico-prescient-mode 1)
   ;; (vertico-reverse-mode)
-  (setq vertico-posframe-parameters nil))
+  :hook
+  (after-init . vertico-prescient-mode))
 
 (use-package vertico-posframe
   :ensure t
-  :after vertico-prescient
   :hook
-  (after-init . vertico-posframe-mode))
+  (after-init . vertico-posframe-mode)
+  :config
+  (setq vertico-posframe-parameters
+        '((left-fringe . 8)
+          (right-fringe . 8)))
+  (setq vertico-posframe-height 11
+        vertico-posframe-width 85))
+
+;; (use-package corfu
+;;   :ensure t
+;;   :hook (after-init . global-corfu-mode)
+;;   :config
+;;   (setq corfu-auto t
+;;         corfu-cycle t
+;;         corfu-quit-at-boundary t
+;;         corfu-quit-no-match t
+;;         corfu-auto-delay 0.1
+;;         corfu-auto-prefix 1))
+
+(use-package cape
+  :ensure t
+  :defer t
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev))
 
 (use-package inhibit-mouse
   :after server
@@ -452,7 +474,7 @@
 ;;   (auto-package-update-at-time "7:30"))
 
 (use-package ibuffer
-  :ensure t
+  :ensure nil
   :after inhibit-mouse)
 
 (use-package buffer-terminator
@@ -530,6 +552,9 @@
 (with-eval-after-load 'smartparens
   (require 'smartparens-config))
 
+(use-package elec-pair
+  :ensure nil)
+
 (use-package sly
   :defer t
   )
@@ -539,6 +564,7 @@
 ;;   )
 
 (use-package avy
+  :ensure t
   :defer 5
   :bind (("C-c v c" . avy-goto-char)
          ("C-c v w" . avy-goto-word-1)
@@ -553,6 +579,15 @@
   (avy-timeout-seconds 0.3)
   (setq avy-case-fold-search nil
         (setq avy-indent-line-overlay t)))
+
+(use-package better-jumper
+  :ensure t
+  :defer t
+  :init
+  :config
+  (better-jumper-mode +1)
+  (setq better-jumper-add-jump-behavior 'on-jump)
+  (setq better-jumper-use-context 'window))
 
 ;;Read
 ;; (use-package reader
@@ -653,15 +688,15 @@
         which-key-allow-imprecise-window-fit t
         which-key-separator " -> "))
 
-  (use-package marginalia
-    :ensure t
-    :custom
-    (marginalia-max-relative-age 0)
-    (marginalia--align 'right)
-    :hook (after-init . marginalia-mode))
+(use-package marginalia
+  :ensure t
+  :custom
+  (marginalia-max-relative-age 0)
+  (marginalia--align 'right)
+  :init
+  (add-hook 'minibuffer-setup-hook #'marginalia-mode))
 
 (use-package orderless
-  :defer t
   :ensure t
   :custom
   (completing-styles '(orderles basic))
@@ -941,39 +976,44 @@
     ))
 
 ;;media
-;; (defun config-emms ()
-;;   "Config-emms."
-;;   (require 'emms-mark)
-;;   (emms-all)
-;;   ;;MPD
-;;   (add-to-list 'emms-info-functions 'emms-info-mpd)
-;;   (add-to-list 'emms-player-list 'emms-player-mpd)
-;;   (emms-player-mpd-sync-from-mpd)
-;;   (emms-player-mpd-connect))
-
-;; (use-package emms
-;;   :ensure t
-;;   :defer t
-;;   :straight (:build t)
-;;   :config
-;;   (setq emms-source-file-default-directory (expand-file-name "E://Music"))
-;;   (setq emms-player-mpd-server-name "localhost")
-;;   (setq emms-player-mpd-server-port "6600")
-;;   (setq emms-player-mpd-music-directory (expand-file-name "E://Music"))
-;;   (setq emms-player-list '(emms-player-mpd))
-;;   (setq emms-browser-thumbnail-small-size 64)
-;;   (setq emms-browser-thumbnail-medium-size 128)
-;;   (setq emms-browser-covers #'emms-browser-cache-thumbnail-async)
-;;   (setq emms-playlist-default-major-mode 'emms-mark-mode)
-;;   :init
-;;   (require 'emms-setup)
-;;   (require 'emms-mark)
-;;   (emms-all)
-;;   (add-to-list 'emms-info-functions 'emms-info-mpd)
-;;   (add-to-list 'emms-player-list 'emms-player-mpd)
-;;   (emms-player-mpd-sync-from-mpd)
-;;   (emms-player-mpd-connect)
-;;   )
+(use-package emms
+  :ensure t
+  :commands (emms)
+  :straight (:build t)
+  :init
+  (setq emms-source-file-default-directory (expand-file-name "E://Music"))
+  :bind
+  (:map emms-playlist-mode-map
+        ("M-<f6>" . emms-pause)
+        ("M-<f5>" . emms-previous)
+        ("M-<f7>" . emms-next)
+        ("r" . emms-random)
+        ("i" . emms-insert-directory)
+        ("m" . emms-show)
+        ("M-," . emms-seek-backward)
+        ("M-." . emms-seek-forward)
+        ("D" . emms-playlist-clear)
+        ("S" . emms-playlist-save)
+        ("A" . emms-playlist-sort-by-natural-order)
+        ("R" . emms-playlist-sort-by-random)
+        )
+  :config
+  (require 'emms-setup)
+  (emms-all)
+  (emms-cache-enable)
+  (require 'emms-tag-editor)
+  (require 'emms-info-native)
+  (setq emms-info-functions '(emms-info-native))
+  (setq emms-tag-editor-tagfile-functions
+        '(("mp3" . emms-info-native)
+          ("ogg" . emms-info-native)
+          ("wav" . emms-info-native)
+          ("flac" . emms-info-native)))
+  (setq emms-player-list '(emms-player-mplayer)
+        emms-info-asynchronously t
+        emms-source-file-directory-tree-function 'emms-source-file-directory-tree-find
+        emms-last-played-format-alist '(((t) . "%H:%M "))
+        emms-show-format "🎧 Now: %s"))
 
 ;;
 ;; (add-hook 'emms-playlist-cleared-hook 'emms-player-mpd-clear)
@@ -1255,7 +1295,7 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
         (sort-lines nil (point-min) (point-max))
         (save-buffer)
         (kill-buffer))))
-;;;kbd that make sense
+    ;;;kbd that make sense
   :hook ((dired-mode-hook . prot/bongo-dired-library-enable)
          (dired-mode-hook . prot/bongo-dired-library-disable))
   :bind (:map bongo-playlist-mode-map
@@ -1302,14 +1342,14 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
 
 (add-hook 'bongo-playlist-mode-hook 'bf/bongo-fix-mpv)
 
-(defun bf1/bongo-fix-ignore ()
-  "Remove 'error' from 'debug-ignored-errors'."
-  (interactive)
-  (setopt debug-ignored-errors
-          '(beginning-of-line
-            beginning-of-buffer end-of-line
-            end-of-buffer end-of-file buffer-read-only
-            file-supersession mark-inactive user-error)))
+;; (defun bf1/bongo-fix-ignore ()
+;;   "Remove 'error' from 'debug-ignored-errors'."
+;;   (interactive)
+;;   (setopt debug-ignored-errors
+;;           '(beginning-of-line
+;;             beginning-of-buffer end-of-line
+;;             end-of-buffer end-of-file buffer-read-only
+;;             file-supersession mark-inactive user-error)))
 
 ;;'Error' running timer ‘bongo-mpv-player-tick’: ('error' "Unknown address family")
 
@@ -1356,10 +1396,13 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
   (setq-default goggles-pulse t))
 
 (use-package vundo
+  :ensure t
   :bind (("C-c u" . vundo))
+  :commands vundo
   :config
-  (setq vundo-glyph-alist vundo-unicode-symbols)
-  )
+  (setq vundo-glyph-alist vundo-unicode-symbols
+        vundo-window-side 'bottom
+        vundo-max-column 60))
 
 (use-package crux
   :defer t
@@ -1375,7 +1418,7 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
 ;;   :defer 5)
 ;; (eval-after-load "dash" '(dash-enable-font-lock))
 
-;;defun misc
+;;Defun misc. Cool or Useful elisp 'func' I found
 (defun toggle-mode-line ()
   "Toggles the modeline on and off."
   (interactive)
@@ -1405,5 +1448,19 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
   (interactive)
   (browse-url (concat "https://search.marginalia.nu/search?profile=yolo&js=no-js&query="
                       (read-string "Search: "))))
+
+(defun jp/jump-paren (arg)
+  "If on left parenthesis then jump to right. Vice versa 'ARG'."
+  (interactive "^p")
+  (cond
+   ((looking-at "\\s\(")
+    (forward-list 1))
+   ((looking-at "\\s\)")
+    (forward-char 1)
+    (backward-list 1))
+   (t (message "No parenthesis."))))
+
+(global-set-key (kbd "C-<apps>") 'jp/jump-paren)
+
 (provide 'post-init)
 ;;; post-init.el ends here
