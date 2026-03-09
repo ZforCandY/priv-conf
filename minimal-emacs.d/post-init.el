@@ -1,546 +1,1489 @@
-;;; pre-init.el --- pre-init -*- no-byte-compile: t; lexical-binding: t; -*-
-
+;;; post-init.el --- post-init -*- no-byte-compile: t; lexical-binding: t; -*-
+                                        ;(load custom-file 'noerror 'no-message)
 ;;; Commentary:
-;; shortcut runemacs.exe --daemon (in shell:startup)
-;; add EMACS_SERVER_FILE user var to "server file dir"
-;; Build native-compile-emacs 31 with MSYS2 (UCRT64) bash script for auto
-;; Also pre-build: scoop bucket add kiennq-scoop https://github.com/kiennq/scoop-misc
-;; (.dlls)\msys2\ucrt64\bin to path. Add conpty_proxy.exe/vterm.el/vtmodule.dll to the path.
-;; load-path compile setq vterm-shell"powershell"
-;; see (https://emacs-china.org/t/windows-emacs-libvterm/30140/20)
-;; also check Mintty https://github.com/chansey97/mintty-standalone ;-nw Wezterm is faster.
-;; add.dlls kiennq/treesit-langs to treesits
-;; add quick-sdcv /sdcv dictionary
-;; meow make editing 10x faster
 ;;; Code:
-(setq message-log-max t)
-(require 'use-package)
+                                        ;(require 'cl)
+;; (profiler-report)
 
-(setq use-package-compute-statistics t)
-(setq use-package-always-ensure t)
+;;Compile Angel
+(use-package compile-angel
+  :commands (compile-angel-on-load-mode)
+  :ensure t
+  :custom
+  (compile-angel-verbose t)
+  :config
+  (push "/init.el" compile-angel-excluded-files)
+  (push "/early-init.el" compile-angel-excluded-files)
+  (push "/pre-init.el" compile-angel-excluded-files)
+  (push "/post-init.el" compile-angel-excluded-files)
+  (push "/pre-early-init.el" compile-angel-excluded-files)
+  (push "/post-early-init.el" compile-angel-excluded-files)
+  (compile-angel-on-load-mode 1))
 
-;;Selected Compile
-(let ((deny-list '("\\(?:[/\\\\]\\.dir-locals\\.el\\(?:\\.gz\\)?$\\)"
-                   "\\(?:[/\\\\]modus-vivendi-theme\\.el\\(?:\\.gz\\)?$\\)"
-                   "\\(?:[/\\\\][^/\\\\]+-loaddefs\\.el\\(?:\\.gz\\)?$\\)"
-                   "\\(?:[/\\\\][^/\\\\]+-autoloads\\.el\\(?:\\.gz\\)?$\\)")))
-  (setq native-comp-jit-compilation-deny-list deny-list)
-  ;; Deprecated
-  (with-no-warnings
-    (setq native-comp-deferred-compilation-deny-list deny-list)
-    (setq comp-deferred-compilation-deny-list deny-list)))
+;;Meow
+;; (require 'meow)
 
-(setq package-native-compile t)
-(setq compile-angel-enable-byte-compile t)
-(setq compile-angel-enable-native-compile t)
-(defvar old-value nil)
-(defvar original-noninteractive-value nil)
-(setq native-comp-speed 3)
-(setq native-comp-async-query-on-exit t)
-(setq confirm-kill-processes t)
-;;Disabled:cause lto compile error (also when switch to other emacs build)
-;; (setq native-comp-compiler-options '("-march=znver3" "-Ofast" "-g0" "-fno-finite-math-only" "-fgraphite-identity" "-floop-nest-optimize" "-fdevirtualize-at-ltrans" "-fipa-pta" "-fno-semantic-interposition" "-flto=auto" "-fuse-linker-plugin"))
-;; (setq native-comp-driver-options '("-march=znver3" "-Ofast" "-g0" "-fno-finite-math-only" "-fgraphite-identity" "-floop-nest-optimize" "-fdevirtualize-at-ltrans" "-fipa-pta" "-fno-semantic-interposition" "-flto=auto" "-fuse-linker-plugin"))
+(defun meow-config-mode ()
+  "Mode-to-insert."
+  ;; (cl-pushnew '(vterm-mode . insert) meow-mode-state-list)
+  (cl-pushnew '(inferior-lisp-mode . insert) meow-mode-state-list))
 
-;;Debug-ignored
-;; (add-to-list 'debug-ignored-errors ')
-;; (ignore-error error
-;;   (read "Unknown address family")
+(use-package meow
+  :demand t
+  :ensure t
+  :custom
+  (meow-use-clipboard t)
+  :config (meow-config-mode))
 
-;;GC
-(setopt garbage-collection-messages nil)
-                                        ;(setq gc-cons-threshold 50000000)
+(defun meow-setup ()
+  "Meow-setup."
+  (setq meow-cheatsheet-physical-layout meow-cheatsheet-physical-layout-ansi)
+  (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+  ;;Digits
+  (meow-leader-define-key
+   '("1" . meow-digit-argument)
+   '("2" . meow-digit-argument)
+   '("3" . meow-digit-argument)
+   '("4" . meow-digit-argument)
+   '("5" . meow-digit-argument)
+   '("6" . meow-digit-argument)
+   '("7" . meow-digit-argument)
+   '("8" . meow-digit-argument)
+   '("9" . meow-digit-argument)
+   '("0" . meow-digit-argument)
+   '("-" . meow-keypad-describe-key)
+   '("_" . meow-cheatsheet))
+  (meow-normal-define-key
+   ;;Basic move
+   '("i" . meow-prev)
+   '("k" . meow-next)
+   '("j" . meow-left)
+   '("l" . meow-right)
+   ;;Expand move
+   '("I" . meow-prev-expand)
+   '("K" . meow-next-expand)
+   '("J" . meow-left-expand)
+   '("L" . meow-right-expand)
+   ;;Expand
+   '("0" . meow-expand-0)
+   '("9" . meow-expand-9)
+   '("8" . meow-expand-8)
+   '("7" . meow-expand-7)
+   '("6" . meow-expand-6)
+   '("5" . meow-expand-5)
+   '("4" . meow-expand-4)
+   '("3" . meow-expand-3)
+   '("2" . meow-expand-2)
+   '("1" . meow-expand-1)
+   ;;Word&symbol
+   '("u" . meow-back-word)
+   '("o" . meow-next-word)
+   '("U" . meow-back-symbol)
+   '("O" . meow-next-symbol)
+   ;;Selected command
+   '("s" . meow-visit)
+   '("S" . meow-goto-line)
+   '("p" . meow-cancel-selection)
+   '("P" . meow-pop-selection)
+   '("y" . meow-find)
+   '("X" . meow-till)
+   '("/" . meow-quit)
+   '("a" . meow-mark-word)
+   '("A" . meow-mark-symbol)
+   '("e" . meow-line)
+   '("E" . meow-block)
+   '("m" . meow-reverse)
+   ;;Undo&redo
+   '("h" . undo-only)
+   '("H" . undo-redo)
+   ;;Edit
+   '("d" . meow-delete)
+   '("D" . meow-kill)
+   '("f" . meow-change)
+   '("v" . meow-yank)
+   '("V" . meow-replace)
+   '("c" . meow-save) ;;copy
+   '("g" . meow-grab)
+   '("G" . meow-sync-grab)
+   ;;Insert
+   '("w" . meow-insert)
+   '("r" . meow-open-above)
+   '("R" . meow-open-below)
+   '("n" . meow-join)
+   '("N" . meow-append)
+   ;;Thing
+   '("," . meow-beginning-of-thing)
+   '("." . meow-end-of-thing)
+   '(";" . meow-inner-of-thing)
+   '(":" . meow-bounds-of-thing)
+   ;;Line
+   '("z" . open-line)
+   '("Z" . split-line)
+   ;;Indent
+   '("-" . indent-rigidly-left-to-tab-stop)
+   '("=" . indent-rigidly-right-to-tab-stop)
+   ;;Windows
+   '("}" . split-window-right)
+   '("]" . rf/split-window-right-and-focus)
+   '("{" . split-window-below)
+   '("[" . bf/split-window-below-and-focus)
+   '("+" . delete-other-windows)
+   ;;High frequency
+   '("x" . execute-extended-command)
+   '("<apps>" . "C-x C-s")
+   '("M-<f9>" . "C-c g")
+   '("<f9>" . se/start-emms)
+   '("?" . compile)
+   '("!" . previous-buffer)
+   '("@" . next-buffer)
+   '("#" . kill-buffer)
+   '("Q" . "C-x C-c")
+   '("C" . comment-dwim)
+   '("b" . switch-to-buffer)
+   '("B" . ibuffer)
+   '("M" . imenu)
+   '("F" . toggle-frame-fullscreen)
+   ;;Misc
+   '("<escape>" . ignore)
+   '("`" . repeat)
+   ))
 
-;;Load-path
-                                        ;(add-to-list 'load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
-(add-to-list 'load-path "B:\\msys2\\ucrt64\\bin")
-(load (concat (file-name-directory user-init-file) "buffer-move.el"))
+(setq meow-use-cursor-position-hack t)
+(setq meow-update-interval 0.05)
+(setq meow-esc-delay 0.001)
+(setq meow-cursor-type-insert '(bar . 4))
 
-                                        ;(add-to-list 'load-path "C:\\Users\\Administrator\\.emacs.d\\var/4g.el")
-                                        ;(load (concat (file-name-directory user-init-file) "4g.el"))
+(meow-setup)
+(unless (bound-and-true-p meow-global-mode)
+  (meow-global-mode 1))
+(meow-global-mode 1)
 
-;;Load-func
-(defun loadup-gen ()
-  "Generate the lines to include in the lisp/loadup.el file.
-to place all of the libraries that are loaded by your InitFile
-into the main dumped Emacs"
-  (interactive)
-  (defun get-loads-from-*Messages* ()
-    (save-excursion
-      (let ((retval ()))
-        (set-buffer "*Messages*")
-        (beginning-of-buffer)
-        (while (search-forward-regexp "^Loading " nil t)
-          (let ((start (point)))
-            (search-forward "...")
-            (backward-char 3)
-            (setq retval (cons (buffer-substring-no-properties start (point)) retval))))
-        retval)))
-  (map 'list
-       (lambda (file) (princ (format "(load \"%s\")\n" file)))
-       (get-loads-from-*Messages*)))
-
-;;Window-size
-                                        ;(set-frame-parameter nil 'fullscreen 'fullboth)
-                                        ;(add-to-list 'default-frame-alist '(fullscreen . maximized))
-                                        ;(add-to-list 'default-frame-alist '(left . 150))
-                                        ;(add-to-list 'default-frame-alist '(top . 50))
-                                        ;(add-to-list 'default-frame-alist '(height . 40))
-                                        ;(add-to-list 'default-frame-alist '(width . 160))
-
-;;Center-window
-;; (defun center-frame ()
-;;   "Center the frame on the screen, respecting the size set in 'default-frame-alist'."
-;;   (interactive)
-;;   (let* ((desired-width
-;;           (or (cdr (assq 'width default-frame-alist)) 80))
-;;          (desired-height
-;;           (or (cdr (assq 'height default-frame-alist)) 24))
-;;          (screen-width (x-display-pixel-width))
-;;          (screen-height (x-display-pixel-height))
-;;          (char-width (frame-char-width))
-;;          (char-height (frame-char-height))
-;;          (frame-pixel-width (* desired-width char-width))
-;;          (frame-pixel-height (* desired-height char-height))
-;;          (left (max 0 (/ (- screen-width frame-pixel-width) 2)))
-;;          (top (max 0 (/ (- screen-height frame-pixel-height) 2))))
-;;     (set-frame-size (selected-frame) desired-width desired-height)
-;;     (set-frame-position (selected-frame) left top)
-;;     ))
-;; (add-hook 'window-setup-hook #'center-frame)
-
-;;Straight bootstrap
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name
-        "straight/repos/straight.el/bootstrap.el"
-        (or (bound-and-true-p straight-base-dir)
-            user-emacs-directory)))
-      (bootstrap-version 7))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
-;;Straight config
-(setq straight-vc-git-default-clone-depth 1)
-
-;;Theme,font,line,info
-(global-prettify-symbols-mode 1)
-(setq prettify-symbols-unprettify-at-point t)
-(setf custom-safe-themes 't)
-;; (setq frame-title-format "λ . Learner: %b")
-(setq frame-title-format "")
-(setq user-full-name "Learner"
-      user-real-login-name "Rafah"
-      user-login-name "fido"
-      user-mail-address "johndoe@anon.org")
-
-;;Defun misc
-                                        ;change font size
-(defun fsize/set-font-size (size)
-  "Set font size to SIZE, specified in tenth of a point."
-  (interactive "nEnter the font size: ")
-  (set-face-attribute 'default nil :height size))
-
-(defun rf/split-window-right-and-focus ()
-  "Spawn a new window right of the current one and focus it."
-  (interactive)
-  (split-window-right)
-  (windmove-right))
-
-(defun bf/split-window-below-and-focus ()
-  "Spawn a new window below the current one and focus it."
-  (interactive)
-  (split-window-below)
-  (windmove-down))
-
-(defun mb/switch-to-messages-buffer ()
-  "Switch to Messages buffer."
-  (interactive)
-  (switch-to-buffer (messages-buffer)))
-
-(defun sb/switch-to-scratch-buffer ()
-  "Switch to Messages buffer."
-  (interactive)
-  (switch-to-buffer "*scratch*"))
-
-;;Defun ends here
-                                        ;(set-face-attribute 'default nil
-                                        ;                   :height 200 :weight 'regular :width 'normal :foundry "outline" :family "Consolas")
-
-(add-hook 'emacs-startup-hook
+(add-hook 'find-file-hook
           (lambda ()
-            (let* ((font       "Maple Mono NF CN:slant:weight=medium:width=normal:spacing")
-                   (attributes (font-face-attributes font)                                   )
-                   (family     (plist-get attributes :family)                                ))
+            (when (> (buffer-size) 1048576)
+              (setq-local meow-highlight-selection nil))))
 
-              ;; Default font.
-              (apply #'set-face-attribute
-                     'default nil
-                     attributes)
-              ;; For all Unicode characters.
-              (set-fontset-font t 'symbol
-                                (font-spec :family "Segoe UI Symbol")
-                                nil 'prepend)
-              ;; Emoji.
-              (set-fontset-font t 'emoji
-                                (font-spec :family "Segoe UI Emoji")
-                                nil 'prepend)
-              ;; For Chinese characters.
-              (set-fontset-font t '(#x4e00 . #x9fff)
-                                (font-spec :family family)))))
+;;Meow config ends here
 
-(fsize/set-font-size 250)
+;;themes
+(mapc #'disable-theme custom-enabled-themes)
+(add-to-list 'custom-theme-load-path "c:/Users/Administrator/.emacs.d/var/themes")
+(setq custom-theme-directory "c:/Users/Administrator/.emacs.d/var/themes")
+                                        ;For high light env
+                                        ;For low light env
+                                        ;naysayer-theme
+                                        ;grandshell-theme
+                                        ;tomorrow-night-deepblue-theme
+                                        ;(load-theme 'misterioso)
+(use-package leuven-theme
+  :ensure t
+  :config
+  (load-theme 'leuven-dark t)
+  :init
+  (global-set-key (kbd "M-/") #'theme-choose-variant))
 
-;; (setq mode-line-position-column-line-format '("%l:%C"))
-(setopt display-line-numbers-type t)
-(setopt line-number-display-limit nil)
+;; (use-package modus-themes
+;;   :ensure t
+;;   :defer t
+;;   :init
+;;   (modus-themes-include-derivatives-mode 1)
+;;   (modus-themes-load-theme 'modus-operandi-tinted)
+;;   :bind
+;;   (("M-/" . modus-themes-toggle)
+;;    ("C-*" . modus-themes-select)
+;;    ("M-*" . modus-themes-load-random))
+;;   :config
+;;   (setq modus-themes-to-toggle '(modus-vivendi-tinted modus-operandi-tinted)
+;;         modus-themes-to-rotate modus-themes-items
+;;         modus-themes-mixed-fonts t
+;;         modus-themes-variable-pitch-ui t
+;;         modus-themes-italic-constructs t
+;;         modus-themes-bold-constructs t
+;;         modus-themes-completions '((t . (bold)))
+;;         modus-themes-prompts '(bold)
+;;         modus-themes-headings
+;;         '((agenda-structure . (variable-pitch light 2.2))
+;;           (agenda-date . (variable-pitch regular 1.3))
+;;           (t . (regular 1.15))))
+;;   (setq modus-themes-common-palette-overrides nil)
+;;   (setq modus-themes-mode-line '(accented borderless padded))
+;;   (setq modus-themes-region '(bg-only no-extend))
+;;   (setq modus-themes-completions 'opinionated)
+;;   (setq modus-themes-paren-match '(bold intense underline))
+;;   (setq modus-themes-syntax '(alt-syntax))
+;;   (setq modus-themes-headings
+;;         '((1 . (rainbow overline background 1.4))
+;;           (2 . (rainbow background 1.3))
+;;           (3 . (rainbow bold 1.2))
+;;           (t . (semilight 1.1))))
+;;   (setq modus-themes-scale-headings t)
+;;   (setq modus-themes-org-blocks 'gray-background))
 
-(column-number-mode 1)
-(setq-default fill-column 180)
+                                        ;(native-comp-available-p)
+:Straight.el
+(straight-use-package 'use-package)
 
-;; (when (version<= "26.0.50" emacs-version)
-;;   (global-display-line-numbers-mode))
-(set-face-attribute 'line-number-current-line nil
-                    :foreground "#0601ff"
-                    :weight 'bold)
+;;Measure time
+(defvar before-user-init-time (current-time)
+  "Value of `current-time' when Emacs begins loading `user-init-file'.")
+(message "Loading Emacs...done (%.3fs)"
+         (float-time (time-subtract before-user-init-time
+                                    before-init-time)))
 
-;;Keybind
-(global-set-key (kbd "C-+") 'text-scale-increase)
-(global-set-key (kbd "M-+") 'text-scale-decrease)
-(global-set-key (kbd "C-*") 'undo-redo)
-(global-set-key (kbd "C-c c") 'shell-command)
-(global-set-key (kbd "C-x c") 'full-calc)
-(global-set-key (kbd "<escape>") 'keyboard-quit)
-(global-unset-key (kbd "C-x <escape> <escape>"))
-(global-set-key (kbd "M-n") #'forward-paragraph)
-(global-set-key (kbd "M-m") #'backward-paragraph)
-(global-set-key (kbd "C-c l") #'inferior-lisp)
-                                        ;(global-set-key (kbd "C-c b") #'eval-buffer)
-(global-set-key (kbd "C-c e") #'eval-last-sexp)
-(global-set-key (kbd "C-c i") #'info-other-window)
-(define-key key-translation-map (kbd "C-q") (kbd "C-g"))
-(global-set-key [remap list-buffers] 'ibuffer)
-(global-set-key (kbd "C-c s") #'bookmark-set)
-(global-set-key (kbd "C-c b") #'bookmark-jump)
-(global-set-key (kbd "C-c m") #'imenu)
-(global-set-key (kbd "C-c a") #'find-file)
-(global-set-key (kbd "C-c g") #'bongo-playlist)
-(global-set-key (kbd "C-x g") #'emms)
-(global-set-key (kbd "C-c k") #'kill-process)
-(global-set-key (kbd "C-c d") #'quick-sdcv-search-at-point)
-(global-set-key (kbd "C-c C-d") #'quick-sdcv-search-input)
+;;Daemon
+(defun ss/server-start ()
+  "Start daemon based on 'server-running-p'."
+  (interactive)
+  (cond
+   ((unless (server-running-p))(server-start))
+   ((eq (server-running-p) t) (message server-name))
+   (t (server-start))))
 
-;;Helpful
-(global-set-key (kbd "C-h f") #'helpful-function)
-(global-set-key (kbd "C-h v") #'helpful-variable)
-(global-set-key (kbd "C-h k") #'helpful-key)
-(global-set-key (kbd "C-h c") #'helpful-command)
-(global-set-key (kbd "C-c h") #'helpful-at-point)
+(use-package server
+  ;;:defer 2
+  :commands (server-running-p)
+  :init (ss/server-start))
 
-;;Paxedit
-;; (global-set-key (kbd "M-d") #'paxedit-delete)
+(set-frame-parameter nil 'fullscreen 'fullboth)
 
-;;sexp
-(global-set-key (kbd "M-<up>") #'backward-sexp)
-(global-set-key (kbd "M-<down>") #'forward-sexp)
+;;'use-package' If :config/init/hook, then no defer.
+;;W32 cut startup time trick: temp mv elpa/packages to trash, restart to test
+;;time of great difference, some depen packages slow emacs greatly (but beware rm break package)
+(custom-set-variables '(package-selected-packages nil))
 
-;;Windmove
-(windmove-default-keybindings 'shift)
-(when (fboundp 'windmove-default-keybindings)
-  (windmove-default-keybindings))
+(use-package conf-mode
+  :commands (conf-mode)
+  :mode
+  ("\\.conf\\'" . conf-mode))
 
-;;Buffmove
-(global-set-key (kbd "C-<up>")     'buf-move-up)
-(global-set-key (kbd "C-<down>")   'buf-move-down)
-(global-set-key (kbd "C-<left>")   'buf-move-left)
-(global-set-key (kbd "C-<right>")  'buf-move-right)
+(use-package vertico
+  :ensure t
+  :hook (minibuffer-setup . vertico-repeat-save)
+  :config
+  (vertico-mode)
+  :custom
+  (read-buffer-completion-ignore-case t)
+  (read-file-name-completion-ignore-case t)
+  (completion-styles '(basic substring partial-completion flex))
+  (vertico-cycle t)
+  (setq vertico-resize nil)
+  (setq vertico-count 12))
 
-;;;Configs
-;;Hook
-(add-hook 'text-mode-hook 'visual-line-mode)
-(add-hook 'after-init-hook #'display-time-mode)
-(add-hook 'after-init-hook #'window-divider-mode)
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-(add-hook 'prog-mode-hook 'electric-pair-mode)
-(add-hook 'after-init-hook #'minibuffer-depth-indicate-mode)
-(add-hook 'before-save-hook #'whitespace-cleanup)
+;; (use-package vertico-prescient
+;;   :ensure t
+;;   ;; (vertico-reverse-mode)
+;;   :hook
+;;   (after-init . vertico-prescient-mode))
 
-;;Scroll
-(setq scroll-conservatively 101)
-(setq scroll-margin 0)
-(setq scroll-preserve-screen-position nil)
-(setq auto-window-vscroll nil)
-(setopt scroll-error-top-bottom nil)
+(use-package vertico-posframe
+  :ensure t
+  :commands (execute-extended-command)
+  :hook
+  (after-init . vertico-posframe-mode)
+  :config
+  (setq vertico-posframe-parameters
+        '((left-fringe . 8)
+          (right-fringe . 8)))
+  (setq vertico-posframe-height 11
+        vertico-posframe-width 85))
 
-(setq jit-lock-defer-time 0.3
-      fast-but-imprecise-scrolling t
-      redisplay-skip-fontification-on-input t
-      recenter-redisplay 'tty)
-;;Sly
-(setq sly-lisp-implementations
-      '((sbcl ("sbcl" "noinform") :coding-system utf-8-unix)
-        (ccl ("wx86cl64.exe"))))
+;; (use-package corfu
+;;   :ensure t
+;;   :hook (after-init . global-corfu-mode)
+;;   :config
+;;   (setq corfu-auto t
+;;         corfu-cycle t
+;;         corfu-quit-at-boundary t
+;;         corfu-quit-no-match t
+;;         corfu-auto-delay 0.1
+;;         corfu-auto-prefix 1))
 
-;;Flycheck
-(setq flycheck-display-errors-delay 0.1)
-(setq flycheck-debug t)
+(use-package cape
+  :ensure t
+  :defer t
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev))
 
-;;Backups
-(setq make-backup-file t)
-(setq vc-make-backup-files t)
-(setq kept-old-versions 5)
-(setq kept-new-versions 10)
-(setq backup-by-copying t)
+(use-package inhibit-mouse
+  :after server
+  :custom
+  (inhibit-mouse-adjust-mouse-highlight t)
+  (inhibit-mouse-adjust-show-help-function t)
+  :config
+  (if (daemonp)
+      (add-hook 'server-after-make-frame-hook #'inhibit-mouse-mode)
+    (inhibit-mouse-mode 1)))
 
-;;Env
-(set-language-environment "UTF-8")
+(use-package treesit-auto
+  :ensure t
+  :commands (global-treesit-auto-mode)
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
 
-;;Performance
-(advice-add #'display-startup-screen :override #'ignore)
-(setq inhibit-compacting-font-caches t)
-(setq-default bidi-display-reordering 'left-to-right
-              bidi-paragraph-direction 'left-to-right)
-(setq bidi-inhibit-bpa t)
-(setenv "LSP_USE_PLISTS" "true")
-(setq lsp-use-plists t)
-(setopt package-quickstart nil
-        package-enable-at-startup t)
-(setq frame-resize-pixelwise t)
+(use-package autorevert
+  :ensure nil
+  :commands (auto-revert-mode global-auto-revert-mode)
+  :hook
+  (after-init . global-auto-revert-mode)
+  :custom
+  (auto-revert-interval 3)
+  (auto-revert-remote-file nil)
+  (auto-revert-use-notify t)
+  (auto-revert-avoid-polling nil)
+  (auto-revert-verbose t))
 
-;;W32
-(when (eq system-type 'windows-nt)
-  (setq w32-allow-system-shell t)
-  (setq w32-use-native-image-API t)
-  (setq w32-get-true-file-attributes nil) ;local
-  (setq w32-pipe-read-delay 0)
+;; Enable `auto-save-mode' to prevent data loss. Use `recover-file' or
+;; `recover-session' to restore unsaved changes.
+(setq auto-save-default t)
+(setq auto-save-interval 300)
+(setq auto-save-timeout 30)
+(setq auto-save-visited-interval 5)   ; Save after 5 seconds if inactivity
+(auto-save-visited-mode 1)
+
+(use-package recentf
+  :ensure nil
+  :commands (recentf-mode recentf-cleanup)
+  :hook
+  (after-init . recentf-mode)
+  :bind (("C-c f" . recentf-open-files))
+  :custom
+  (setq recentf-max-saved-items 500)
+  (setq recentf-max-menu-items 250)
+  (recentf-case-fold-search t)
+  (recentf-auto-clenanup (if (daemonp) 300 'never))
+  (recentf-exclude
+   (list "\\.tar$" "\\.tbz2$" "\\.tbz$" "\\.tgz$" "\\.bz2$"
+         "\\.bz$" "\\.gz$" "\\.gzip$" "\\.xz$" "\\.zip$"
+         "\\.7z$" "\\.rar$" "\\.pdf$"
+         "COMMIT_EDITMSG\\'"
+         "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\|bmp\\|xpm\\)$"
+         "-autoloads\\.el$" "autoload\\.el$"))
+  :config
+  (add-hook 'kill-emacs-hook #'recentf-cleanup -90))
+
+(use-package savehist
+  :ensure nil
+  :commands (savehist-mode savehist-save)
+  :hook
+  (after-init . savehist-mode)
+  :init
+  (setq savehist-autosave-interval 600
+        savehist-additional-variables
+        '(kill-ring extended-command-history
+                    register-alist
+                    mark-ring global-mark-ring
+                    search-ring regexp-search-ring)))
+
+(use-package saveplace
+  :ensure nil
+  :commands (save-place-mode save-place-local-mode)
+  :hook
+  (after-init . save-place-mode)
+  :custom
+  (save-place-limit 400))
+
+(use-package company
+  :ensure t
+  :commands (global-company-mode)
+  :config
+  (setopt company-idle-delay 0
+          company-minimum-prefix-length 2)
+  (setopt company-dabbrev-code-everywhere t)
+  (setopt company-dabbrev-code-other-buffers t
+          company-dabbrev-code-time-limit 2)
+  (setopt company-show-quick-access t
+          company-tooltip-offset-display 'lines
+          company-tooltip-limit 10)
+  (setq company-tooltip-align-annotations t
+        company-require-match 'never
+        )
+  :hook
+  (after-init . global-company-mode)
   )
 
-;;Display
-(setopt display-line-numbers-width 3)
-;(setq display-time-day-and-date t)
-(setq redisplay-skip-fontification-on-input t)
-(setq-default redisplay-dont-pause t)
+(use-package company-dict
+  :after company-box
+  :straight (:build t)
+  :config
+  (setq company-dict-dir (expand-file-name "dicts" user-emacs-directory)))
 
-;;Paren
-(show-paren-mode t)
-(setq show-paren-delay 0)
-(setq show-paren-style 'mixed)
+(use-package company-box
+  :after nerd-icons
+  :hook (company-mode . company-box-mode)
+  :config
+  (setq company-box-show-single-candidate t
+        company-box-backends-colors nil
+        ))
 
-;;Cursor
-(setq x-stretch-cursor t)
-(setopt visible-cursor t)
-(setq help-window-select t)
-(setq-default cursor-in-non-selected-windows nil)
-(setq mouse-yank-at-point t)
+(use-package company-prescient
+  :after company
+  :ensure t
+  :hook
+  (after-init . company-prescient-mode))
 
-;;Company
-
-;;Mouse
-(setq mouse-wheel-scroll-amount '(2 ((shift) . 1)) ;; one line at a time
-      mouse-wheel-progressive-speed nil ;; don't accelerate scrolling
-      mouse-wheel-follow-mouse 't ;; scroll window under mouse
-      )
-
-;;Default
-(setq-default lexical-binding t)
-
-;;Load
-(setq load-prefer-newer t)
-
-;;Window
-(setq use-dialog-box nil)
-(setq highlight-nonselected-windows nil)
-(setopt mouse-autoselect-window t)
-(setq window-combination-resize t)
-
-;;Delete
-(setq delete-by-moving-to-trash t)
-
-;;Kill
-(setq confirm-kill-emacs 'y-or-n-p)
-(setopt confirm-kill-processes nil)
-
-;;Scratch
-(setq initial-scratch-message "┌┬┐┬ ┬┬
- │ ││││
- ┴ └┴┘┴
-      ┬  ┬┌─┐┬ ┬┌┬┐
-      │  ││ ┬├─┤ │
-      ┴─┘┴└─┘┴ ┴ ┴
-                ┌─┐┌─┐┌─┐┬─┐┬┌─┬ ┌─┐
-                └─┐├─┘├─┤├┬┘├┴┐│ ├┤
-                └─┘┴  ┴ ┴┴└─┴ ┴┴─└─┘
-Only when you creating you truly alive.
-")
-
-;;Lisp
-(setq inferior-lisp-program "sbcl")
-(setq inferior-lisp-program "B:\\SBCL/sbcl.exe")
+(use-package all-the-icons
+  :commands (vertico-prescient-mode)
+  :if (display-graphic-p))
 
 ;;Org
-(setq org-directory "B:\\C\\org")
-(setq org-agenda-files (list "B:\\C\\org\\agenda" "B:\\C\\org\\plan.org"))
+(use-package org
+  :straight t
+  :defer t
+  :ensure t
+  :commands (org-mode org-version)
+  :mode
+  ("\\.org\\'" . org-mode)
+  :config
+  (setq org-hide-leading-stars t
+        org-startup-indented t
+        org-adapt-indentation nil
+        org-edit-src-content-indentation 0
+        org-pretty-entities                t
+        org-fontify-done-headline t
+        org-fontify-todo-headline t
+        org-fontify-whole-heading-line t
+        org-fontify-quote-and-verse-blocks t
+        org-startup-truncated t
+        org-startup-align-all-tables       t
+        org-src-fontify-natively t
+        org-use-property-inheritance       t
+        org-list-allow-alphabetical        t
+        org-redisplay-inline-images        t
+        org-display-inline-images          t
+        org-startup-with-inline-images     "inlineimages"
+        org-default-notes-file             (expand-file-name "plan.org" org-directory)
+        )
+  (setq org-ellipsis " ▾"
+        org-hide-emphasis-markers t))
 
-                                        ;(setq org-startup-numerated t)
-(setq org-hide-leading-stars t)
-(setq org-fontify-quote-and-verse-blocks t)
-(setq org-fontify-whole-heading-line t)
-(setq org-startup-truncated nil)
+;; (use-package auto-package-update
+;;   :ensure t
+;;   :defer 5
+;;   :custom
+;;   ;; Here, packages will only be updated if at least 7 days have passed
+;;   ;; since the last successful update.
+;;   (auto-package-update-interval 7)
+;;   (auto-package-update-hide-results t)
+;;   (auto-package-update-delete-old-versions t)
+;;   :config
+;;   ;; Run package updates automatically at startup, but only if the configured
+;;   ;; interval has elapsed.
+;;   (auto-package-update-maybe)
+;;   (auto-package-update-at-time "7:30"))
 
-;;Inline-image
-;; (defun org-http-image-data-fn (protocol link _description)
-;;   "Interpret LINK as an URL to an image file."
-;;   (when (and (image-type-from-file-name link)
-;;              (not (eq org-display-remote-inline-images 'skip)))
-;;     (if-let (buf (url-retrieve-synchronously (concat protocol ":" link)))
-;;         (with-current-buffer buf
-;;           (goto-char (point-min))
-;;           (re-search-forward "\r?\n\r?\n" nil t)
-;;           (buffer-substring-no-properties (point) (point-max)))
-;;       (message "Download of image \"%s\" failed" link)
-;;       nil)))
+(use-package ibuffer
+  :ensure nil
+  :commands (ibuffer))
 
-                                        ;(setq org-display-remote-inline-images 'cache)
+(use-package buffer-terminator
+  :ensure t
+  :defer 3
+  :custom
+  (buffer-terminator-verbose nil)
+  ;; Set the inactivity timeout (in seconds) after which buffers are considered
+  ;; inactive (default is 30 minutes):
+  (buffer-terminator-inactivity-timeout (* 30 60)) ; 30 minutes
+  ;; Define how frequently the cleanup process should run (default is every 10
+  ;; minutes):
+  (buffer-terminator-interval (* 10 60)) ; 10 minutes
+  :hook
+  (after-init . buffer-terminator-mode))
 
-;;Package
-(setq package-install-upgrade-built-in t)
-(setopt network-security-level 'low)
-;; (setopt package-archives '(
-;;                            ("gnu"    . "https://mirrors.ustc.edu.cn/elpa/gnu/")
-;;                            ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")
-;;                            ("melpa"  . "https://mirrors.ustc.edu.cn/elpa/melpa/")
-;;                            ))
-;; (setopt package-archive-priorities '(
-;;                                      ("gnu"    . 1)
-;;                                      ("nongnu" . 0)
-;;                                      ("melpa"  . 1))
-;;         package-menu-hide-low-priority t)
+;; Enables automatic indentation of code while typing
+(use-package aggressive-indent
+  :ensure t
+  :defer 3
+  :commands aggressive-indent-mode
+  :hook
+  (c-mode . aggressive-indent-mode)
+  (emacs-lisp-mode . aggressive-indent-mode)
+  (after-init . global-aggressive-indent-mode)
+  (racket-mode-hook . aggressive-indent-mode))
 
-(setopt package-check-signature nil)
+;; Highlights function and variable definitions in Emacs Lisp mode
+(use-package highlight-defined
+  :ensure t
+  :defer 3
+  :commands highlight-defined-mode
+  :hook
+  (emacs-lisp-mode . highlight-defined-mode))
+
+;; Prevent parenthesis imbalance
+
+(use-package paredit
+  :ensure t
+  :commands paredit-mode
+  :hook
+  (emacs-lisp-mode . paredit-mode)
+                                        ;(lisp-mode . paredit-mode)
+  (common-lisp-mode . paredit-mode)
+  (scheme-mode . paredit-mode)
+  (racket-mode . paredit-mode)
+  :config
+  (define-key paredit-mode-map (kbd "RET") nil))
+
+(defun tp/toggle-paredit ()
+  "Toggle paredit modes with Lisp dialets mode."
+  (interactive)
+  (cond
+   ((not paredit-mode)(setq paredit-mode 1))
+   ((paredit-mode)(setq paredit-mode nil))
+   ))
+(global-set-key (kbd "<f4>") 'tp/toggle-paredit)
+
+(use-package paxedit
+  :defer 3
+  :ensure t
+  :commands paxedit-mode
+  :hook
+  (emacs-lisp-mode . paxedit-mode)
+  (lisp-mode . paxedit-mode))
+
+(use-package smartparens
+  :ensure t
+  :commands (smartparens-global-mode)
+  :config (smartparens-global-mode)
+  :hook (prog-mode text-mode emacs-lisp-mode
+                   racket-mode scheme-mode common-lisp-mode
+                   vterm-mode ielm-mode lisp-interaction-mode))
+
+(with-eval-after-load 'smartparens
+  (require 'smartparens-config))
+
+(use-package elec-pair
+  :ensure nil)
+
+(use-package sly
+  :commands (sly)
+  )
+
+;; (use-package magit
+;;   :commands (magit)
+;;   )
+
+(use-package avy
+  :ensure t
+  :defer t
+  :bind (("C-c v c" . avy-goto-char)
+         ("C-c v w" . avy-goto-word-1)
+         ("C-c v l" . avy-goto-line)
+         ("C-c v e" . avy-goto-end-of-line))
+  :config
+  (setq avy-all-windows nil
+        avy-all-windows-alt t
+        avy-background t
+        avy-style 'pre)
+  :custom
+  (avy-timeout-seconds 0.3)
+  (setq avy-case-fold-search nil
+        (setq avy-indent-line-overlay t)))
+
+(use-package better-jumper
+  :ensure t
+  :commands (better-jumper-mode)
+  :init
+  :config
+  (better-jumper-mode +1)
+  (setq better-jumper-add-jump-behavior 'on-jump)
+  (setq better-jumper-use-context 'window))
 
 ;;Read
-(setq read-process-output-max (* 1024 1024))
+;; (use-package reader
+;;   :defer t
+;;   :vc t
+;;   :load-path "C:\\Users\\Administrator\\.emacs.d\\var\\el\\emacs-reader")
 
-;;Tab-bar
-(setopt tab-bar-show 1
-        tab-bar-close-button nil
-        tab-bar-format '(tab-bar-format-history tab-bar-format-tabs tab-bar-separator))
+(use-package nov
+  :commands (nov-mode)
+  :ensure t
+  :mode ("\\.epub\\'" . nov-mode)
+  :bind (:map nov-mode-map
+              ("b" . switch-to-buffer)
+              ("d" . nov-display-metadata)
+              ("x" . execute-extended-command)
+              ("i" . nov-goto-toc))
+  :config
+  (setq nov-text-widith 95))
 
-;;Buffer
-(setopt switch-to-buffer-obey-display-actions t)
-(modify-frame-parameters nil '((inhibit-double-buffering . nil)))
-(setopt frame-background-mode nil)
-(setq frame-inhibit-implied-resize t)
-;; (set-frame-parameter nil 'alpha-background 90)
-;; (add-to-list 'default-frame-alist '(alpha-background . 0.9))
+;; (use-package elfeed
+;;   :defer t
+;;   :straight (:build t)
+;;   ;;:config
+;;   :custom
+;;   ((elfeed-db-directory  (expand-file-name ".elfeed-db"
+;;                                            user-emacs-directory))))
 
-;;Server
-(setopt server-use-tcp t)
-(setq server-log t)
-(setq server-msg-size (* 1024 1024))
-(setq server-auth-dir "C:\\Users\\Administrator\\emacs-server-auth-dir"
-      server-name "admin.txt")
-                                        ;(server-running-p)
-;;Indent
-(setq-default indent-tabs-mode nil)
-;; (setq-default c-default-style "linux")
-(setq-default tab-width 4)
-(setq c-basic-offset 4)
-(setq js-indent-level 2)
-(setq css-indent-offset 2)
+;;Term/Shell
+(use-package vterm
+  :commands (vterm)
+  :load-path "C:\\Users\\Administrator\\.emacs.d\\var\\elpa"
+  :bind (("C-c t" . vterm))
+  :init
+  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *")
+  (setq vterm-copy-exclude-prompt nil)
+  (setq vterm-always-compile-module t)
+  (setq vterm-timer-delay 0.01)
+  (setq vterm-max-scrollback 20000)
+  :config
+  (when (eq system-type 'windows-nt)
+    (setq vterm-shell "powershell")))
 
-;;White-space
-(dolist (hook '(conf-mode-hook prog-mode-hook text-mode-hook))
-  (add-hook hook (lambda () (setq show-trailing-whitespace t))))
-(global-set-key (kbd "C-c <deletechar>")  'delete-trailing-whitespace)
-
-;;Treesit-font
-(setq treesit-font-lock-level 4)
-
-;;Mode line
-                                        ;(size-indication-mode)
-(setopt uniquify-buffer-name-style 'forward
-        uniquify-strip-common-suffix t)
-(line-number-mode -1)
-(setopt mode-line-process t)
-
-;;Time
-;(require 'time)
-(setopt display-time-24hr-format nil)
-
-(defun dt/display-time ()
-  "Display time string."
+(defun vm/vterm-mouse ()
+  "Vterm enable mouse."
   (interactive)
-  (message (current-time-string)))
-(global-set-key (kbd "<pause>")  'dt/display-time)
+  (if (string-equal (buffer-name) "*vterm*")
+      (inhibit-mouse-mode 0)
+    (inhibit-mouse-mode 1))
+  )
+
+(add-hook 'fundamental-mode 'vterm-mode)
+;;(setq vterm-shell "B:\\msys2//msys2_shell.cmd -defterm -here -no-start -ucrt64 -i")
+
+(use-package display-line-numbers
+  :commands (display-line-numbers-mode)
+  :init
+  (setq display-line-numbers-type (quote relative))
+  :hook ((prog-mode . display-line-numbers-mode)))
+
+(use-package ultra-scroll
+  :commands (ultra-scroll-mode)
+  :vc (:url "https://github.com/jdtsmith/ultra-scroll" :branch "main")
+  :hook
+  (after-init . ultra-scroll-mode))
+
+(use-package golden-ratio
+  :commands (golden-ratio-mode)
+  :hook (after-init . golden-ratio-mode)
+  :custom
+  (golden-ratio-auto-scale t))
+
+(defun my-which-key-sort (a b)
+  "Custom sort function to prioritize letters A B over numbers."
+  (let ((key-a (car a))
+        (key-b (car b)))
+    (if (and (string-match-p "[a-zA-Z]" (char-to-string (aref key-a 0)))
+             (not (string-match-p "[a-zA-Z]" (char-to-string (aref key-b 0)))))
+        -1
+      (if (and (not (string-match-p "[a-zA-Z]" (char-to-string (aref key-a 0))))
+               (string-match-p "[a-zA-Z]" (char-to-string (aref key-b 0))))
+          1
+        (string< (char-to-string (aref key-a 0)) (char-to-string (aref key-b 0)))))))
+
+(use-package which-key
+  :ensure t
+  :commands (which-key-mode)
+  :hook
+  (after-init . which-key-mode)
+  :config
+  (setq which-key-side-window-location 'bottom
+        which-key-sort-uppercase-first nil
+        which-key-sort-order #'my-which-key-sort
+        which-key-add-column-padding 1
+        which-key-max-display-columns nil
+        which-key-min-display-lines 6
+        which-key-side-window-slot -10
+        which-key-side-window-max-height 0.25
+        which-key-idle-delay 0.1
+        which-key-page-delay 0.1
+        which-key-max-description-length 25
+        which-key-allow-imprecise-window-fit t
+        which-key-separator " -> "))
+
+(use-package marginalia
+  :ensure t
+  :commands (marginalia-mode)
+  :custom
+  (marginalia-max-relative-age 0)
+  (marginalia--align 'right)
+  :init
+  (add-hook 'minibuffer-setup-hook #'marginalia-mode))
+
+(use-package orderless
+  :ensure t
+  :custom
+  (completing-styles '(orderles basic))
+  (orderless-matching-styles '(orderless-literal orderless-regexp))
+  (completion-category-defaults nil)
+  (completing-category-overrides nil))
+
+(use-package dired
+  :ensure nil
+  :commands (dired)
+  :hook
+  ((dired-mode . dired-hide-details-mode)
+   (dired-mode . hl-line-mode))
+  :config
+  ;;(dired-recursive-copies 'always)
+  ;;(dired-recursive-deletes 'always)
+  (setq dired-recursive-copies 'always)
+  (setq dired-recursive-deletes 'always)
+  (setq delete-by-moving-to-trash t)
+  (setq dired-listing-switches "-alh"))
+
+(use-package dired-subtree
+  :commands (dired-subtree-toggle)
+  :bind
+  ( :map dired-mode-map
+    ("<tab>" . dired-subtree-toggle)
+    ("TAB" . dired-subtree-toggle)
+    ("<backtab>" . dired-subtree-remove)
+    ("S-TAB" . dired-subtree-remove))
+  :config
+  (setq dired-subtree-use-backgrounds nil))
+
+;; (use-package bufler
+;;   :ensure t
+;;   :straight (bufler :build t)
+;;   :after dired
+;;   :bind (:map
+;;          bufler-list-mode-map
+;;          ("g" .  bufler)
+;;          ("f" .  bufler-list-group-frame)
+;;          ("F" .  bufler-list-group-make-frame)
+;;          ("N" .  bufler-list-buffer-name-workspace)
+;;          ("D" .  bufler-list-buffer-kill)
+;;          ("p" .  bufler-list-buffer-peek)
+;;          ("<apps>" .  bufler-list-buffer-save)
+;;          ("RET" . bufler-list-buffer-switch)))
+
+;;nerd-icons
+
+(use-package nerd-icons
+  :after dired
+  :ensure t)
+
+(use-package nerd-icons-dired
+  :ensure t
+  :after nerd-icons
+  :hook
+  (dired-mode . nerd-icons-dired-mode))
+
+;; (use-package nerd-icons-completion
+;;   :after marginalia
+;;   :config
+;;   (nerd-icons-completion-mode)
+;;   (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+
+(use-package nerd-icons-ibuffer
+  :ensure t
+  :hook (ibuffer-mode . nerd-icons-ibuffer-mode)
+  :init
+  (setq nerd-icons-ibuffer-human-readable-size t)
+  (setq inhibit-compacting-font-caches t))
+
+(use-package flycheck
+  :ensure t
+  :commands (global-flycheck-mode)
+  :hook (after-init . global-flycheck-mode)
+  :config
+  (setq flycheck-idle-change-delay 2.0)
+  (delq 'new-line flycheck-check-syntax-automatically)
+  (setq flycheck-emacs-lisp-load-path 'inherit)
+  (setq flycheck-display-errors-delay 0.2)
+  (add-hook 'c-mode-common-hook #'flycheck-mode)
+  )
+
+(use-package flyover
+  :ensure t
+  :after flycheck
+  :hook ((flycheck-mode . flyover-mode)
+         (flymake-mode . flyover-mode))
+  :custom
+  (flyover-checkers '(flycheck flymake))
+  (flyover-levels '(error warning info))
+  (flyover-use-theme-colors t)
+  (flyover-background-lightness 60)
+  (flyover-info-icon "ⓘ")
+  (flyover-warning-icon "⚠︎")
+  (flyover-error-icon "❌")
+  (flyover-border-style 'arrow)
+  (flyover-show-virtual-line t)
+  (flyover-virtual-line-type 'curved-dotted-arrow)
+  (flyover-line-position-offset 1)
+  (flyover-wrap-messages t)
+  (flyover-max-line-length 80)
+  (flyover-debounce-interval 0.2)
+  (flyover-cursor-debounce-interval 0.3)
+  (flyover-display-mode 'always)
+  (flyover-hide-during-completion t))
+
+(use-package ispell
+  ;;See https://rbrins.com/posts/2023-01-08-installing-spellcheck-emacs.html
+  :commands (ispell-region)
+  :ensure nil
+  :config
+  (setenv "LANG" "en_US")
+  (setq ispell-program-name "B:/Hunspell/bin/hunspell.exe")
+  (setq ispell-quietly t)
+  (setq flyspell-issue-welcome-flag nil)
+  (setq flyspell-issue-message-flag nil)
+  (setq ispell-dictionary "en_US")
+  (setq ispell-local-dictionary "en_US")
+  (setq ispell-extra-args '("-d" "en_US"))
+  (setq ispell-local-dictionary-alist
+        '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
+  (setq ispell-hunspell-dictionary-alist
+        '(("en_US"
+           "C:/Hunspell/en_US/en_US.aff"
+           "C:/Hunspell/en_US/en_US.dic"
+           nil nil nil "utf-8"))))
+
+(use-package rainbow-delimiters
+  :commands (rainbow-delimiters-mode)
+  :hook ((prog-mode . rainbow-delimiters-mode))
+  :init
+  (with-eval-after-load 'rainbow-delimiters
+    (set-face-foreground 'rainbow-delimiters-depth-1-face "#c66")  ; red
+    (set-face-foreground 'rainbow-delimiters-depth-2-face "#6c6")  ; green
+    (set-face-foreground 'rainbow-delimiters-depth-3-face "#69f")  ; blue
+    (set-face-foreground 'rainbow-delimiters-depth-4-face "#cc6")  ; yellow
+    (set-face-foreground 'rainbow-delimiters-depth-5-face "#6cc")  ; cyan
+    (set-face-foreground 'rainbow-delimiters-depth-6-face "#c6c")  ; magenta
+    (set-face-foreground 'rainbow-delimiters-depth-7-face "#ccc")  ; light gray
+    (set-face-foreground 'rainbow-delimiters-depth-8-face "#999")  ; medium gray
+    (set-face-foreground 'rainbow-delimiters-depth-9-face "#666")) ; dark gray
+  )
+
+(use-package expreg
+  :after meow
+  :config (global-set-key (kbd "M-j") 'expreg-expand))
+
+;; (use-package org-bullets
+;;   :defer 15
+;;   :after org
+;;   :hook (org-mode-hook . org-bullets-mode))
+(setq org-startup-truncated nil)
+
+(use-package simple-modeline
+  :init
+  (setq simple-modeline-segments
+        '((simple-modeline-segment-modified
+           simple-modeline-segment-buffer-name
+           simple-modeline-segment-position)
+          (
+           ;;simple-modeline-segment-minor-modes
+           simple-modeline-segment-input-method
+           simple-modeline-segment-eol
+           simple-modeline-segment-encoding
+           simple-modeline-segment-vc
+           simple-modeline-segment-misc-info
+           simple-modeline-segment-process
+           simple-modeline-segment-major-mode)))
+  :hook (after-init . simple-modeline-mode))
+
+(use-package stripspace
+  :ensure t
+  :commands stripspace-local-mode
+  :hook ((prog-mode . stripspace-local-mode)
+         (text-mode . stripspace-local-mode)
+         (conf-mode . stripspace-local-mode))
+  :custom
+  (stripspace-only-if-initially-clean nil)
+  (stripspace-restore-column t))
 
 ;;Image
-(auto-image-file-mode t)
-(setq image-use-external-converter t)
+;; (straight-use-package '(org-yt
+;;                         :type git
+;;                         :host github
+;;                         :repo "TobiasZawada/org-yt"
+;;                         :ensure t
+;;                         :defer t
+;;                         :defer 10))
+                                        ;(require 'org-yt)
 
-;;Edit
-(delete-selection-mode t)
 
-;;Custom.el
-;; (add-hook 'after-init-hook (lambda ()
-;;                              (let ((inhibit-message t))
-;;                                (when (file-exists-p custom-file)
-;;                                  (load-file custom-file)))))
-(setq custom-file nil)
+                                        ;(org-link-set-parameters "http"  :image-data-fun #'org-http-image-data-fn)
+                                        ;(org-link-set-parameters "https" :image-data-fun #'org-http-image-data-fn)
+(progn ;    `isearch'
+  (setq isearch-allow-scroll nil))
 
-;;Code fold
-(add-hook 'prog-mode-hook #'hs-minor-mode)
+(use-package eieio
+  :defer t)
 
-;; open browser when click hyperlink
-(add-hook 'prog-mode-hook 'goto-address-prog-mode)
-(setq goto-address-mail-face 'link)
+(use-package helpful
+  :ensure t
+  :defer 5)
 
-;;transparent
-(when (and (eq system-type 'windows-nt)
-           (or (display-graphic-p)
-               (daemonp)))
-  (ignore-error 'file-missing
-    ;; Put DLL into `load-path'.
-    (module-load "C:\\Users\\Administrator\\emacs\\bin//pop_select.dll")))
+(use-package powershell
+  :ensure t
+  :commands (powershell-mode)
+  :mode
+  ("\\.ps1\\'" . powershell-mode))
 
-(defconst transp 1)
-(defun tt/toggle-transparent ()
-  "Toggle-frame-transparency."
-  (interactive)
-  (if (> transp 0)
-      (progn
-        (pop-select/transparent-set-all-frame 200)
-        (defconst transp -1))
-    (progn
-      (pop-select/transparent-set-all-frame 255)
-      (defconst transp 1))
+;; (use-package geiser-guile
+;;   :defer t
+;;   :mode ("\\.guile\\'" . scheme-mode))
+
+(use-package sicp
+  :commands (info))
+
+(use-package racket-mode
+  :commands (racket-mode)
+  :mode
+  ("\\.scm\\'" . racket-mode))
+
+;; (use-package clojure-mode
+;;   :defer t
+;;   :mode
+;;   ("\\.clj\\'" . clojure-mode))
+
+(use-package ahk-mode
+  :commands (ahk-mode)
+  :mode
+  ("\\.ahk\\'" . ahk-mode))
+
+;; (use-package asm-mode
+;;   :defer t
+;;   :mode
+;;   ("\\.asm\\'" . asm-mode)
+;;   :config
+;;   (setq asm-comment-char ?#))
+
+;;Dictionary
+(setq dictionary-server "dict.org")
+(use-package quick-sdcv
+  :ensure t
+  :commands (quick-sdcv-search-at-point)
+  :bind (:map quick-sdcv-mode-map
+              ("q" . quit-window))
+  :custom
+  (quick-sdcv-dictionary-prefix-symbol "►")
+  (quick-sdcv-ellipsis " ▼")
+  :config
+  (setq quick-sdcv-unique-buffers nil)
+                                        ;(setq quick-sdcv-exact-search t)
+  (setq quick-sdcv-hist-size 100)
+  (add-hook 'quick-sdcv-mode-hook #'goto-address-mode)
+  )
+
+(use-package doc-view
+  :commands (doc-view-mode)
+  )
+                                        ;(doc-view-ghostscript-program
+                                        ;"B:/gs10.06.0/bin/gswin64c.exe")
+;;ripgrep
+;; (use-package rg
+;;   :commands (rg)
+;;   :bind
+;;   (("C-c r" . rg))
+;;   :config
+;;   (setq rg-w32-unicode t))
+
+(use-package deadgrep
+  :commands (deadgrep))
+
+(with-eval-after-load 'inhibit-mouse
+  (progn
+    (setq isearch-allow-scroll 'unlimited)
+    (setq isearch-lazy-count t)
+                                        ;(require 'rg-isearch)
+                                        ;(define-key isearch-mode-map "\M-sr" 'rg-isearch-menu)
     ))
-(global-set-key (kbd "M-<f12>") 'tt/toggle-transparent)
 
-(when(display-graphic-p)
-  (tt/toggle-transparent))
+;;media
+(use-package emms
+  :ensure t
+  :commands (emms)
+  :straight (:build t)
+  :init
+  (setq emms-source-file-default-directory (expand-file-name "E://Music"))
+  :bind
+  (:map emms-playlist-mode-map
+        ("M-<f1>" . emms-stop)
+        ("M-<f2>" . emms-start)
+        ("M-<f5>" . emms-previous)
+        ("M-<f7>" . emms-next)
+        ("r" . emms-random)
+        ("i" . emms-insert-directory)
+        ("l" . emms-lyrics-lrclib-get)
+        ("M-l" . emms-lyrics-toggle-display-on-minibuffer)
+        ("b" . emms-lyrics-toggle-display-buffer)
+        ("s" . emms-show)
+        ("M-," . emms-seek-backward)
+        ("M-." . emms-seek-forward)
+        ("D" . emms-playlist-clear)
+        ("S" . emms-playlist-save)
+        ("A" . emms-playlist-sort-by-natural-order)
+        ("R" . emms-playlist-sort-by-random)
+        )
+  :config
+  (require 'emms-setup)
+  (emms-all)
+  (emms-cache-enable)
+  (require 'emms-tag-editor)
+  (require 'emms-info-native)
+  (setq emms-info-functions '(emms-info-native))
+  (setq emms-tag-editor-tagfile-functions
+        '(("mp3" . emms-info-native)
+          ("ogg" . emms-info-native)
+          ("wav" . emms-info-native)
+          ("flac" . emms-info-native)))
+  (setq emms-player-list '(emms-player-mplayer)
+        emms-info-asynchronously t
+        emms-source-file-directory-tree-function 'emms-source-file-directory-tree-find
+        emms-last-played-format-alist '(((t) . "%H:%M "))
+        emms-show-format "🎧 Now: %s"
+        emms-lyrics-display-buffer t
+        emms-lyrics-scroll-p nil
+        emms-playlist-mode-center-when-go t
+        emms-lyrics-display-on-modeline nil
+        emms-lyrics-display-on-minibuffer t
+        emms-playlist-buffer-name "*EMMS*"
+        )
+  )
 
-;;Uncommented
-;;(pop-select/transparent-set-background 255 255 255 255)
+(with-eval-after-load 'emms
+  (progn
+    (emms-lyrics 1)
+    (cl-pushnew '(emms-playlist-mode . insert) meow-mode-state-list)))
 
-(save-place-mode 1)
-(setopt indicate-empty-lines t)
-(setq-default indicate-buffer-boundaries 'left)
-(setq require-final-newline t)
-(setq sentence-end-double-space nil)
+(defun se/start-emms ()
+  "Start emms with meow-insert."
+  (interactive)
+  (emms)
+  (emms-playing-time 1)
+  (meow-insert)
+  )
 
-(setopt overflow-newline-into-fringe t)
-(setopt display-hourglass t
-        hourglass-delay 0)
-(setopt no-redraw-on-reenter t)
-                                        ;(setopt visible-bell t)
-                                        ;(setq fast-but-imprecise-scrolling t)
-                                        ;(global-so-long-mode t)
-(provide 'pre-init)
-;;; pre-init.el ends here
+;;Also check 'customize-group'
+(use-package bongo
+  :ensure t
+  :commands (bongo-playlist)
+  :config
+  (setq bongo-logo nil)
+  (setq bongo-display-track-icons nil)
+  (setq bongo-display-header-icons t)
+  (setq bongo-display-inline-playback-progress t)
+  (setq bongo-mark-played-tracks t)
+  (setq bongo-field-separator (propertize " . " 'face 'shadow))
+  (setq bongo-default-directory "E:/Music/")
+  (setq bongo-insert-whole-directory-trees t)
+  (setq bongo-prefer-library-buffers nil)
+  (setq bongo-display-track-lengths t)
+  (setq bongo-display-playback-mode-indicator t)
+  (setq bongo-display-inline-playback-progress t)
+  (setq bongo-header-line-mode t)
+  (setq bongo-mode-line-indicator-mode t)
+  (setq bongo-enabled-backends '(mpv)) ;mpv/mplayer
+  ;;; Bongo playlist buffer
+  (defvar prot/bongo-playlist-delimiter
+    "\n******************************\n\n"
+    "Delimiter for inserted items in `bongo' playlist buffers.")
+
+  (defun prot/bongo-playlist-section ()
+    (bongo-insert-comment-text
+     prot/bongo-playlist-delimiter))
+
+  (defun prot/bongo-paylist-section-next ()
+    "Move to next `bongo' playlist custom section delimiter."
+    (interactive)
+    (let ((section "^\\*+$"))
+      (if (save-excursion (re-search-forward section nil t))
+          (progn
+            (goto-char (point-at-eol))
+            (re-search-forward section nil t))
+        (goto-char (point-max)))))
+
+  (defun prot/bongo-paylist-section-previous ()
+    "Move to previous `bongo' playlist custom section delimiter."
+    (interactive)
+    (let ((section "^\\*+$"))
+      (if (save-excursion (re-search-backward section nil t))
+          (progn
+            (goto-char (point-at-bol))
+            (re-search-backward section nil t))
+        (goto-char (point-min)))))
+
+  (defun prot/bongo-playlist-mark-section ()
+    "Mark `bongo' playlist section, delimited by custom markers.
+The marker is `prot/bongo-playlist-delimiter'."
+    (interactive)
+    (let ((section "^\\*+$"))
+      (search-forward-regexp section nil t)
+      (push-mark nil t)
+      (forward-line -1)
+      ;; REVIEW any predicate to replace this `save-excursion'?
+      (if (save-excursion (re-search-backward section nil t))
+          (progn
+            (search-backward-regexp section nil t)
+            (forward-line 1))
+        (goto-char (point-min)))
+      (activate-mark)))
+
+  (defun prot/bongo-playlist-kill-section ()
+    "Kill `bongo' playlist-section at point.
+This operates on a custom delimited section of the buffer.  See
+`prot/bongo-playlist-kill-section'."
+    (interactive)
+    (prot/bongo-playlist-mark-section)
+    (bongo-kill))
+
+  (defun prot/bongo-playlist-play-random ()
+    "Play random `bongo' track and determine further conditions."
+    (interactive)
+    (unless (bongo-playlist-buffer)
+      (bongo-playlist-buffer))
+    (when (or (bongo-playlist-buffer-p)
+              (bongo-library-buffer-p))
+      (unless (bongo-playing-p)
+        (with-current-buffer (bongo-playlist-buffer)
+          (bongo-play-random)
+          (bongo-random-playback-mode 1)
+          (bongo-recenter)))))
+
+  (defun prot/bongo-playlist-random-toggle ()
+    "Toggle `bongo-random-playback-mode' in playlist buffers."
+    (interactive)
+    (if (eq bongo-next-action 'bongo-play-random-or-stop)
+        (bongo-progressive-playback-mode)
+      (bongo-random-playback-mode)))
+
+  (defun prot/bongo-playlist-reset ()
+    "Stop playback and reset `bongo' playlist marks.
+To reset the playlist is to undo the marks produced by non-nil
+`bongo-mark-played-tracks'."
+    (interactive)
+    (when (bongo-playlist-buffer-p)
+      (bongo-stop)
+      (bongo-reset-playlist)))
+
+  (defun prot/bongo-playlist-terminate ()
+    "Stop playback and clear the entire `bongo' playlist buffer.
+Contrary to the standard `bongo-erase-buffer', this also removes
+the currently-playing track."
+    (interactive)
+    (when (bongo-playlist-buffer-p)
+      (bongo-stop)
+      (bongo-erase-buffer)))
+
+  (defun prot/bongo-playlist-insert-playlist-file ()
+    "Insert contents of playlist file to a `bongo' playlist.
+Upon insertion, playback starts immediately, in accordance with
+`prot/bongo-play-random'.
+
+The available options at the completion prompt point to files
+that hold filesystem paths of media items.  Think of them as
+'directories of directories' that mix manually selected media
+items.
+
+Also see `prot/bongo-dired-make-playlist-file'."
+    (interactive)
+    (let* ((path "E:/Music/")
+           (dotless directory-files-no-dot-files-regexp)
+           (playlists (mapcar
+                       'abbreviate-file-name
+                       (directory-files path nil dotless)))
+           (choice (completing-read "Insert playlist: " playlists nil t)))
+      (if (bongo-playlist-buffer-p)
+          (progn
+            (save-excursion
+              (goto-char (point-max))
+              (bongo-insert-playlist-contents
+               (format "%s%s" path choice))
+              (prot/bongo-playlist-section))
+            (prot/bongo-playlist-play-random))
+        (user-error "Not in a `bongo' playlist buffer"))))
+
+;;; Bongo + Dired (bongo library buffer)
+  (defmacro prot/bongo-dired-library (name doc val)
+    "Create `bongo' library function NAME with DOC and VAL."
+    `(defun ,name ()
+       ,doc
+       (when (string-match-p "\\`E:/Music/" default-directory)
+         (bongo-dired-library-mode ,val))))
+
+  (prot/bongo-dired-library
+   prot/bongo-dired-library-enable
+   "Set `bongo-dired-library-mode' when accessing ~/Music.
+
+Add this to `dired-mode-hook'.  Upon activation, the directory
+and all its sub-directories become a valid library buffer for
+Bongo, from where we can, among others, add tracks to playlists.
+The added benefit is that Dired will continue to behave as
+normal, making this a superior alternative to a purpose-specific
+library buffer.
+
+Note, though, that this will interfere with `wdired-mode'.  See
+`prot/bongo-dired-library-disable'."
+   1)
+
+  ;; NOTE `prot/bongo-dired-library-enable' does not get reactivated
+  ;; upon exiting `wdired-mode'.
+  ;;
+  ;; TODO reactivate bongo dired library upon wdired exit
+  (prot/bongo-dired-library
+   prot/bongo-dired-library-disable
+   "Unset `bongo-dired-library-mode' when accessing ~/Music.
+This should be added `wdired-mode-hook'.  For more, refer to
+`prot/bongo-dired-library-enable'."
+   -1)
+
+  (defun prot/bongo-dired-insert-files ()
+    "Add files in a `dired' buffer to the `bongo' playlist."
+    (let ((media (dired-get-marked-files)))
+      (with-current-buffer (bongo-playlist-buffer)
+        (goto-char (point-max))
+        (mapc 'bongo-insert-file media)
+        (prot/bongo-playlist-section))
+      (with-current-buffer (bongo-library-buffer)
+        (dired-next-line 1))))
+
+  (defun prot/bongo-dired-insert ()
+    "Add `dired' item at point or marks to `bongo' playlist.
+
+The playlist is created, if necessary, while some other tweaks
+are introduced.  See `prot/bongo-dired-insert-files' as well as
+`prot/bongo-playlist-play-random'.
+
+Meant to work while inside a `dired' buffer that doubles as a
+library buffer (see `prot/bongo-dired-library')."
+    (interactive)
+    (when (bongo-library-buffer-p)
+      (unless (bongo-playlist-buffer-p)
+        (bongo-playlist-buffer))
+      (prot/bongo-dired-insert-files)
+      (prot/bongo-playlist-play-random)))
+
+  (defun prot/bongo-dired-make-playlist-file ()
+    "Add `dired' marked items to playlist file using completion.
+
+These files are meant to reference filesystem paths.  They ease
+the task of playing media from closely related directory trees,
+without having to interfere with the user's directory
+structure (e.g. a playlist file 'rock' can include the paths of
+~/Music/Scorpions and ~/Music/Queen).
+
+This works by appending the absolute filesystem path of each item
+to the selected playlist file.  If no marks are available, the
+item at point will be used instead.
+
+Selecting a non-existent file at the prompt will create a new
+entry whose name matches user input.  Depending on the completion
+framework, such as with `icomplete-mode', this may require a
+forced exit (e.g. \\[exit-minibuffer] to parse the input without
+further questions).
+
+Also see `prot/bongo-playlist-insert-playlist-file'."
+    (interactive)
+    (let* ((dotless directory-files-no-dot-files-regexp)
+           (pldir "E:/Music/")
+           (playlists (mapcar
+                       'abbreviate-file-name
+                       (directory-files pldir nil dotless)))
+           (plname (completing-read "Select playlist: " playlists nil nil))
+           (plfile (format "%s/%s" pldir plname))
+           (media-paths
+            (if (derived-mode-p 'dired-mode)
+                ;; TODO more efficient way to do ensure newline ending?
+                ;;
+                ;; The issue is that we need to have a newline at the
+                ;; end of the file, so that when we append again we
+                ;; start on an empty line.
+                (concat
+                 (mapconcat #'identity
+                            (dired-get-marked-files)
+                            "\n")
+                 "\n")
+              (user-error "Not in a `dired' buffer"))))
+      ;; The following `when' just checks for an empty string.  If we
+      ;; wanted to make this more robust we should also check for names
+      ;; that contain only spaces and/or invalid characters…  This is
+      ;; good enough for me.
+      (when (string-empty-p plname)
+        (user-error "No playlist file has been specified"))
+      (unless (file-directory-p pldir)
+        (make-directory pldir))
+      (unless (and (file-exists-p plfile)
+                   (file-readable-p plfile)
+                   (not (file-directory-p plfile)))
+        (make-empty-file plfile))
+      (append-to-file media-paths nil plfile)
+      (with-current-buffer (find-file-noselect plfile)
+        (delete-duplicate-lines (point-min) (point-max))
+        (sort-lines nil (point-min) (point-max))
+        (save-buffer)
+        (kill-buffer))))
+    ;;;kbd that make sense
+  :hook ((dired-mode-hook . prot/bongo-dired-library-enable)
+         (dired-mode-hook . prot/bongo-dired-library-disable))
+  :bind (:map bongo-playlist-mode-map
+              ("h" . bongo-undo)
+              ("q" . bongo-redisplay)
+              ("M-D" . bongo-quit)
+              ("d" . bongo-recenter)
+              ("<f2>" . bongo-pause/resume)
+              ("n" . bongo-next)
+              ("p" . bongo-previous)
+              ("<f1>" . bongo-start/stop)
+              ("c" . bongo-mark-region)
+              ("v" . bongo-kill-marked)
+              ("D" . bongo-delete-played-tracks)
+              ("a" . bongo-next-object)
+              ("w" . bongo-previous-object)
+              ("M-a" . prot/bongo-paylist-section-next)
+              ("M-w" . prot/bongo-paylist-section-previous)
+              ;; ("M-m" . prot/bongo-playlist-mark-section)
+              ;;("M-d" . prot/bongo-playlist-kill-section)
+              ("s" . bongo-play-previous)
+              ("x" . bongo-play-next)
+              ("M-r" . prot/bongo-playlist-reset)
+              ("M-D" . prot/bongo-playlist-terminate)
+              ("r" . bongo-play-random)
+              ("R" . prot/bongo-playlist-random-toggle)
+              ;;("R" . bongo-rename-line)
+              ;;("l" . bongo-dired-line)       ; Jump to dir of file at point
+              ;;("J" . dired-jump)             ; Jump to library buffer
+              ;;("I" . prot/bongo-playlist-insert-playlist-file)
+              ("M-I" . bongo-insert-special)
+              ;; :map bongo-dired-library-mode-map
+              ;; ("<C-return>" . prot/bongo-dired-insert)
+              ;; ("C-c SPC" . prot/bongo-dired-insert)
+              ;; ("C-c +" . prot/bongo-dired-make-playlist-file)
+              )) ;mplayer
+
+(defun bf/bongo-fix-mpv ()
+  "Temporarily ignore mpv 'error cause by 'windows-nt (prevent Debugger entered)."
+  (interactive)
+  (when (string-equal (buffer-name) "*Bongo Playlist*")
+    (add-to-list 'debug-ignored-errors 'error)
+    ))
+
+(add-hook 'bongo-playlist-mode-hook 'bf/bongo-fix-mpv)
+
+;; (defun bf1/bongo-fix-ignore ()
+;;   "Remove 'error' from 'debug-ignored-errors'."
+;;   (interactive)
+;;   (setopt debug-ignored-errors
+;;           '(beginning-of-line
+;;             beginning-of-buffer end-of-line
+;;             end-of-buffer end-of-file buffer-read-only
+;;             file-supersession mark-inactive user-error)))
+
+;;'Error' running timer ‘bongo-mpv-player-tick’: ('error' "Unknown address family")
+
+(defun bf2/fix-echo ()
+  "Suppress disgusting 'error' message spam in the echo area."
+  (interactive)
+  (defadvice message (around my-message-filter activate)
+    (unless (string-match "Error running timer" (or (ad-get-arg 0) ""))
+      ad-do-it)))
+
+(add-hook 'bongo-playlist-mode-hook 'bf2/fix-echo)
+
+;;media ends here
+
+(use-package eros
+  :ensure t
+  :commands (eros-mode)
+  :config (eros-mode))
+
+(use-package eww
+  :ensure nil
+  :commands (eww)
+  :straight (:type built-in)
+  :bind (:map eww-mode-map
+              ("b" . switch-to-buffer)
+              ("x" . execute-extended-command)
+              )
+  :config
+  (setq eww-auto-rename-buffer 'title))
+
+(use-package centered-cursor-mode
+  :ensure t
+  :after meow
+  :config
+  (global-centered-cursor-mode))
+
+(use-package focus
+  :commands (focus-mode))
+
+(global-set-key (kbd "C-<f12>") 'focus-mode)
+
+
+(use-package goggles
+  :hook ((prog-mode-hook . goggles-mode)
+         (text-mode-hook . goggles-mode))
+  :config
+  (setq-default goggles-pulse t))
+
+(use-package vundo
+  :ensure t
+  :bind (("C-c u" . vundo))
+  :commands vundo
+  :config
+  (setq vundo-glyph-alist vundo-unicode-symbols
+        vundo-window-side 'bottom
+        vundo-max-column 60))
+
+(use-package crux
+  :defer t
+  )
+
+;; (USE-package keyfreq
+;;   :hook
+;;   (after-init . keyfreq-mode)
+;;   :config
+;;   (keyfreq-autosave-mode))
+
+;; (use-package dash
+;;   :defer 5)
+;; (eval-after-load "dash" '(dash-enable-font-lock))
+
+(use-package transient
+  :ensure nil)
+
+(use-package restart-emacs
+  :ensure t
+  :defer t
+  :commands restart-emacs)
+
+;;Defun misc. Cool or Useful elisp 'func' I found
+(defun toggle-mode-line ()
+  "Toggles the modeline on and off."
+  (interactive)
+  (setq mode-line-format
+        (if (equal mode-line-format nil)
+            (default-value 'mode-line-format)) )
+  (redraw-display))
+
+(global-set-key [f12] 'toggle-mode-line)
+
+(defun jump-middle ()
+  "Jump to the middle of the line."
+  (interactive)
+  (let*
+      (
+       (begin (line-beginning-position))
+       (end (line-end-position))
+       (middle (/ (+ end begin) 2))
+       )
+    (goto-char middle))
+  )
+
+(global-set-key (kbd "C-<return>") 'jump-middle)
+
+(defun www/search-website ()
+  "Browse url."
+  (interactive)
+  (browse-url (concat "https://search.marginalia.nu/search?profile=yolo&js=no-js&query="
+                      (read-string "Search: "))))
+
+(defun jp/jump-paren (arg)
+  "If on left parenthesis then jump to right. Vice versa 'ARG'."
+  (interactive "^p")
+  (cond
+   ((looking-at "\\s\(")
+    (forward-list 1))
+   ((looking-at "\\s\)")
+    (forward-char 1)
+    (backward-list 1))
+   (t (message "No parenthesis."))))
+
+(global-set-key (kbd "C-<apps>") 'jp/jump-paren)
+
+(provide 'post-init)
+;;; post-init.el ends here
