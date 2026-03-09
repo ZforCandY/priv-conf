@@ -523,6 +523,9 @@ Only when you creating you truly alive.
     ))
 (global-set-key (kbd "M-<f12>") 'tt/toggle-transparent)
 
+(when(display-graphic-p)
+  (tt/toggle-transparent))
+
 ;;Uncommented
 ;;(pop-select/transparent-set-background 255 255 255 255)
 
