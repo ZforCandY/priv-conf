@@ -132,7 +132,7 @@
    '("x" . execute-extended-command)
    '("<apps>" . "C-x C-s")
    '("M-<f9>" . "C-c g")
-   '("<f9>" . "C-x g")
+   '("<f9>" . se/start-emms)
    '("?" . compile)
    '("!" . previous-buffer)
    '("@" . next-buffer)
@@ -178,7 +178,7 @@
 (use-package leuven-theme
   :ensure t
   :config
-  (load-theme 'leuven t)
+  (load-theme 'leuven-dark t)
   :init
   (global-set-key (kbd "M-/") #'theme-choose-variant))
 
@@ -298,12 +298,12 @@
 ;;         corfu-auto-delay 0.1
 ;;         corfu-auto-prefix 1))
 
-;; (use-package cape
-;;   :ensure t
-;;   :defer t
-;;   :init
-;;   (add-to-list 'completion-at-point-functions #'cape-file)
-;;   (add-to-list 'completion-at-point-functions #'cape-dabbrev))
+(use-package cape
+  :ensure t
+  :defer t
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev))
 
 (use-package inhibit-mouse
   :after server
@@ -993,12 +993,16 @@
   (setq emms-source-file-default-directory (expand-file-name "E://Music"))
   :bind
   (:map emms-playlist-mode-map
-        ("M-<f6>" . emms-pause)
+        ("M-<f1>" . emms-stop)
+        ("M-<f2>" . emms-start)
         ("M-<f5>" . emms-previous)
         ("M-<f7>" . emms-next)
         ("r" . emms-random)
         ("i" . emms-insert-directory)
-        ("m" . emms-show)
+        ("l" . emms-lyrics-lrclib-get)
+        ("M-l" . emms-lyrics-toggle-display-on-minibuffer)
+        ("b" . emms-lyrics-toggle-display-buffer)
+        ("s" . emms-show)
         ("M-," . emms-seek-backward)
         ("M-." . emms-seek-forward)
         ("D" . emms-playlist-clear)
@@ -1022,7 +1026,28 @@
         emms-info-asynchronously t
         emms-source-file-directory-tree-function 'emms-source-file-directory-tree-find
         emms-last-played-format-alist '(((t) . "%H:%M "))
-        emms-show-format "🎧 Now: %s"))
+        emms-show-format "🎧 Now: %s"
+        emms-lyrics-display-buffer t
+        emms-lyrics-scroll-p nil
+        emms-playlist-mode-center-when-go t
+        emms-lyrics-display-on-modeline nil
+        emms-lyrics-display-on-minibuffer t
+        emms-playlist-buffer-name "*EMMS*"
+        )
+  )
+
+(with-eval-after-load 'emms
+  (progn
+    (emms-lyrics 1)
+    (cl-pushnew '(emms-playlist-mode . insert) meow-mode-state-list)))
+
+(defun se/start-emms ()
+  "Start emms with meow-insert."
+  (interactive)
+  (emms)
+  (emms-playing-time 1)
+  (meow-insert)
+  )
 
 ;;Also check 'customize-group'
 (use-package bongo
