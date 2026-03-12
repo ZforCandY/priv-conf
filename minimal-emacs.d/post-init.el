@@ -175,49 +175,49 @@
                                         ;grandshell-theme
                                         ;tomorrow-night-deepblue-theme
                                         ;(load-theme 'misterioso)
-(use-package leuven-theme
-  :ensure t
-  :config
-  (load-theme 'leuven-dark t)
-  :init
-  (global-set-key (kbd "M-/") #'theme-choose-variant))
-
-;; (use-package modus-themes
+;; (use-package leuven-theme
 ;;   :ensure t
-;;   :defer t
-;;   :init
-;;   (modus-themes-include-derivatives-mode 1)
-;;   (modus-themes-load-theme 'modus-operandi-tinted)
-;;   :bind
-;;   (("M-/" . modus-themes-toggle)
-;;    ("C-*" . modus-themes-select)
-;;    ("M-*" . modus-themes-load-random))
 ;;   :config
-;;   (setq modus-themes-to-toggle '(modus-vivendi-tinted modus-operandi-tinted)
-;;         modus-themes-to-rotate modus-themes-items
-;;         modus-themes-mixed-fonts t
-;;         modus-themes-variable-pitch-ui t
-;;         modus-themes-italic-constructs t
-;;         modus-themes-bold-constructs t
-;;         modus-themes-completions '((t . (bold)))
-;;         modus-themes-prompts '(bold)
-;;         modus-themes-headings
-;;         '((agenda-structure . (variable-pitch light 2.2))
-;;           (agenda-date . (variable-pitch regular 1.3))
-;;           (t . (regular 1.15))))
-;;   (setq modus-themes-common-palette-overrides nil)
-;;   (setq modus-themes-mode-line '(accented borderless padded))
-;;   (setq modus-themes-region '(bg-only no-extend))
-;;   (setq modus-themes-completions 'opinionated)
-;;   (setq modus-themes-paren-match '(bold intense underline))
-;;   (setq modus-themes-syntax '(alt-syntax))
-;;   (setq modus-themes-headings
-;;         '((1 . (rainbow overline background 1.4))
-;;           (2 . (rainbow background 1.3))
-;;           (3 . (rainbow bold 1.2))
-;;           (t . (semilight 1.1))))
-;;   (setq modus-themes-scale-headings t)
-;;   (setq modus-themes-org-blocks 'gray-background))
+;;   (load-theme 'leuven-dark t)
+;;   :init
+;;   (global-set-key (kbd "M-/") #'theme-choose-variant))
+
+(use-package modus-themes
+  :ensure t
+  :defer t
+  :init
+  (modus-themes-include-derivatives-mode 1)
+  (modus-themes-load-theme 'modus-operandi)
+  :bind
+  (("M-/" . modus-themes-toggle)
+   ("C-*" . modus-themes-select)
+   ("M-*" . modus-themes-load-random))
+  :config
+  (setq modus-themes-to-toggle '(modus-operandi-tinted modus-operandi)
+        modus-themes-to-rotate modus-themes-items
+        modus-themes-mixed-fonts t
+        modus-themes-variable-pitch-ui t
+        modus-themes-italic-constructs t
+        modus-themes-bold-constructs t
+        modus-themes-completions '((t . (bold)))
+        modus-themes-prompts '(bold)
+        modus-themes-headings
+        '((agenda-structure . (variable-pitch light 2.2))
+          (agenda-date . (variable-pitch regular 1.3))
+          (t . (regular 1.15))))
+  (setq modus-themes-common-palette-overrides nil)
+  (setq modus-themes-mode-line '(accented borderless padded))
+  (setq modus-themes-region '(bg-only no-extend))
+  (setq modus-themes-completions 'opinionated)
+  (setq modus-themes-paren-match '(bold intense underline))
+  (setq modus-themes-syntax '(alt-syntax))
+  (setq modus-themes-headings
+        '((1 . (rainbow overline background 1.4))
+          (2 . (rainbow background 1.3))
+          (3 . (rainbow bold 1.2))
+          (t . (semilight 1.1))))
+  (setq modus-themes-scale-headings t)
+  (setq modus-themes-org-blocks 'gray-background))
 
                                         ;(native-comp-available-p)
 :Straight.el
@@ -501,7 +501,20 @@
                       (mode . eshell-mode)))
          ("help"    (or
                      (name . "^\\*Help\\*$")
-                     (name . "^\\*info\\*$")))
+                     (name . "^\\*info\\*$")
+                     (name . "^\\*sdcv\\*$")))
+         ("media"     (or
+                       (mode . emms-playlist-mode)
+                       (mode . bongo-playlist-mode)
+                       (name . "^\\*EMMS*\\*$")
+                       (name . "^\\*Bongo\\*$")))
+         ("init"     (or
+                      (name . "^\\init\\.el$")
+                      (name . "^\\early-init\\.el$")
+                      (name . "^\\pre-early-init\\.el$")
+                      (name . "^\\post-early-init\\.el$")
+                      (name . "^\\pre-init\\.el$")
+                      (name . "^\\post-init\\.el$")))
          )))
 
 (add-hook 'ibuffer-mode-hook
@@ -1042,6 +1055,8 @@
         ("l" . emms-lyrics-lrclib-get)
         ("M-l" . emms-lyrics-toggle-display-on-minibuffer)
         ("b" . emms-lyrics-toggle-display-buffer)
+        ("M-D" . quit-window)
+        ("q" . emms-pause)
         ("s" . emms-show)
         ("M-," . emms-seek-backward)
         ("M-." . emms-seek-forward)
