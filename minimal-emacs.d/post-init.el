@@ -391,16 +391,15 @@
   :commands (global-company-mode)
   :config
   (setopt company-idle-delay 0
-          company-minimum-prefix-length 2)
-  (setopt company-dabbrev-code-everywhere t)
-  (setopt company-dabbrev-code-other-buffers t
-          company-dabbrev-code-time-limit 2)
-  (setopt company-show-quick-access t
+          company-minimum-prefix-length 2
+          company-dabbrev-code-everywhere t
+          company-dabbrev-code-other-buffers t
+          company-dabbrev-code-time-limit 2
+          company-show-quick-access t
           company-tooltip-offset-display 'lines
           company-tooltip-limit 10)
   (setq company-tooltip-align-annotations t
-        company-require-match 'never
-        )
+        company-require-match 'never)
   :hook
   (after-init . global-company-mode)
   )
@@ -433,7 +432,7 @@
 (use-package org
   :straight t
   :defer t
-  :ensure t
+  :ensure nil
   :commands (org-mode org-version)
   :mode
   ("\\.org\\'" . org-mode)
@@ -479,9 +478,39 @@
   :ensure nil
   :commands (ibuffer))
 
+;; Ibuffer filters
+(setq ibuffer-saved-filter-groups
+      '(("default"
+         ("org"     (or
+                     (mode . org-mode)
+                     (name . "^\\*Org Src")
+                     (name . "^\\*Org Agenda\\*$")))
+         ("tramp"   (name . "^\\*tramp.*"))
+         ("emacs"   (or
+                     (name . "^\\*scratch\\*$")
+                     (name . "^\\*Messages\\*$")
+                     (name . "^\\*Warnings\\*$")
+                     (name . "^\\*Shell Command Output\\*$")
+                     (name . "^\\*Async-native-compile-log\\*$")))
+         ("ediff"   (name . "^\\*[Ee]diff.*"))
+         ("vc"      (name . "^\\*vc-.*"))
+         ("dired"   (mode . dired-mode))
+         ("terminal" (or
+                      (mode . vterm-mode)
+                      (mode . shell-mode)
+                      (mode . eshell-mode)))
+         ("help"    (or
+                     (name . "^\\*Help\\*$")
+                     (name . "^\\*info\\*$")))
+         )))
+
+(add-hook 'ibuffer-mode-hook
+          (lambda ()
+            (ibuffer-switch-to-saved-filter-groups "default")))
+(setq ibuffer-show-empty-filter-groups nil)
+
 (use-package buffer-terminator
   :ensure t
-  :defer 3
   :custom
   (buffer-terminator-verbose nil)
   ;; Set the inactivity timeout (in seconds) after which buffers are considered
@@ -496,7 +525,6 @@
 ;; Enables automatic indentation of code while typing
 (use-package aggressive-indent
   :ensure t
-  :defer 3
   :commands aggressive-indent-mode
   :hook
   (c-mode . aggressive-indent-mode)
@@ -507,13 +535,11 @@
 ;; Highlights function and variable definitions in Emacs Lisp mode
 (use-package highlight-defined
   :ensure t
-  :defer 3
   :commands highlight-defined-mode
   :hook
   (emacs-lisp-mode . highlight-defined-mode))
 
 ;; Prevent parenthesis imbalance
-
 (use-package paredit
   :ensure t
   :commands paredit-mode
@@ -536,7 +562,6 @@
 (global-set-key (kbd "<f4>") 'tp/toggle-paredit)
 
 (use-package paxedit
-  :defer 3
   :ensure t
   :commands paxedit-mode
   :hook
@@ -674,7 +699,7 @@
         (string< (char-to-string (aref key-a 0)) (char-to-string (aref key-b 0)))))))
 
 (use-package which-key
-  :ensure t
+  :ensure nil
   :commands (which-key-mode)
   :hook
   (after-init . which-key-mode)
@@ -704,11 +729,15 @@
 
 (use-package orderless
   :ensure t
-  :custom
-  (completing-styles '(orderles basic))
-  (orderless-matching-styles '(orderless-literal orderless-regexp))
-  (completion-category-defaults nil)
-  (completing-category-overrides nil))
+  :straight t
+  :defer t
+  :after vertico
+  :init
+  (setq completion-styles '(orderless basic)
+        orderless-matching-styles '(orderless-literal orderless-regexp)
+        completion-category-defaults nil
+        completion-category-overrides nil)
+  )
 
 (use-package dired
   :ensure nil
@@ -719,6 +748,7 @@
   :config
   ;;(dired-recursive-copies 'always)
   ;;(dired-recursive-deletes 'always)
+  ;;(setq dired-kill-when-opening-new-dired-buffer t)
   (setq dired-recursive-copies 'always)
   (setq dired-recursive-deletes 'always)
   (setq delete-by-moving-to-trash t)
@@ -898,6 +928,15 @@
 
                                         ;(org-link-set-parameters "http"  :image-data-fun #'org-http-image-data-fn)
                                         ;(org-link-set-parameters "https" :image-data-fun #'org-http-image-data-fn)
+
+(use-package isearch
+  :ensure nil
+  :config
+  (setq isearch-lazy-count t)
+  (setq lazy-count-prefix-format "(%s/%s) ")
+  (setq lazy-count-suffix-format nil)
+  (setq search-whitespace-regexp ".*?"))
+
 (progn ;    `isearch'
   (setq isearch-allow-scroll nil))
 
@@ -995,6 +1034,7 @@
   (:map emms-playlist-mode-map
         ("M-<f1>" . emms-stop)
         ("M-<f2>" . emms-start)
+        ("M-<f6>" . emms-pause)
         ("M-<f5>" . emms-previous)
         ("M-<f7>" . emms-next)
         ("r" . emms-random)
@@ -1403,7 +1443,6 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
 
 (global-set-key (kbd "C-<f12>") 'focus-mode)
 
-
 (use-package goggles
   :hook ((prog-mode-hook . goggles-mode)
          (text-mode-hook . goggles-mode))
@@ -1423,6 +1462,16 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
   :defer t
   )
 
+(use-package webjump
+  :ensure nil
+  :commands (webjump)
+  :custom
+  (webjump-sites
+   '(("DuckDuckGo" . [simple-query "www.duckduckgo.com" "www.duckduckgo.com/?q=" ""])
+     ("Google" . [simple-query "www.google.com" "www.google.com/search?q=" ""])
+     ("YouTube" . [simple-query "www.youtube.com/feed/subscriptions" "www.youtube.com/results?search_query=" ""])
+     )))
+
 ;; (USE-package keyfreq
 ;;   :hook
 ;;   (after-init . keyfreq-mode)
@@ -1433,8 +1482,9 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
 ;;   :defer 5)
 ;; (eval-after-load "dash" '(dash-enable-font-lock))
 
-(use-package transient
-  :ensure nil)
+;; (use-package transient
+;;   :disabled t
+;;   :ensure nil)
 
 (use-package restart-emacs
   :ensure t
@@ -1484,6 +1534,24 @@ Also see `prot/bongo-playlist-insert-playlist-file'."
    (t (message "No parenthesis."))))
 
 (global-set-key (kbd "C-<apps>") 'jp/jump-paren)
+
+;; (with-current-buffer (get-buffer-create "*scratch*")
+;;   (message (format "┌┬┐┬ ┬┬
+;;  │ ││││
+;;  ┴ └┴┘┴
+;;       ┬  ┬┌─┐┬ ┬┌┬┐
+;;       │  ││ ┬├─┤ │
+;;       ┴─┘┴└─┘┴ ┴ ┴
+;;                 ┌─┐┌─┐┌─┐┬─┐┬┌─┬ ┌─┐
+;;                 └─┐├─┘├─┤├┬┘├┴┐│ ├┤
+;;                 └─┘┴  ┴ ┴┴└─┴ ┴┴─└─┘
+;; Only when you creating you truly alive.
+;;
+;; Loading time: %s
+;; Packages: %s
+;;
+;; "                  (emacs-init-time)
+;; (number-to-string (length package-activated-list)))))
 
 (provide 'post-init)
 ;;; post-init.el ends here
