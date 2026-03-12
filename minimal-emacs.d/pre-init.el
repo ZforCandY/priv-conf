@@ -11,7 +11,7 @@
 ;; also check Mintty https://github.com/chansey97/mintty-standalone ;-nw Wezterm is faster.
 ;; add.dlls kiennq/treesit-langs to treesits
 ;; add quick-sdcv /sdcv dictionary
-;; meow make editing 10x faster
+;; meow make editing 10x faster /Tip:Use 'diff' to debug init.
 ;;; Code:
 (setq message-log-max t)
 (require 'use-package)
@@ -312,6 +312,7 @@ into the main dumped Emacs"
 (setopt package-quickstart nil
         package-enable-at-startup t)
 (setq frame-resize-pixelwise t)
+(setq vc-handled-backends '(Git))
 
 ;;W32
 (when (eq system-type 'windows-nt)
@@ -528,8 +529,9 @@ Only when you creating you truly alive.
 
 ;;Uncommented
 ;;(pop-select/transparent-set-background 255 255 255 255)
-
+(modify-coding-system-alist 'file "" 'utf-8)
 (save-place-mode 1)
+(setq ibuffer-human-readable-size t)
 (setopt indicate-empty-lines t)
 (setq-default indicate-buffer-boundaries 'left)
 (setq require-final-newline t)
