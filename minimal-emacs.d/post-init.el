@@ -21,19 +21,20 @@
   (compile-angel-on-load-mode 1))
 
 ;;Meow
-;; (require 'meow)
+(require 'meow)
 
-(defun meow-config-mode ()
-  "Mode-to-insert."
-  ;; (cl-pushnew '(vterm-mode . insert) meow-mode-state-list)
-  (cl-pushnew '(inferior-lisp-mode . insert) meow-mode-state-list))
+;; (defun meow-config-mode ()
+;;   "Mode-to-insert."
+;;   ;; (cl-pushnew '(vterm-mode . insert) meow-mode-state-list)
+;;   (cl-pushnew '(inferior-lisp-mode . insert) meow-mode-state-list))
 
 (use-package meow
-  :demand t
+  ;; :demand t
   :ensure t
   :custom
   (meow-use-clipboard t)
-  :config (meow-config-mode))
+  ;; :config (meow-config-mode)
+  )
 
 (defun meow-setup ()
   "Meow-setup."
@@ -137,6 +138,7 @@
    '("!" . previous-buffer)
    '("@" . next-buffer)
    '("#" . kill-buffer)
+   '("$" . restart-emacs)
    '("Q" . "C-x C-c")
    '("C" . comment-dwim)
    '("b" . switch-to-buffer)
@@ -152,8 +154,8 @@
 (setq meow-update-interval 0.05)
 (setq meow-esc-delay 0.001)
 (setq meow-cursor-type-insert '(bar . 4))
-
 (meow-setup)
+
 (unless (bound-and-true-p meow-global-mode)
   (meow-global-mode 1))
 (meow-global-mode 1)
@@ -175,49 +177,58 @@
                                         ;grandshell-theme
                                         ;tomorrow-night-deepblue-theme
                                         ;(load-theme 'misterioso)
-;; (use-package leuven-theme
-;;   :ensure t
-;;   :config
-;;   (load-theme 'leuven-dark t)
-;;   :init
-;;   (global-set-key (kbd "M-/") #'theme-choose-variant))
-
-(use-package modus-themes
+(use-package leuven-theme
   :ensure t
-  :defer t
-  :init
-  (modus-themes-include-derivatives-mode 1)
-  (modus-themes-load-theme 'modus-operandi)
-  :bind
-  (("M-/" . modus-themes-toggle)
-   ("C-*" . modus-themes-select)
-   ("M-*" . modus-themes-load-random))
   :config
-  (setq modus-themes-to-toggle '(modus-operandi-tinted modus-operandi)
-        modus-themes-to-rotate modus-themes-items
-        modus-themes-mixed-fonts t
-        modus-themes-variable-pitch-ui t
-        modus-themes-italic-constructs t
-        modus-themes-bold-constructs t
-        modus-themes-completions '((t . (bold)))
-        modus-themes-prompts '(bold)
-        modus-themes-headings
-        '((agenda-structure . (variable-pitch light 2.2))
-          (agenda-date . (variable-pitch regular 1.3))
-          (t . (regular 1.15))))
-  (setq modus-themes-common-palette-overrides nil)
-  (setq modus-themes-mode-line '(accented borderless padded))
-  (setq modus-themes-region '(bg-only no-extend))
-  (setq modus-themes-completions 'opinionated)
-  (setq modus-themes-paren-match '(bold intense underline))
-  (setq modus-themes-syntax '(alt-syntax))
-  (setq modus-themes-headings
-        '((1 . (rainbow overline background 1.4))
-          (2 . (rainbow background 1.3))
-          (3 . (rainbow bold 1.2))
-          (t . (semilight 1.1))))
-  (setq modus-themes-scale-headings t)
-  (setq modus-themes-org-blocks 'gray-background))
+  (load-theme 'leuven-dark t)
+  :init
+  (global-set-key (kbd "M-/") #'theme-choose-variant))
+
+;; (use-package doric-themes
+;;   :straight t
+;;   :config
+;;   (load-theme 'doric-marble t)
+;;   (setq doric-themes-to-toggle '(doric-marble doric-earth))
+;;   :init
+;;   (global-set-key (kbd "M-/") #'doric-themes-toggle)
+;;   )
+
+;; (use-package modus-themes
+;;   :ensure t
+;;   :defer t
+;;   :init
+;;   (modus-themes-include-derivatives-mode 1)
+;;   (modus-themes-load-theme 'modus-operandi)
+;;   :bind
+;;   (("M-/" . modus-themes-toggle)
+;;    ("C-*" . modus-themes-select)
+;;    ("M-*" . modus-themes-load-random))
+;;   :config
+;;   (setq modus-themes-to-toggle '(modus-operandi-tinted modus-operandi)
+;;         modus-themes-to-rotate modus-themes-items
+;;         modus-themes-mixed-fonts t
+;;         modus-themes-variable-pitch-ui t
+;;         modus-themes-italic-constructs t
+;;         modus-themes-bold-constructs t
+;;         modus-themes-completions '((t . (bold)))
+;;         modus-themes-prompts '(bold)
+;;         modus-themes-headings
+;;         '((agenda-structure . (variable-pitch light 2.2))
+;;           (agenda-date . (variable-pitch regular 1.3))
+;;           (t . (regular 1.15))))
+;;   (setq modus-themes-common-palette-overrides nil)
+;;   (setq modus-themes-mode-line '(accented borderless padded))
+;;   (setq modus-themes-region '(bg-only no-extend))
+;;   (setq modus-themes-completions 'opinionated)
+;;   (setq modus-themes-paren-match '(bold intense underline))
+;;   (setq modus-themes-syntax '(alt-syntax))
+;;   (setq modus-themes-headings
+;;         '((1 . (rainbow overline background 1.4))
+;;           (2 . (rainbow background 1.3))
+;;           (3 . (rainbow bold 1.2))
+;;           (t . (semilight 1.1))))
+;;   (setq modus-themes-scale-headings t)
+;;   (setq modus-themes-org-blocks 'gray-background))
 
                                         ;(native-comp-available-p)
 :Straight.el
@@ -411,11 +422,12 @@
   (setq company-dict-dir (expand-file-name "dicts" user-emacs-directory)))
 
 (use-package company-box
-  :after nerd-icons
   :hook (company-mode . company-box-mode)
   :config
   (setq company-box-show-single-candidate t
         company-box-backends-colors nil
+        company-box-doc-delay 0.5
+        company-box-doc-text-scale-level -2
         ))
 
 (use-package company-prescient
@@ -425,7 +437,6 @@
   (after-init . company-prescient-mode))
 
 (use-package all-the-icons
-  :commands (vertico-prescient-mode)
   :if (display-graphic-p))
 
 ;;Org
@@ -954,7 +965,9 @@
   (setq isearch-allow-scroll nil))
 
 (use-package eieio
-  :defer t)
+  :defer t
+  :config
+  (setq eieio-backward-compatibility t))
 
 (use-package helpful
   :ensure t
@@ -1184,10 +1197,10 @@
 
 ;;media ends here
 
-(use-package eros
-  :ensure t
-  :commands (eros-mode)
-  :config (eros-mode))
+;; (use-package eros
+;;   :ensure t
+;;   :commands (eros-mode)
+;;   :config (eros-mode))
 
 (use-package eww
   :ensure nil
@@ -1254,10 +1267,16 @@
 ;;   :disabled t
 ;;   :ensure nil)
 
+(use-package casual-suite
+  :defer 5
+  :bind ("C-o" . casual-editkit-main-tmenu)
+  :bind (("C-c v a" . casual-avy-tmenu))
+  )
+
 (use-package restart-emacs
   :ensure t
   :defer t
-  :commands restart-emacs)
+  :commands (restart-emacs))
 
 ;;Defun misc. Cool or Useful elisp 'func' I found
 (defun toggle-mode-line ()
@@ -1303,23 +1322,23 @@
 
 (global-set-key (kbd "C-<apps>") 'jp/jump-paren)
 
-;; (with-current-buffer (get-buffer-create "*scratch*")
-;;   (message (format "┌┬┐┬ ┬┬
-;;  │ ││││
-;;  ┴ └┴┘┴
-;;       ┬  ┬┌─┐┬ ┬┌┬┐
-;;       │  ││ ┬├─┤ │
-;;       ┴─┘┴└─┘┴ ┴ ┴
-;;                 ┌─┐┌─┐┌─┐┬─┐┬┌─┬ ┌─┐
-;;                 └─┐├─┘├─┤├┬┘├┴┐│ ├┤
-;;                 └─┘┴  ┴ ┴┴└─┴ ┴┴─└─┘
-;; Only when you creating you truly alive.
-;;
-;; Loading time: %s
-;; Packages: %s
-;;
-;; "                  (emacs-init-time)
-;; (number-to-string (length package-activated-list)))))
+(with-current-buffer (get-buffer-create "*scratch*")
+  (message (format "┌┬┐┬ ┬┬
+ │ ││││
+ ┴ └┴┘┴
+      ┬  ┬┌─┐┬ ┬┌┬┐
+      │  ││ ┬├─┤ │
+      ┴─┘┴└─┘┴ ┴ ┴
+                ┌─┐┌─┐┌─┐┬─┐┬┌─┬ ┌─┐
+                └─┐├─┘├─┤├┬┘├┴┐│ ├┤
+                └─┘┴  ┴ ┴┴└─┴ ┴┴─└─┘
+Only when you creating you truly alive.
+
+Loading time: %s
+Packages: %s
+
+"                  (emacs-init-time)
+(number-to-string (length package-activated-list)))))
 
 (provide 'post-init)
 ;;; post-init.el ends here
